@@ -1,0 +1,29 @@
+ERROR - 2026-08-02 06:14:28 --> Unknown column 'nama_ibadah' in 'field list'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('INSERT INTO `ibadah` (`nama_ibadah`, `tanggal`, `waktu`, `id_sektor_pelayanan`, `keterangan`, `approval_ketua5`) VALUES (\'Ibadah Minggu Umum\', \'2026-05-17\', \'07:00:00\', \'1\', \'Seeder Generated\', \'approved\')', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(908): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `ibadah` (`nama_ibadah`, `tanggal`, `waktu`, `id_sektor_pelayanan`, `keterangan`, `approval_ketua5`) VALUES (\'Ibadah Minggu Umum\', \'2026-05-17\', \'07:00:00\', \'1\', \'Seeder Generated\', \'approved\')')
+ 3 SYSTEMPATH\Database\BaseConnection.php(825): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `ibadah` (`nama_ibadah`, `tanggal`, `waktu`, `id_sektor_pelayanan`, `keterangan`, `approval_ketua5`) VALUES (\'Ibadah Minggu Umum\', \'2026-05-17\', \'07:00:00\', \'1\', \'Seeder Generated\', \'approved\')')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(2343): CodeIgniter\Database\BaseConnection->query('INSERT INTO `ibadah` (`nama_ibadah`, `tanggal`, `waktu`, `id_sektor_pelayanan`, `keterangan`, `approval_ketua5`) VALUES (:nama_ibadah:, :tanggal:, :waktu:, :id_sektor_pelayanan:, :keterangan:, :approval_ketua5:)', [...], false)
+ 5 APPPATH\Database\Seeds\DashboardDataSeeder.php(55): CodeIgniter\Database\BaseBuilder->insert([...])
+ 6 SYSTEMPATH\Database\Seeder.php(155): App\Database\Seeds\DashboardDataSeeder->run()
+ 7 SYSTEMPATH\Commands\Database\Seed.php(79): CodeIgniter\Database\Seeder->call('App\\Database\\Seeds\\DashboardDataSeeder')
+ 8 SYSTEMPATH\CLI\Commands.php(72): CodeIgniter\Commands\Database\Seed->run([])
+ 9 SYSTEMPATH\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('db:seed', [...])
+10 SYSTEMPATH\Boot.php(442): CodeIgniter\CLI\Console->run()
+11 SYSTEMPATH\Boot.php(166): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+12 ROOTPATH\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+ERROR - 2026-08-02 06:15:55 --> Unknown column 'nama_ibadah' in 'field list'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('INSERT INTO `ibadah` (`nama_ibadah`, `tanggal`, `waktu`, `id_sektor_pelayanan`, `keterangan`, `approval_ketua5`) VALUES (\'Ibadah Pelkat PKP\', \'2026-05-17\', \'07:00:00\', \'1\', \'Seeder Generated\', \'approved\')', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(908): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `ibadah` (`nama_ibadah`, `tanggal`, `waktu`, `id_sektor_pelayanan`, `keterangan`, `approval_ketua5`) VALUES (\'Ibadah Pelkat PKP\', \'2026-05-17\', \'07:00:00\', \'1\', \'Seeder Generated\', \'approved\')')
+ 3 SYSTEMPATH\Database\BaseConnection.php(825): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `ibadah` (`nama_ibadah`, `tanggal`, `waktu`, `id_sektor_pelayanan`, `keterangan`, `approval_ketua5`) VALUES (\'Ibadah Pelkat PKP\', \'2026-05-17\', \'07:00:00\', \'1\', \'Seeder Generated\', \'approved\')')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(2343): CodeIgniter\Database\BaseConnection->query('INSERT INTO `ibadah` (`nama_ibadah`, `tanggal`, `waktu`, `id_sektor_pelayanan`, `keterangan`, `approval_ketua5`) VALUES (:nama_ibadah:, :tanggal:, :waktu:, :id_sektor_pelayanan:, :keterangan:, :approval_ketua5:)', [...], false)
+ 5 APPPATH\Database\Seeds\DashboardDataSeeder.php(55): CodeIgniter\Database\BaseBuilder->insert([...])
+ 6 SYSTEMPATH\Database\Seeder.php(155): App\Database\Seeds\DashboardDataSeeder->run()
+ 7 SYSTEMPATH\Commands\Database\Seed.php(79): CodeIgniter\Database\Seeder->call('App\\Database\\Seeds\\DashboardDataSeeder')
+ 8 SYSTEMPATH\CLI\Commands.php(72): CodeIgniter\Commands\Database\Seed->run([])
+ 9 SYSTEMPATH\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('db:seed', [...])
+10 SYSTEMPATH\Boot.php(442): CodeIgniter\CLI\Console->run()
+11 SYSTEMPATH\Boot.php(166): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+12 ROOTPATH\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+ERROR - 2026-08-02 06:16:33 --> Unknown column 'nama_ibadah' in 'field list'

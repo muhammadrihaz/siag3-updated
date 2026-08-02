@@ -1,0 +1,21 @@
+<!-- DEBUG-VIEW START 1 APPPATH\Views\errors\html\error_404.php -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>404 - Page Not Found</title>
+
+    <style>
+        div.logo {
+            height: 200px;
+            width: 155px;
+            display: inline-block;
+            opacity: 0.08;
+            position: absolute;
+            top: 2rem;
+            left: 50%;
+            margin-left: -73px;
+        }
+        body {
+            height: 100%;
+            back

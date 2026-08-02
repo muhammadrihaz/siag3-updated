@@ -1,0 +1,61 @@
+
+CodeIgniter v4.7.3 Command Line Tool - Server Time: 2026-07-31 16:50:59 UTC+00:00
+
+Running all new migrations...
+[CodeIgniter\Database\Exceptions\DatabaseException]
+Table 'sektor_pelayanan' already exists
+at SYSTEMPATH\Database\BaseConnection.php:863
+
+  Caused by:
+  [CodeIgniter\Database\Exceptions\DatabaseException]
+  Table 'sektor_pelayanan' already exists
+  at SYSTEMPATH\Database\MySQLi\Connection.php:310
+
+  Caused by:
+  [mysqli_sql_exception]
+  Table 'sektor_pelayanan' already exists
+  at SYSTEMPATH\Database\MySQLi\Connection.php:300
+
+Backtrace:
+  1    SYSTEMPATH\Database\MySQLi\Connection.php:300
+       mysqli()->query('RENAME TABLE `wilayah` TO `sektor_pelayanan`', 0)
+
+  2    SYSTEMPATH\Database\BaseConnection.php:908
+       CodeIgniter\Database\MySQLi\Connection()->execute('RENAME TABLE `wilayah` TO `sektor_pelayanan`')
+
+  3    SYSTEMPATH\Database\BaseConnection.php:825
+       CodeIgniter\Database\BaseConnection()->simpleQuery('RENAME TABLE `wilayah` TO `sektor_pelayanan`')
+
+  4    APPPATH\Database\Migrations\2026-07-31-163046_UpdateSiagSchema.php:25
+       CodeIgniter\Database\BaseConnection()->query('RENAME TABLE `wilayah` TO `sektor_pelayanan`')
+
+  5    SYSTEMPATH\Database\MigrationRunner.php:1014
+       App\Database\Migrations\UpdateSiagSchema()->up()
+
+  6    SYSTEMPATH\Database\MigrationRunner.php:202
+       CodeIgniter\Database\MigrationRunner()->migrate('up', Object(stdClass))
+
+  7    SYSTEMPATH\Commands\Database\Migrate.php:89
+       CodeIgniter\Database\MigrationRunner()->latest(null)
+
+  8    SYSTEMPATH\CLI\SignalTrait.php:245
+       CodeIgniter\Commands\Database\Migrate::CodeIgniter\Commands\Database\{closure}()
+
+  9    SYSTEMPATH\Commands\Database\Migrate.php:88
+       CodeIgniter\Commands\Database\Migrate()->withSignalsBlocked(Object(Closure))
+
+ 10    SYSTEMPATH\CLI\Commands.php:72
+       CodeIgniter\Commands\Database\Migrate()->run([])
+
+ 11    SYSTEMPATH\CLI\Console.php:47
+       CodeIgniter\CLI\Commands()->run('migrate', [])
+
+ 12    SYSTEMPATH\Boot.php:442
+       CodeIgniter\CLI\Console()->run()
+
+ 13    SYSTEMPATH\Boot.php:166
+       CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+
+ 14    ROOTPATH\spark:87
+       CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+

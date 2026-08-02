@@ -1,0 +1,15 @@
+﻿ 4 SYSTEMPATH\Database\BaseBuilder.php(1647): CodeIgniter\Database\BaseConnection->query('SELECT `user`.`id`, `user`.`id_jemaat`, `user`.`id_sektor_pelayanan`, `user`.`username`, `user`.`password`, `user`.`role`, `user`.`status`, `user`.`last_login`, `jemaat`.`nama_jemaat`, `sektorpelayanan`.`nama_sektor`
+FROM `user`
+LEFT JOIN `jemaat` ON `jemaat`.`id` = `user`.`id_jemaat`
+LEFT JOIN `sektorpelayanan` ON `sektorpelayanan`.`id` = `user`.`id_sektor_pelayanan`
+WHERE `user`.`username` = :user.username:', [...], false)
+ 5 APPPATH\Models\UserModel.php(143): CodeIgniter\Database\BaseBuilder->get()
+ 6 APPPATH\Controllers\Auth.php(55): App\Models\UserModel->getUserByUsername('master')
+ 7 SYSTEMPATH\CodeIgniter.php(974): App\Controllers\Auth->loginProcess()
+ 8 SYSTEMPATH\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Auth))
+ 9 SYSTEMPATH\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+11 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+12 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+13 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp\\htdocs\\siag3-updated\\public\\index.php')
+ERROR - 2026-08-01 01:42:52 --> getUserByUsername error: Table 'siag3.sektorpelayanan' doesn't exist
