@@ -13,38 +13,18 @@ services:
     environment:
       # CodeIgniter 4 Environment overrides
       - CI_ENVIRONMENT=development
-      - database.default.hostname=mysql
+      # Menghubungkan ke hostname container MySQL yang sudah ada
+      - database.default.hostname=photobooth_website_project-mysql-1
       - database.default.database=siag3
       - database.default.username=sail
       - database.default.password=password
       - database.default.DBDriver=MySQLi
       - database.default.port=3306
-    depends_on:
-      - mysql
     networks:
-      - siag3_network
+      - existing_sail_network
 
-  mysql:
-    image: mysql:8.4
-    container_name: siag3_db
-    ports:
-      # Mapped to 33062 on host to avoid port clashes with existings 'sail' mysql instances (3306 and 33061 shown in your docker ps)
-      - "33062:3306"
-    environment:
-      - MYSQL_DATABASE=siag3
-      - MYSQL_USER=sail
-      - MYSQL_PASSWORD=password
-      - MYSQL_ROOT_PASSWORD=password
-    volumes:
-      - siag3_db_data:/var/lib/mysql
-      # Auto-import siag3.sql on initial container startup (only runs if the db is completely empty)
-      - ./siag3.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - siag3_network
-
-volumes:
-  siag3_db_data:
-
+# Menggunakan Network milik container Sail Anda yang sudah berjalan
 networks:
-  siag3_network:
-    driver: bridge
+  existing_sail_network:
+    external: true
+    name: photobooth_website_project_sail # (Ubah menjadi portofolio-new-rihaz_sail jika Anda ingin memakai DB server milik Portofolio)
