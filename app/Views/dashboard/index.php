@@ -94,8 +94,7 @@
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                <?= $is_master ? 'Total Sektor Pelayanan' : 'Sektor Pelayanan Anda' ?>
+                                <?= $is_master ? 'Total Wilayah (Cabang)' : 'Wilayah (Cabang)' ?>
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
                                 <?= number_format($total_sektor ?? 0) ?>
@@ -182,8 +181,8 @@
                             </div>
                             <div class="col-6">
                                 <div class="card bg-light py-2">
-                                    <div class="small text-muted">Sektor Pelayanan</div>
-                                    <strong><?= $user_sektor ?? 'Semua Sektor Pelayanan' ?></strong>
+                                    <div class="small text-muted">Wilayah/Cabang</div>
+                                    <strong><?= $user_sektor ?? 'Semua Wilayah' ?></strong>
                                 </div>
                             </div>
                         </div>
@@ -213,7 +212,7 @@
                         <table class="table table-bordered table-hover">
                             <thead class="bg-primary text-white">
                                 <tr>
-                                    <th>Sektor Pelayanan</th>
+                                    <th>Wilayah / Cabang</th>
                                     <th class="text-center">Keluarga</th>
                                     <th class="text-center">Jemaat</th>
                                     <th class="text-center">Ibadah</th>
@@ -269,7 +268,7 @@
                     <option value="triwulan">Triwulan</option>
                 </select>
                 <select id="filter_lokasi" class="form-control d-inline-block w-auto ml-2">
-                    <option value="all">Semua Sektor/Lokasi</option>
+                    <option value="all">Semua Wilayah</option>
                     <?php if(!empty($sektor_list)): foreach($sektor_list as $sl): ?>
                         <option value="<?= $sl->id ?>"><?= htmlspecialchars($sl->nama_sektor) ?></option>
                     <?php endforeach; endif; ?>

@@ -287,7 +287,6 @@
                 <span><strong>Wilayah:</strong> <?= $ibadah->nama_sektor ?? '-' ?></span>
                 <span><strong>Hadir:</strong> <span id="totalHadir"><?= $ibadah->jumlah_hadir ?? 0 ?></span></span>
                 <span><strong>Total:</strong> <span id="totalPeserta"><?= $ibadah->total_peserta ?? 0 ?></span></span>
-                <span><strong>Nominal:</strong> <span id="totalNominal" style="color: #ffd700;">Rp 0</span></span>
                 <span><span class="badge-live"><i class="fas fa-circle"></i> LIVE</span></span>
                 <span><a href="<?= base_url('ibadah') ?>" class="btn btn-sm btn-light no-print" style="color:#1a3a6b;"><i class="fas fa-times"></i></a></span>
             </div>
@@ -311,24 +310,7 @@
                 </div>
             </div>
 
-            <!-- Kolom Kiri Bawah: Persembahan -->
-            <div class="live-card">
-                <div class="live-card-header">
-                    <h6><i class="fas fa-hand-holding-heart text-success"></i> Persembahan Terakhir</h6>
-                    <div>
-                        <span class="badge badge-success mr-2" id="totalNominalPersembahan" style="font-size:13px; padding:5px 12px;">Rp 0</span>
-                        <span class="count" id="countPersembahan">0</span>
-                    </div>
-                </div>
-                <div class="live-card-body no-scroll">
-                    <div class="scroll-content" id="persembahanList">
-                        <div class="empty-state">
-                            <i class="fas fa-hand-holding-heart"></i>
-                            <p>Belum ada persembahan</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
 
             <!-- Kolom Kanan: Pelayan -->
             <div class="live-card" style="grid-column: span 1;">
@@ -415,44 +397,7 @@
             $('#totalPeserta').text(data.length);
         }
 
-        // Render Persembahan
-        function renderPersembahan(data) {
-            var html = '';
-            var count = data.length;
-            var totalNominal = 0;
-            
-            $.each(data, function(key, item) {
-                totalNominal += parseInt(item.nominal) || 0;
-            });
-            
-            if (count === 0) {
-                html = '<div class="empty-state"><i class="fas fa-hand-holding-heart"></i><p>Belum ada persembahan</p></div>';
-            } else {
-                $.each(data, function(key, item) {
-                    var initial = item.nama_jemaat ? item.nama_jemaat.charAt(0).toUpperCase() : '?';
-                    var jenisLabel = {
-                        'kantong_putih': 'Putih',
-                        'kantong_cokelat': 'Cokelat',
-                        'persembahan_khusus': 'Khusus'
-                    };
-                    html += `
-                        <div class="list-item">
-                            <div class="avatar" style="background:#d4edda; color:#155724;">${initial}</div>
-                            <div class="info">
-                                <div class="name">${item.nama_jemaat || '-'}</div>
-                                <div class="detail">${jenisLabel[item.jenis] || item.jenis} · ${item.metode || '-'}</div>
-                            </div>
-                            <div class="badge-time" style="font-weight:700; color:#1a3a6b;">${formatRupiah(item.nominal)}</div>
-                        </div>
-                    `;
-                });
-            }
-            
-            $('#persembahanList').html(html);
-            $('#countPersembahan').text(count);
-            $('#totalNominalPersembahan').text(formatRupiah(totalNominal));
-            $('#totalNominal').text(formatRupiah(totalNominal));
-        }
+
 
         // Render Pelayan
         function renderPelayan(data) {
@@ -492,7 +437,6 @@
                     if (response.status === 'success') {
                         var data = response.data;
                         renderAbsensi(data.absensi || []);
-                        renderPersembahan(data.persembahan || []);
                         renderPelayan(data.pelayan || []);
                     }
                 },

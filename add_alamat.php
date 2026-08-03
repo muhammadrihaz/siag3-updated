@@ -14,3 +14,5 @@ echo "\nJemaat columns:\n";
 while ($row = $cols->fetch_assoc()) {
     echo "  " . $row['Field'] . " (" . $row['Type'] . ")\n";
 }
+
+

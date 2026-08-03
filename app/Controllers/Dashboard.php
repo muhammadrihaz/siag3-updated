@@ -72,10 +72,11 @@ class Dashboard extends Controller
             }
             
             // =============================================
-            // TOTAL SEKTOR
+            // TOTAL SEKTOR / WILAYAH
             // =============================================
             if ($isMaster) {
-                $total_sektor = $this->sektorPelayananModel->countAll();
+                // Hardcode 18 sesuai permintaan (17 sektor + bajem tabanan)
+                $total_sektor = 18;
             } else {
                 $total_sektor = 1;
             }
@@ -92,12 +93,13 @@ class Dashboard extends Controller
             }
             
             // =============================================
-            // ABSENSI HARI INI
+            // ABSENSI HARI INI (HADIR)
             // =============================================
             $today = date('Y-m-d');
             if ($isMaster) {
                 $total_absensi_hari_ini = $this->absensiModel
                     ->where('DATE(waktu)', $today)
+                    ->where('status', 'hadir')
                     ->countAllResults();
             } else {
                 $total_absensi_hari_ini = $this->absensiModel
@@ -105,6 +107,7 @@ class Dashboard extends Controller
                     ->join('ibadah', 'ibadah.id = absensi.id_ibadah', 'left')
                     ->where('ibadah.id_sektor_pelayanan', $userSektorPelayanan)
                     ->where('DATE(absensi.waktu)', $today)
+                    ->where('absensi.status', 'hadir')
                     ->countAllResults();
             }
             

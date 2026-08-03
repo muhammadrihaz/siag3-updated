@@ -24,7 +24,7 @@
                     <div class="form-group">
                         <label for="id_sektor_pelayanan">Wilayah</label>
                         <select class="form-control" id="id_sektor_pelayanan" name="id_sektor_pelayanan">
-                            <option value="">-- Semua Sektor Pelayanan --</option>
+                            <option value="">-- Semua Wilayah --</option>
                             <?php foreach ($sektorPelayanan as $w): ?>
                                 <option value="<?= $w->id ?>"><?= $w->nama_sektor ?></option>
                             <?php endforeach; ?>

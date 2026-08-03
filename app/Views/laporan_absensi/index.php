@@ -31,7 +31,7 @@
                             <option value="">-- Semua Ibadah --</option>
                             <?php foreach ($ibadah as $i): ?>
                                 <option value="<?= $i->id ?>">
-                                    <?= $i->jenis_ibadah ?> - <?= $i->tanggal ?> (<?= $i->nama_sektor ?? '-' ?>)
+                                    <?= $i->jenis_ibadah ?> - <?= $i->tanggal ?> (<?= str_replace('Sektor', 'Cabang Gereja', $i->nama_sektor ?? '-') ?>)
                                 </option>
                             <?php endforeach; ?>
                         </select>

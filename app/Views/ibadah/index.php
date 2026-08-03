@@ -62,9 +62,9 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="id_sektor_pelayanan">Sektor Pelayanan <span class="text-danger">*</span></label>
+                                <label for="id_sektor_pelayanan">Wilayah (Cabang) <span class="text-danger">*</span></label>
                                 <select class="form-control" id="id_sektor_pelayanan" name="id_sektor_pelayanan">
-                                    <option value="">-- Pilih Sektor Pelayanan --</option>
+                                    <option value="">-- Pilih Wilayah (Cabang) --</option>
                                 </select>
                                 <small class="text-danger error-text" id="error_id_sektor_pelayanan"></small>
                             </div>
@@ -214,7 +214,7 @@ $(document).ready(function() {
             success: function(data) {
                 var select = $('#id_sektor_pelayanan');
                 select.empty();
-                select.append('<option value="">-- Pilih Sektor Pelayanan --</option>');
+                select.append('<option value="">-- Pilih Wilayah (Cabang) --</option>');
                 $.each(data, function(key, value) {
                     var selected = (selectedId && selectedId == value.id) ? 'selected' : '';
                     select.append('<option value="' + value.id + '" ' + selected + '>' + value.nama_sektor + '</option>');
@@ -304,7 +304,7 @@ $(document).ready(function() {
         var isValid = true;
         
         if (id_sektor_pelayanan == '') {
-            $('#error_id_sektor_pelayanan').text('Sektor Pelayanan harus dipilih!');
+            $('#error_id_sektor_pelayanan').text('Wilayah harus dipilih!');
             isValid = false;
         }
         
