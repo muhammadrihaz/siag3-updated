@@ -1,5 +1,5 @@
 <?php
-$db = new PDO('mysql:host=127.0.0.1;dbname=siag3;charset=utf8mb4', 'root', '');
+$db = new PDO('mysql:host=db;dbname=siag3;charset=utf8mb4', 'siag3_user', 'password');
 $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $db->exec("CREATE TABLE IF NOT EXISTS cabang_gereja (
     id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
