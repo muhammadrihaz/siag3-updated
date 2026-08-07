@@ -97,7 +97,7 @@ $routes->group('', ['filter' => 'login'], function($routes) {
             $routes->post('save', 'Ibadah::save');
             $routes->get('getById/(:num)', 'Ibadah::getById/$1');
             $routes->post('delete/(:num)', 'Ibadah::delete/$1');
-            $routes->get('getWilayah', 'Ibadah::getWilayah');
+            $routes->get('getCabangGereja', 'Ibadah::getCabangGereja');
             $routes->get('detail/(:num)', 'Ibadah::detail/$1');
             $routes->get('absensi/(:num)', 'Ibadah::absensi/$1');
             $routes->get('absensi/scan/(:num)', 'Absensi::scanWithId/$1');
