@@ -44,6 +44,15 @@ $routes->group('', ['filter' => 'login'], function($routes) {
             $routes->post('delete/(:num)', 'SektorPelayanan::delete/$1');
         });
         
+        // CABANG GEREJA
+        $routes->group('cabanggereja', function($routes) {
+            $routes->get('/', 'CabangGereja::index');
+            $routes->post('getData', 'CabangGereja::getData');
+            $routes->post('save', 'CabangGereja::save');
+            $routes->get('getById/(:num)', 'CabangGereja::getById/$1');
+            $routes->post('delete/(:num)', 'CabangGereja::delete/$1');
+        });
+        
         // WAITLIST SAKRAMEN
         $routes->group('waitlistsakramen', function($routes) {
             $routes->get('/', 'WaitlistSakramen::index');

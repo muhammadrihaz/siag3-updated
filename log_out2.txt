@@ -1,0 +1,118 @@
+DEBUG - 2026-08-07 11:43:33 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-08-07 11:44:10 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-08-07 11:45:33 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-08-07 11:46:01 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-08-07 11:48:05 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-08-07 11:50:04 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-08-07 11:50:32 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-08-07 11:50:50 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-08-07 11:50:53 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-08-07 11:50:55 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-08-07 11:57:50 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-08-07 11:57:50 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-08-07 11:57:52 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-08-07 11:58:06 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-08-07 11:58:07 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-08-07 11:59:53 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-08-07 11:59:55 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-08-07 11:59:58 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-08-07 12:05:04 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-08-07 12:05:07 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+ERROR - 2026-08-07 12:09:58 --> Table 'sektor_pelayanan' already exists
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('RENAME TABLE `wilayah` TO `sektor_pelayanan`', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(908): CodeIgniter\Database\MySQLi\Connection->execute('RENAME TABLE `wilayah` TO `sektor_pelayanan`')
+ 3 SYSTEMPATH\Database\BaseConnection.php(825): CodeIgniter\Database\BaseConnection->simpleQuery('RENAME TABLE `wilayah` TO `sektor_pelayanan`')
+ 4 APPPATH\Database\Migrations\2026-07-31-163046_UpdateSiagSchema.php(25): CodeIgniter\Database\BaseConnection->query('RENAME TABLE `wilayah` TO `sektor_pelayanan`')
+ 5 SYSTEMPATH\Database\MigrationRunner.php(1014): App\Database\Migrations\UpdateSiagSchema->up()
+ 6 SYSTEMPATH\Database\MigrationRunner.php(202): CodeIgniter\Database\MigrationRunner->migrate('up', Object(stdClass))
+ 7 SYSTEMPATH\Commands\Database\Migrate.php(89): CodeIgniter\Database\MigrationRunner->latest(null)
+ 8 SYSTEMPATH\CLI\SignalTrait.php(245): CodeIgniter\Commands\Database\Migrate::CodeIgniter\Commands\Database\{closure}()
+ 9 SYSTEMPATH\Commands\Database\Migrate.php(88): CodeIgniter\Commands\Database\Migrate->withSignalsBlocked(Object(Closure))
+10 SYSTEMPATH\CLI\Commands.php(72): CodeIgniter\Commands\Database\Migrate->run([])
+11 SYSTEMPATH\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate', [])
+12 SYSTEMPATH\Boot.php(442): CodeIgniter\CLI\Console->run()
+13 SYSTEMPATH\Boot.php(166): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+14 ROOTPATH\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+DEBUG - 2026-08-07 12:12:51 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-08-07 12:12:52 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-08-07 12:12:53 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-08-07 12:12:55 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+CRITICAL - 2026-08-07 12:12:55 --> TypeError: CodeIgniter\Database\BaseBuilder::limit(): Argument #1 ($value) must be of type ?int, string given, called in C:\xampp\htdocs\siag3-updated\vendor\codeigniter4\framework\system\Model.php on line 761
+[Method: POST, Route: cabanggereja/getData]
+in SYSTEMPATH\Database\BaseBuilder.php on line 1512.
+ 1 SYSTEMPATH\Model.php(761): CodeIgniter\Database\BaseBuilder->limit('10', '0')
+ 2 APPPATH\Models\CabangGerejaModel.php(60): CodeIgniter\Model->__call('limit', [...])
+ 3 APPPATH\Controllers\CabangGereja.php(44): App\Models\CabangGerejaModel->getDatatables()
+ 4 SYSTEMPATH\CodeIgniter.php(974): App\Controllers\CabangGereja->getData()
+ 5 SYSTEMPATH\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\CabangGereja))
+ 6 SYSTEMPATH\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+10 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp\\htdocs\\siag3-updated\\public\\index.php')
+DEBUG - 2026-08-07 12:13:11 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+ERROR - 2026-08-07 12:13:11 --> Table 'siag3.cabang_gereja' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('INSERT INTO `cabang_gereja` (`nama_cabang`, `alamat_gereja`, `created_at`, `updated_at`) VALUES (\'Test 1\', \'adawd\', \'2026-08-07 12:13:11\', \'2026-08-07 12:13:11\')', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(908): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `cabang_gereja` (`nama_cabang`, `alamat_gereja`, `created_at`, `updated_at`) VALUES (\'Test 1\', \'adawd\', \'2026-08-07 12:13:11\', \'2026-08-07 12:13:11\')')
+ 3 SYSTEMPATH\Database\BaseConnection.php(825): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `cabang_gereja` (`nama_cabang`, `alamat_gereja`, `created_at`, `updated_at`) VALUES (\'Test 1\', \'adawd\', \'2026-08-07 12:13:11\', \'2026-08-07 12:13:11\')')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(2343): CodeIgniter\Database\BaseConnection->query('INSERT INTO `cabang_gereja` (`nama_cabang`, `alamat_gereja`, `created_at`, `updated_at`) VALUES (:nama_cabang:, :alamat_gereja:, :created_at:, :updated_at:)', [...], false)
+ 5 SYSTEMPATH\Model.php(357): CodeIgniter\Database\BaseBuilder->insert()
+ 6 SYSTEMPATH\BaseModel.php(899): CodeIgniter\Model->doInsert([...])
+ 7 SYSTEMPATH\Model.php(670): CodeIgniter\BaseModel->insert([...], true)
+ 8 APPPATH\Controllers\CabangGereja.php(113): CodeIgniter\Model->insert([...])
+ 9 SYSTEMPATH\CodeIgniter.php(974): App\Controllers\CabangGereja->save()
+10 SYSTEMPATH\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\CabangGereja))
+11 SYSTEMPATH\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+12 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+13 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+14 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+15 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp\\htdocs\\siag3-updated\\public\\index.php')
+ERROR - 2026-08-07 12:13:11 --> Exception in save: Table 'siag3.cabang_gereja' doesn't exist
+DEBUG - 2026-08-07 12:16:21 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-08-07 12:16:24 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+CRITICAL - 2026-08-07 12:16:24 --> TypeError: CodeIgniter\Database\BaseBuilder::limit(): Argument #1 ($value) must be of type ?int, string given, called in C:\xampp\htdocs\siag3-updated\vendor\codeigniter4\framework\system\Model.php on line 761
+[Method: POST, Route: cabanggereja/getData]
+in SYSTEMPATH\Database\BaseBuilder.php on line 1512.
+ 1 SYSTEMPATH\Model.php(761): CodeIgniter\Database\BaseBuilder->limit('10', '0')
+ 2 APPPATH\Models\CabangGerejaModel.php(60): CodeIgniter\Model->__call('limit', [...])
+ 3 APPPATH\Controllers\CabangGereja.php(44): App\Models\CabangGerejaModel->getDatatables()
+ 4 SYSTEMPATH\CodeIgniter.php(974): App\Controllers\CabangGereja->getData()
+ 5 SYSTEMPATH\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\CabangGereja))
+ 6 SYSTEMPATH\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+10 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp\\htdocs\\siag3-updated\\public\\index.php')
+DEBUG - 2026-08-07 12:16:33 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-08-07 12:16:33 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+CRITICAL - 2026-08-07 12:16:33 --> TypeError: CodeIgniter\Database\BaseBuilder::limit(): Argument #1 ($value) must be of type ?int, string given, called in C:\xampp\htdocs\siag3-updated\vendor\codeigniter4\framework\system\Model.php on line 761
+[Method: POST, Route: cabanggereja/getData]
+in SYSTEMPATH\Database\BaseBuilder.php on line 1512.
+ 1 SYSTEMPATH\Model.php(761): CodeIgniter\Database\BaseBuilder->limit('10', '0')
+ 2 APPPATH\Models\CabangGerejaModel.php(60): CodeIgniter\Model->__call('limit', [...])
+ 3 APPPATH\Controllers\CabangGereja.php(44): App\Models\CabangGerejaModel->getDatatables()
+ 4 SYSTEMPATH\CodeIgniter.php(974): App\Controllers\CabangGereja->getData()
+ 5 SYSTEMPATH\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\CabangGereja))
+ 6 SYSTEMPATH\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+10 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp\\htdocs\\siag3-updated\\public\\index.php')
+DEBUG - 2026-08-07 12:16:38 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-08-07 12:16:41 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+CRITICAL - 2026-08-07 12:16:41 --> TypeError: CodeIgniter\Database\BaseBuilder::limit(): Argument #1 ($value) must be of type ?int, string given, called in C:\xampp\htdocs\siag3-updated\vendor\codeigniter4\framework\system\Model.php on line 761
+[Method: POST, Route: cabanggereja/getData]
+in SYSTEMPATH\Database\BaseBuilder.php on line 1512.
+ 1 SYSTEMPATH\Model.php(761): CodeIgniter\Database\BaseBuilder->limit('10', '0')
+ 2 APPPATH\Models\CabangGerejaModel.php(60): CodeIgniter\Model->__call('limit', [...])
+ 3 APPPATH\Controllers\CabangGereja.php(44): App\Models\CabangGerejaModel->getDatatables()
+ 4 SYSTEMPATH\CodeIgniter.php(974): App\Controllers\CabangGereja->getData()
+ 5 SYSTEMPATH\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\CabangGereja))
+ 6 SYSTEMPATH\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+10 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp\\htdocs\\siag3-updated\\public\\index.php')
+DEBUG - 2026-08-07 12:17:12 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.

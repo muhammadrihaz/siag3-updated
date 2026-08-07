@@ -68,6 +68,11 @@
                 <a class="collapse-item <?= (isset($sub_menu) && $sub_menu == 'sektorpelayanan') ? 'active' : '' ?>" href="<?= base_url('sektorpelayanan') ?>">
                     <i class="fas fa-map-marker-alt fa-fw"></i> Sektor Pelayanan
                 </a>
+                
+                <!-- Cabang Gereja -->
+                <a class="collapse-item <?= (isset($sub_menu) && $sub_menu == 'cabanggereja') ? 'active' : '' ?>" href="<?= base_url('cabanggereja') ?>">
+                    <i class="fas fa-church fa-fw"></i> Cabang Gereja
+                </a>
                 <?php endif; ?>
                 
                 <!-- Keluarga -->
