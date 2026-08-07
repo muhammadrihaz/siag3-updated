@@ -1,11 +1,10 @@
 <?php
-$f = 'writable/logs/log-2026-08-07.log';
-if (!file_exists($f)) {
-    echo "No log found today\n";
-    exit;
+$lines = file("writable/logs/log-2026-08-07.log");
+$found = [];
+foreach($lines as $line) {
+    if (strpos($line, 'Unknown column') !== false) {
+        $found[] = $line;
+    }
 }
-$lines = file($f);
-$count = count($lines);
-for ($i = max(0, $count - 40); $i < $count; $i++) {
-    echo $lines[$i];
-}
+echo "Found " . count($found) . " errors:\n";
+echo implode("\n", array_slice($found, -5)); // show last 5
