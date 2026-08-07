@@ -79,6 +79,9 @@
                                         </button>
                                     </form>
                                     <hr>
+                                    <a href="<?= base_url() ?>" class="btn btn-secondary btn-user btn-block mb-3">
+                                        <i class="fas fa-home"></i> Kembali ke Halaman Awal
+                                    </a>
                                     <div class="text-center">
                                         <a class="small" href="<?= base_url('register') ?>">Belum punya akun? Register</a>
                                     </div>
