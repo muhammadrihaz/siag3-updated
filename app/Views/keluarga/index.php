@@ -28,7 +28,7 @@
                         <th width="5%">No</th>
                         <th>Nama Kepala Keluarga</th>
                         <th>No. KK</th>
-                        <th>Sektor</th>
+                        <th>Sekpel</th>
                         <th>Alamat</th>
                         <th width="12%">Aksi</th>
                     </tr>

@@ -27,7 +27,7 @@
                     <tr>
                         <th width="5%">No</th>
                         <th>Nama Sektor</th>
-                        <th>Ketua Wilayah</th>
+                        <th>Koordinator Sekpel</th>
                         <th>Telepon</th>
                         <th width="10%">Jumlah Jemaat</th>
                         <th width="12%">Aksi</th>
