@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\IbadahModel;
-use App\Models\SektorPelayananModel;
+use App\Models\CabangGerejaModel;
 use App\Models\AbsensiModel;
 use App\Models\PelayanModel;
 use App\Models\PersembahanModel;
@@ -12,22 +12,20 @@ use CodeIgniter\Controller;
 class Ibadah extends Controller
 {
     protected $ibadahModel;
-    protected $sektorPelayananModel;
+    protected $cabangGerejaModel;
     protected $absensiModel;
     protected $pelayanModel;
     protected $persembahanModel;
     protected $session;
     protected $validation;
     protected $userRole;
-    protected $userSektorPelayanan;
-
     /**
      * Constructor - Inisialisasi model dan cek login
      */
     public function __construct()
     {
         $this->ibadahModel = new IbadahModel();
-        $this->sektorPelayananModel = new SektorPelayananModel();
+        $this->cabangGerejaModel = new CabangGerejaModel();
         $this->absensiModel = new AbsensiModel();
         $this->pelayanModel = new PelayanModel();
         $this->persembahanModel = new PersembahanModel();
@@ -41,8 +39,6 @@ class Ibadah extends Controller
         
         // Ambil role dan wilayah user untuk filter data
         $this->userRole = $this->session->get('role');
-        $this->userSektorPelayanan = $this->session->get('id_sektor_pelayanan');
-        
         // Cek permission view - hanya user dengan akses view yang bisa masuk
         if (!canView('ibadah')) {
             return redirect()->to('/dashboard')->with('error', 'Anda tidak memiliki akses ke halaman ini!');
@@ -85,13 +81,7 @@ class Ibadah extends Controller
                 $data = [];
                 $no = $this->request->getPost('start');
                 
-                // Filter data berdasarkan wilayah user (kecuali Master)
-                $filteredList = [];
-                foreach ($list as $ibadah) {
-                    if ($this->userRole == 'master' || $ibadah->id_sektor_pelayanan == $this->userSektorPelayanan) {
-                        $filteredList[] = $ibadah;
-                    }
-                }
+                $filteredList = $list;
                 
                 foreach ($filteredList as $ibadah) {
                     $no++;
@@ -112,7 +102,7 @@ class Ibadah extends Controller
                     $row[] = date('d-m-Y', strtotime($ibadah->tanggal));
                     $row[] = $ibadah->waktu_mulai ?? '-';
                     $row[] = $ibadah->jenis_ibadah ?? '-';
-                    $row[] = $ibadah->nama_sektor ?? '-';
+                    $row[] = $ibadah->nama_cabang ?? '-';
                     $row[] = $ibadah->jumlah_hadir ?? 0;
                     $row[] = $ibadah->total_peserta ?? 0;
                     $row[] = $statusBadge . '<br>' . $ketua5Badge;
@@ -218,7 +208,7 @@ class Ibadah extends Controller
 
             // Validasi input
             $rules = [
-                'id_sektor_pelayanan' => 'required|numeric',
+                'id_cabang_gereja' => 'required|numeric',
                 'tanggal' => 'required|valid_date',
                 'waktu_mulai' => 'required',
                 'jenis_ibadah' => 'required|in_list[Minggu Pagi,Minggu Sore,Persekutuan,Kebaktian Khusus]',
@@ -235,18 +225,10 @@ class Ibadah extends Controller
                 ]);
             }
 
-            $id_sektor_pelayanan = $this->request->getPost('id_sektor_pelayanan');
+            $id_cabang_gereja = $this->request->getPost('id_cabang_gereja');
             
-            // Cek jika user bukan master, hanya bisa memilih wilayahnya sendiri
-            if ($this->userRole != 'master' && $id_sektor_pelayanan != $this->userSektorPelayanan) {
-                return $this->response->setJSON([
-                    'status' => 'error',
-                    'message' => 'Anda hanya dapat mengelola data di wilayah Anda!'
-                ]);
-            }
-
             $data = [
-                'id_sektor_pelayanan' => $id_sektor_pelayanan,
+                'id_cabang_gereja' => $id_cabang_gereja,
                 'tanggal' => $this->request->getPost('tanggal'),
                 'waktu_mulai' => $this->request->getPost('waktu_mulai'),
                 'jenis_ibadah' => $this->request->getPost('jenis_ibadah'),
@@ -271,14 +253,6 @@ class Ibadah extends Controller
             } else {
                 // Update data yang ada
                 $oldData = $this->ibadahModel->find($id);
-                
-                // Cek jika user bukan master, hanya bisa edit data di wilayahnya
-                if ($this->userRole != 'master' && $oldData->id_sektor_pelayanan != $this->userSektorPelayanan) {
-                    return $this->response->setJSON([
-                        'status' => 'error',
-                        'message' => 'Anda hanya dapat mengelola data di wilayah Anda!'
-                    ]);
-                }
                 
                 $update = $this->ibadahModel->update($id, $data);
                 if ($update) {
@@ -354,14 +328,6 @@ class Ibadah extends Controller
                 
                 $ibadah = $this->ibadahModel->find($id);
                 
-                // Cek jika user bukan master, hanya bisa hapus data di wilayahnya
-                if ($this->userRole != 'master' && $ibadah->id_sektor_pelayanan != $this->userSektorPelayanan) {
-                    return $this->response->setJSON([
-                        'status' => 'error',
-                        'message' => 'Anda hanya dapat menghapus data di wilayah Anda!'
-                    ]);
-                }
-                
                 // Cek relasi dengan absensi
                 $absensi = $this->absensiModel->where('id_ibadah', $id)->findAll();
                 if (!empty($absensi)) {
@@ -416,20 +382,15 @@ class Ibadah extends Controller
      * 
      * @return JSON
      */
-    public function getWilayah()
+    public function getCabangGereja()
     {
         try {
             if ($this->request->isAJAX()) {
-                // Filter wilayah berdasarkan role
-                if ($this->userRole == 'master') {
-                    $sektorPelayanan = $this->sektorPelayananModel->findAll();
-                } else {
-                    $sektorPelayanan = $this->sektorPelayananModel->where('id', $this->userSektorPelayanan)->findAll();
-                }
-                return $this->response->setJSON($sektorPelayanan);
+                $cabang = $this->cabangGerejaModel->findAll();
+                return $this->response->setJSON($cabang);
             }
         } catch (\Exception $e) {
-            log_message('error', 'getSektorPelayanan error: ' . $e->getMessage());
+            log_message('error', 'getCabangGereja error: ' . $e->getMessage());
             return $this->response->setJSON([
                 'error' => $e->getMessage()
             ]);
@@ -455,11 +416,6 @@ class Ibadah extends Controller
             
             if (!$ibadah) {
                 throw new \Exception('Data ibadah tidak ditemukan!');
-            }
-            
-            // Cek jika user bukan master, hanya bisa lihat data di wilayahnya
-            if ($this->userRole != 'master' && $ibadah->id_sektor_pelayanan != $this->userSektorPelayanan) {
-                return redirect()->to('/ibadah')->with('error', 'Anda tidak memiliki akses ke data ini!');
             }
             
             // Ambil data absensi
@@ -508,11 +464,6 @@ class Ibadah extends Controller
             
             if (!$ibadah) {
                 throw new \Exception('Data ibadah tidak ditemukan!');
-            }
-            
-            // Cek jika user bukan master, hanya bisa lihat data di wilayahnya
-            if ($this->userRole != 'master' && $ibadah->id_sektor_pelayanan != $this->userSektorPelayanan) {
-                return redirect()->to('/ibadah')->with('error', 'Anda tidak memiliki akses ke data ini!');
             }
             
             // Ambil data absensi untuk ibadah ini
@@ -589,11 +540,6 @@ class Ibadah extends Controller
             
             if (!$ibadah) {
                 throw new \Exception('Data ibadah tidak ditemukan!');
-            }
-            
-            // Cek jika user bukan master, hanya bisa lihat data di wilayahnya
-            if ($this->userRole != 'master' && $ibadah->id_sektor_pelayanan != $this->userSektorPelayanan) {
-                return redirect()->to('/ibadah')->with('error', 'Anda tidak memiliki akses ke data ini!');
             }
             
             $data = [
@@ -696,11 +642,6 @@ class Ibadah extends Controller
             
             if (!$ibadah) {
                 throw new \Exception('Data ibadah tidak ditemukan!');
-            }
-            
-            // Cek wilayah
-            if ($this->userRole != 'master' && $ibadah->id_sektor_pelayanan != $this->userSektorPelayanan) {
-                return redirect()->to('/ibadah')->with('error', 'Anda tidak memiliki akses ke data ini!');
             }
             
             // Ambil data pelayan yang sudah ada
@@ -902,11 +843,6 @@ class Ibadah extends Controller
             
             if (!$ibadah) {
                 throw new \Exception('Data ibadah tidak ditemukan!');
-            }
-            
-            // Cek wilayah
-            if ($this->userRole != 'master' && $ibadah->id_sektor_pelayanan != $this->userSektorPelayanan) {
-                return redirect()->to('/ibadah')->with('error', 'Anda tidak memiliki akses ke data ini!');
             }
             
             // Ambil data persembahan yang sudah ada

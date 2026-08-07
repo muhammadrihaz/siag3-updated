@@ -29,7 +29,7 @@
                         <th>Tanggal</th>
                         <th>Waktu</th>
                         <th>Jenis Ibadah</th>
-                        <th>Wilayah</th>
+                        <th>Cabang Gereja</th>
                         <th>Jumlah Hadir</th>
                         <th>Total Peserta</th>
                         <th>Status</th>
@@ -62,11 +62,11 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="id_sektor_pelayanan">Wilayah (Cabang) <span class="text-danger">*</span></label>
-                                <select class="form-control" id="id_sektor_pelayanan" name="id_sektor_pelayanan">
-                                    <option value="">-- Pilih Wilayah (Cabang) --</option>
+                                <label for="id_cabang_gereja">Cabang Gereja <span class="text-danger">*</span></label>
+                                <select class="form-control" id="id_cabang_gereja" name="id_cabang_gereja">
+                                    <option value="">-- Pilih Cabang Gereja --</option>
                                 </select>
-                                <small class="text-danger error-text" id="error_id_sektor_pelayanan"></small>
+                                <small class="text-danger error-text" id="error_id_cabang_gereja"></small>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -205,23 +205,23 @@ $(document).ready(function() {
     <?php endif; ?>
     
     <?php if (canCreate('ibadah') || canEdit('ibadah')): ?>
-    // Load Sektor Pelayanan untuk dropdown
-    function loadWilayah(selectedId = null) {
+    // Load Cabang Gereja untuk dropdown
+    function loadCabangGereja(selectedId = null) {
         $.ajax({
-            url: '<?= base_url('ibadah/getWilayah') ?>',
+            url: '<?= base_url('ibadah/getCabangGereja') ?>',
             type: 'GET',
             dataType: 'json',
             success: function(data) {
-                var select = $('#id_sektor_pelayanan');
+                var select = $('#id_cabang_gereja');
                 select.empty();
-                select.append('<option value="">-- Pilih Wilayah (Cabang) --</option>');
+                select.append('<option value="">-- Pilih Cabang Gereja --</option>');
                 $.each(data, function(key, value) {
                     var selected = (selectedId && selectedId == value.id) ? 'selected' : '';
-                    select.append('<option value="' + value.id + '" ' + selected + '>' + value.nama_sektor + '</option>');
+                    select.append('<option value="' + value.id + '" ' + selected + '>' + value.nama_cabang + '</option>');
                 });
             },
             error: function() {
-                console.log('Gagal load data sektor pelayanan');
+                console.log('Gagal load data cabang');
             }
         });
     }
@@ -241,7 +241,7 @@ $(document).ready(function() {
         $('#id').val('');
         $('.error-text').text('');
         $('#status').val('draft');
-        loadWilayah();
+        loadCabangGereja();
         setDefaultDate();
         $('#modalIbadah').modal('show');
     });
@@ -270,7 +270,7 @@ $(document).ready(function() {
             type: 'GET',
             dataType: 'json',
             success: function(data) {
-                loadWilayah(data.id_sektor_pelayanan);
+                loadCabangGereja(data.id_cabang_gereja);
                 $('#tanggal').val(data.tanggal);
                 $('#waktu_mulai').val(data.waktu_mulai);
                 $('#jenis_ibadah').val(data.jenis_ibadah);
@@ -296,15 +296,15 @@ $(document).ready(function() {
         
         $('.error-text').text('');
         
-        var id_sektor_pelayanan = $('#id_sektor_pelayanan').val();
+        var id_cabang_gereja = $('#id_cabang_gereja').val();
         var tanggal = $('#tanggal').val();
         var waktu_mulai = $('#waktu_mulai').val();
         var jenis_ibadah = $('#jenis_ibadah').val();
         var status = $('#status').val();
         var isValid = true;
         
-        if (id_sektor_pelayanan == '') {
-            $('#error_id_sektor_pelayanan').text('Wilayah harus dipilih!');
+        if (id_cabang_gereja == '') {
+            $('#error_id_cabang_gereja').text('Cabang Gereja harus dipilih!');
             isValid = false;
         }
         

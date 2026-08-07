@@ -47,8 +47,8 @@
     <div class="card-body">
         <div class="row">
             <div class="col-md-3">
-                <div class="text-muted small">Wilayah</div>
-                <strong><?= $ibadah->nama_sektor ?? '-' ?></strong>
+                <div class="text-muted small">Cabang Gereja</div>
+                <strong><?= $ibadah->nama_cabang ?? '-' ?></strong>
             </div>
             <div class="col-md-3">
                 <div class="text-muted small">Waktu Mulai</div>

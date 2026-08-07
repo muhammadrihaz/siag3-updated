@@ -9,7 +9,7 @@ class IbadahModel extends Model
     protected $table = 'ibadah';
     protected $primaryKey = 'id';
     protected $allowedFields = [
-        'id_sektor_pelayanan', 'tanggal', 'waktu_mulai', 'jenis_ibadah', 
+        'id_cabang_gereja', 'tanggal', 'waktu_mulai', 'jenis_ibadah', 
         'jumlah_hadir', 'total_peserta', 'status', 'approval_ketua5', 'keterangan'
     ];
     protected $useTimestamps = true;
@@ -18,8 +18,8 @@ class IbadahModel extends Model
     protected $returnType = 'object';
     protected $useSoftDeletes = false;
     
-    protected $column_order = ['id', 'tanggal', 'jenis_ibadah', 'nama_sektor', 'jumlah_hadir', 'total_peserta', 'status'];
-    protected $column_search = ['tanggal', 'jenis_ibadah', 'nama_sektor', 'status'];
+    protected $column_order = ['id', 'tanggal', 'jenis_ibadah', 'nama_cabang', 'jumlah_hadir', 'total_peserta', 'status'];
+    protected $column_search = ['tanggal', 'jenis_ibadah', 'nama_cabang', 'status'];
     protected $order = ['tanggal' => 'DESC'];
     
     protected $request;
@@ -38,9 +38,9 @@ class IbadahModel extends Model
     {
         $this->builder->select('
             ibadah.*, 
-            sektor_pelayanan.nama_sektor
+            cabang_gereja.nama_cabang
         ');
-        $this->builder->join('sektor_pelayanan', 'sektor_pelayanan.id = ibadah.id_sektor_pelayanan', 'left');
+        $this->builder->join('cabang_gereja', 'cabang_gereja.id = ibadah.id_cabang_gereja', 'left');
         
         $i = 0;
         $searchValue = $this->request->getPost('search')['value'] ?? '';
@@ -107,7 +107,7 @@ class IbadahModel extends Model
     {
         try {
             $this->builder->select('ibadah.*');
-            $this->builder->join('sektor_pelayanan', 'sektor_pelayanan.id = ibadah.id_sektor_pelayanan', 'left');
+            $this->builder->join('cabang_gereja', 'cabang_gereja.id = ibadah.id_cabang_gereja', 'left');
             return $this->builder->countAllResults();
         } catch (\Exception $e) {
             log_message('error', 'countAll error: ' . $e->getMessage());
@@ -118,8 +118,8 @@ class IbadahModel extends Model
     public function getIbadah()
     {
         try {
-            $this->builder->select('ibadah.*, sektor_pelayanan.nama_sektor');
-            $this->builder->join('sektor_pelayanan', 'sektor_pelayanan.id = ibadah.id_sektor_pelayanan', 'left');
+            $this->builder->select('ibadah.*, cabang_gereja.nama_cabang');
+            $this->builder->join('cabang_gereja', 'cabang_gereja.id = ibadah.id_cabang_gereja', 'left');
             $this->builder->orderBy('ibadah.tanggal', 'DESC');
             $query = $this->builder->get();
             return $query->getResult();
@@ -132,8 +132,8 @@ class IbadahModel extends Model
     public function getIbadahById($id)
     {
         try {
-            $this->builder->select('ibadah.*, sektor_pelayanan.nama_sektor');
-            $this->builder->join('sektor_pelayanan', 'sektor_pelayanan.id = ibadah.id_sektor_pelayanan', 'left');
+            $this->builder->select('ibadah.*, cabang_gereja.nama_cabang');
+            $this->builder->join('cabang_gereja', 'cabang_gereja.id = ibadah.id_cabang_gereja', 'left');
             $this->builder->where('ibadah.id', $id);
             $query = $this->builder->get();
             return $query->getRow();
@@ -143,12 +143,12 @@ class IbadahModel extends Model
         }
     }
 
-    public function getByWilayah($id_sektor_pelayanan)
+    public function getByCabang($id_cabang_gereja)
     {
         try {
-            return $this->where('id_sektor_pelayanan', $id_sektor_pelayanan)->orderBy('tanggal', 'DESC')->findAll();
+            return $this->where('id_cabang_gereja', $id_cabang_gereja)->orderBy('tanggal', 'DESC')->findAll();
         } catch (\Exception $e) {
-            log_message('error', 'getBySektor Pelayanan error: ' . $e->getMessage());
+            log_message('error', 'getByCabang error: ' . $e->getMessage());
             return [];
         }
     }
@@ -166,8 +166,8 @@ class IbadahModel extends Model
     public function getByDateRange($startDate, $endDate)
     {
         try {
-            $this->builder->select('ibadah.*, sektor_pelayanan.nama_sektor');
-            $this->builder->join('sektor_pelayanan', 'sektor_pelayanan.id = ibadah.id_sektor_pelayanan', 'left');
+            $this->builder->select('ibadah.*, cabang_gereja.nama_cabang');
+            $this->builder->join('cabang_gereja', 'cabang_gereja.id = ibadah.id_cabang_gereja', 'left');
             $this->builder->where('ibadah.tanggal >=', $startDate);
             $this->builder->where('ibadah.tanggal <=', $endDate);
             $this->builder->orderBy('ibadah.tanggal', 'DESC');

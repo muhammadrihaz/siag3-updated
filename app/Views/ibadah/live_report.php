@@ -283,7 +283,7 @@
                 </div>
             </div>
             <div class="info">
-                <span><strong>Wilayah:</strong> <?= $ibadah->nama_sektor ?? '-' ?></span>
+                <span><strong>Cabang Gereja:</strong> <?= $ibadah->nama_cabang ?? '-' ?></span>
                 <span><strong>Hadir:</strong> <span id="totalHadir"><?= $ibadah->jumlah_hadir ?? 0 ?></span></span>
                 <span><strong>Total:</strong> <span id="totalPeserta"><?= $ibadah->total_peserta ?? 0 ?></span></span>
                 <span><span class="badge-live"><i class="fas fa-circle"></i> LIVE</span></span>

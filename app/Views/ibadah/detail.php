@@ -79,8 +79,8 @@
                             <td><?= $ibadah->jenis_ibadah ?? '-' ?></td>
                         </tr>
                         <tr>
-                            <th><i class="fas fa-map-marker-alt"></i> Wilayah</th>
-                            <td><?= $ibadah->nama_sektor ?? '-' ?></td>
+                            <th><i class="fas fa-map-marker-alt"></i> Cabang Gereja</th>
+                            <td><?= $ibadah->nama_cabang ?? '-' ?></td>
                         </tr>
                     </table>
                 </div>
