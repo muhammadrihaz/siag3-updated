@@ -30,7 +30,7 @@
                         <th>No. Anggota</th>
                         <th>Status Keluarga</th>
                         <th>Kepala Keluarga</th>
-                        <th>Wilayah</th>
+                        <th>Sekpel</th>
                         <th>JK</th>
                         <th width="22%">Aksi</th>
                     </tr>
