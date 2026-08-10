@@ -16,22 +16,22 @@ class LaporanIbadahModel extends Model
         $this->builder = $this->db->table('ibadah');
     }
 
-    public function getIbadahByFilter($id_sektor_pelayanan = null, $tanggal_awal = null, $tanggal_akhir = null, $status = null)
+    public function getIbadahByFilter($id_cabang_gereja = null, $tanggal_awal = null, $tanggal_akhir = null, $status = null)
     {
         try {
             $this->builder->select('
                 ibadah.*,
-                sektor_pelayanan.nama_sektor,
+                cabang_gereja.nama_cabang,
                 (SELECT COUNT(*) FROM absensi WHERE absensi.id_ibadah = ibadah.id) as total_absensi,
                 (SELECT COUNT(*) FROM absensi WHERE absensi.id_ibadah = ibadah.id AND absensi.status = "hadir") as total_hadir,
                 (SELECT COUNT(*) FROM pelayan WHERE pelayan.id_ibadah = ibadah.id) as total_pelayan,
                 (SELECT SUM(nominal) FROM persembahan WHERE persembahan.id_ibadah = ibadah.id) as total_persembahan
             ');
-            $this->builder->join('sektor_pelayanan', 'sektor_pelayanan.id = ibadah.id_sektor_pelayanan', 'left');
+            $this->builder->join('cabang_gereja', 'cabang_gereja.id = ibadah.id_cabang_gereja', 'left');
             
             // Filter wilayah
-            if ($id_sektor_pelayanan) {
-                $this->builder->where('ibadah.id_sektor_pelayanan', $id_sektor_pelayanan);
+            if ($id_cabang_gereja) {
+                $this->builder->where('ibadah.id_cabang_gereja', $id_cabang_gereja);
             }
             
             // Filter tanggal
@@ -56,20 +56,20 @@ class LaporanIbadahModel extends Model
         }
     }
 
-    public function getAllWilayah()
+    public function getAllCabang()
     {
         try {
-            $this->builder = $this->db->table('sektor_pelayanan');
-            $this->builder->orderBy('nama_sektor', 'ASC');
+            $this->builder = $this->db->table('cabang_gereja');
+            $this->builder->orderBy('nama_cabang', 'ASC');
             $query = $this->builder->get();
             return $query->getResult();
         } catch (\Exception $e) {
-            log_message('error', 'getAllSektor Pelayanan error: ' . $e->getMessage());
+            log_message('error', 'getAllCabang error: ' . $e->getMessage());
             return [];
         }
     }
 
-    public function getStatistik($id_sektor_pelayanan = null, $tanggal_awal = null, $tanggal_akhir = null, $status = null)
+    public function getStatistik($id_cabang_gereja = null, $tanggal_awal = null, $tanggal_akhir = null, $status = null)
     {
         try {
             $this->builder = $this->db->table('ibadah');
@@ -79,10 +79,10 @@ class LaporanIbadahModel extends Model
                 SUM(ibadah.total_peserta) as total_peserta,
                 (SELECT SUM(nominal) FROM persembahan WHERE persembahan.id_ibadah = ibadah.id) as total_persembahan
             ');
-            $this->builder->join('sektor_pelayanan', 'sektor_pelayanan.id = ibadah.id_sektor_pelayanan', 'left');
+            $this->builder->join('cabang_gereja', 'cabang_gereja.id = ibadah.id_cabang_gereja', 'left');
             
-            if ($id_sektor_pelayanan) {
-                $this->builder->where('ibadah.id_sektor_pelayanan', $id_sektor_pelayanan);
+            if ($id_cabang_gereja) {
+                $this->builder->where('ibadah.id_cabang_gereja', $id_cabang_gereja);
             }
             if ($tanggal_awal) {
                 $this->builder->where('ibadah.tanggal >=', $tanggal_awal);
@@ -102,15 +102,15 @@ class LaporanIbadahModel extends Model
         }
     }
 
-    public function getStatusCount($id_sektor_pelayanan = null, $tanggal_awal = null, $tanggal_akhir = null)
+    public function getStatusCount($id_cabang_gereja = null, $tanggal_awal = null, $tanggal_akhir = null)
     {
         try {
             $this->builder = $this->db->table('ibadah');
             $this->builder->select('status, COUNT(*) as total');
-            $this->builder->join('sektor_pelayanan', 'sektor_pelayanan.id = ibadah.id_sektor_pelayanan', 'left');
+            $this->builder->join('cabang_gereja', 'cabang_gereja.id = ibadah.id_cabang_gereja', 'left');
             
-            if ($id_sektor_pelayanan) {
-                $this->builder->where('ibadah.id_sektor_pelayanan', $id_sektor_pelayanan);
+            if ($id_cabang_gereja) {
+                $this->builder->where('ibadah.id_cabang_gereja', $id_cabang_gereja);
             }
             if ($tanggal_awal) {
                 $this->builder->where('ibadah.tanggal >=', $tanggal_awal);

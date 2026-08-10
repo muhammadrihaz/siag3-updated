@@ -30,11 +30,11 @@ class LaporanAbsensiModel extends Model
                 ibadah.tanggal,
                 ibadah.jenis_ibadah,
                 ibadah.waktu_mulai,
-                sektor_pelayanan.nama_sektor
+                cabang_gereja.nama_cabang
             ');
             $this->builder->join('jemaat', 'jemaat.id = absensi.id_jemaat', 'left');
             $this->builder->join('ibadah', 'ibadah.id = absensi.id_ibadah', 'left');
-            $this->builder->join('sektor_pelayanan', 'sektor_pelayanan.id = ibadah.id_sektor_pelayanan', 'left');
+            $this->builder->join('cabang_gereja', 'cabang_gereja.id = ibadah.id_cabang_gereja', 'left');
             
             // Filter ibadah
             if ($id_ibadah !== null && $id_ibadah !== '' && $id_ibadah !== 'null') {
@@ -69,8 +69,8 @@ class LaporanAbsensiModel extends Model
     {
         try {
             $this->builder = $this->db->table('ibadah');
-            $this->builder->select('ibadah.*, sektor_pelayanan.nama_sektor');
-            $this->builder->join('sektor_pelayanan', 'sektor_pelayanan.id = ibadah.id_sektor_pelayanan', 'left');
+            $this->builder->select('ibadah.*, cabang_gereja.nama_cabang');
+            $this->builder->join('cabang_gereja', 'cabang_gereja.id = ibadah.id_cabang_gereja', 'left');
             $this->builder->where('ibadah.status !=', 'batal');
             $this->builder->orderBy('ibadah.tanggal', 'DESC');
             $query = $this->builder->get();
@@ -96,7 +96,7 @@ class LaporanAbsensiModel extends Model
             ');
             $this->builder->join('jemaat', 'jemaat.id = absensi.id_jemaat', 'left');
             $this->builder->join('ibadah', 'ibadah.id = absensi.id_ibadah', 'left');
-            $this->builder->join('sektor_pelayanan', 'sektor_pelayanan.id = ibadah.id_sektor_pelayanan', 'left');
+            $this->builder->join('cabang_gereja', 'cabang_gereja.id = ibadah.id_cabang_gereja', 'left');
             
             if ($id_ibadah !== null && $id_ibadah !== '' && $id_ibadah !== 'null') {
                 $this->builder->where('absensi.id_ibadah', $id_ibadah);
@@ -123,7 +123,7 @@ class LaporanAbsensiModel extends Model
             $this->builder->select('absensi.status, COUNT(*) as total');
             $this->builder->join('jemaat', 'jemaat.id = absensi.id_jemaat', 'left');
             $this->builder->join('ibadah', 'ibadah.id = absensi.id_ibadah', 'left');
-            $this->builder->join('sektor_pelayanan', 'sektor_pelayanan.id = ibadah.id_sektor_pelayanan', 'left');
+            $this->builder->join('cabang_gereja', 'cabang_gereja.id = ibadah.id_cabang_gereja', 'left');
             
             if ($id_ibadah !== null && $id_ibadah !== '' && $id_ibadah !== 'null') {
                 $this->builder->where('absensi.id_ibadah', $id_ibadah);
@@ -148,7 +148,7 @@ class LaporanAbsensiModel extends Model
             $this->builder->select('absensi.metode, COUNT(*) as total');
             $this->builder->join('jemaat', 'jemaat.id = absensi.id_jemaat', 'left');
             $this->builder->join('ibadah', 'ibadah.id = absensi.id_ibadah', 'left');
-            $this->builder->join('sektor_pelayanan', 'sektor_pelayanan.id = ibadah.id_sektor_pelayanan', 'left');
+            $this->builder->join('cabang_gereja', 'cabang_gereja.id = ibadah.id_cabang_gereja', 'left');
             
             if ($id_ibadah !== null && $id_ibadah !== '' && $id_ibadah !== 'null') {
                 $this->builder->where('absensi.id_ibadah', $id_ibadah);

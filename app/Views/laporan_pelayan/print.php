@@ -185,7 +185,7 @@
                     <td><span class="badge badge-primary"><?= $p->tugas ?? '-' ?></span></td>
                     <td><?= $p->tanggal ?? '-' ?></td>
                     <td><?= $p->jenis_ibadah ?? '-' ?></td>
-                    <td><?= $p->nama_sektor ?? '-' ?></td>
+                    <td><?= $p->nama_cabang ?? '-' ?></td>
                     <td><?= $p->waktu_mulai ?? '-' ?></td>
                     <td>
                         <span class="badge badge-<?= $p->status == 'hadir' ? 'success' : ($p->status == 'tidak_hadir' ? 'danger' : ($p->status == 'konfirmasi' ? 'warning' : 'secondary')) ?>">

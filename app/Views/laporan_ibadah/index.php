@@ -22,11 +22,11 @@
             <div class="row">
                 <div class="col-md-3">
                     <div class="form-group">
-                        <label for="id_sektor_pelayanan">Wilayah</label>
-                        <select class="form-control" id="id_sektor_pelayanan" name="id_sektor_pelayanan">
-                            <option value="">-- Semua Wilayah --</option>
-                            <?php foreach ($sektorPelayanan as $w): ?>
-                                <option value="<?= $w->id ?>"><?= $w->nama_sektor ?></option>
+                        <label for="id_cabang_gereja">Cabang Gereja</label>
+                        <select class="form-control" id="id_cabang_gereja" name="id_cabang_gereja">
+                            <option value="">-- Semua Cabang Gereja --</option>
+                            <?php foreach ($cabangGereja as $w): ?>
+                                <option value="<?= $w->id ?>"><?= $w->nama_cabang ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -167,7 +167,7 @@
                         <th>Tanggal</th>
                         <th>Waktu</th>
                         <th>Jenis Ibadah</th>
-                        <th>Wilayah</th>
+                        <th>Cabang Gereja</th>
                         <th>Hadir</th>
                         <th>Total Peserta</th>
                         <th>Pelayan</th>
@@ -219,7 +219,7 @@ $(document).ready(function() {
 
     // Load Data
     function loadData() {
-        var id_sektor_pelayanan = $('#id_sektor_pelayanan').val();
+        var id_cabang_gereja = $('#id_cabang_gereja').val();
         var tanggal_awal = $('#tanggal_awal').val();
         var tanggal_akhir = $('#tanggal_akhir').val();
         var status = $('#status').val();
@@ -237,7 +237,7 @@ $(document).ready(function() {
             url: '<?= base_url('laporanibadah/getData') ?>',
             type: 'POST',
             data: {
-                id_sektor_pelayanan: id_sektor_pelayanan,
+                id_cabang_gereja: id_cabang_gereja,
                 tanggal_awal: tanggal_awal,
                 tanggal_akhir: tanggal_akhir,
                 status: status
@@ -256,7 +256,7 @@ $(document).ready(function() {
                                 <td>${value.tanggal || '-'}</td>
                                 <td>${value.waktu_mulai || '-'}</td>
                                 <td>${value.jenis_ibadah || '-'}</td>
-                                <td><span class="badge badge-info">${value.nama_sektor || '-'}</span></td>
+                                <td><span class="badge badge-info">${value.nama_cabang || '-'}</span></td>
                                 <td class="text-center"><span class="badge badge-success">${value.total_hadir || 0}</span></td>
                                 <td class="text-center"><span class="badge badge-primary">${value.total_peserta || 0}</span></td>
                                 <td class="text-center"><span class="badge badge-warning">${value.total_pelayan || 0}</span></td>
@@ -364,13 +364,13 @@ $(document).ready(function() {
         var labels = [];
         var wilayahName = '';
         
-        if (filter.id_sektor_pelayanan) {
-            $.each(<?= json_encode($sektorPelayanan) ?>, function(key, value) {
-                if (value.id == filter.id_sektor_pelayanan) {
-                    wilayahName = value.nama_sektor;
+        if (filter.id_cabang_gereja) {
+            $.each(<?= json_encode($cabangGereja) ?>, function(key, value) {
+                if (value.id == filter.id_cabang_gereja) {
+                    wilayahName = value.nama_cabang;
                 }
             });
-            if (wilayahName) labels.push('Wilayah: ' + wilayahName);
+            if (wilayahName) labels.push('Cabang Gereja: ' + wilayahName);
         }
         
         if (filter.tanggal_awal && filter.tanggal_akhir) {
@@ -391,17 +391,17 @@ $(document).ready(function() {
 
     // Print
     $('#btnPrint').on('click', function() {
-        var id_sektor_pelayanan = $('#id_sektor_pelayanan').val() || 'null';
+        var id_cabang_gereja = $('#id_cabang_gereja').val() || 'null';
         var tanggal_awal = $('#tanggal_awal').val() || 'null';
         var tanggal_akhir = $('#tanggal_akhir').val() || 'null';
         var status = $('#status').val() || 'null';
         
-        var url = '<?= base_url('laporanibadah/print') ?>/' + id_sektor_pelayanan + '/' + tanggal_awal + '/' + tanggal_akhir + '/' + status;
+        var url = '<?= base_url('laporanibadah/print') ?>/' + id_cabang_gereja + '/' + tanggal_awal + '/' + tanggal_akhir + '/' + status;
         window.open(url, '_blank');
     });
 
     // Enter key trigger search
-    $('#id_sektor_pelayanan, #tanggal_awal, #tanggal_akhir, #status').on('keypress', function(e) {
+    $('#id_cabang_gereja, #tanggal_awal, #tanggal_akhir, #status').on('keypress', function(e) {
         if (e.which === 13) {
             $('#formFilter').submit();
         }

@@ -27,7 +27,7 @@
                             <option value="">-- Semua Ibadah --</option>
                             <?php foreach ($ibadah as $i): ?>
                                 <option value="<?= $i->id ?>">
-                                    <?= $i->jenis_ibadah ?> - <?= $i->tanggal ?> (<?= str_replace('Sektor', 'Cabang Gereja', $i->nama_sektor ?? '-') ?>)
+                                    <?= $i->jenis_ibadah ?> - <?= $i->tanggal ?> (<?= $i->nama_cabang ?? '-' ?>)
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -211,6 +211,22 @@
 $(document).ready(function() {
     var table = null;
 
+        var allIbadah = <?= json_encode($ibadah) ?>;
+    
+    $('#id_cabang_gereja').on('change', function() {
+        var selectedCabang = $(this).val();
+        var select = $('#id_ibadah');
+        select.empty();
+        select.append('<option value="">-- Semua Ibadah --</option>');
+        
+        $.each(allIbadah, function(index, value) {
+            if (selectedCabang === '' || value.id_cabang_gereja == selectedCabang) {
+                var namaCabang = value.nama_cabang ? value.nama_cabang : '-';
+                select.append('<option value="' + value.id + '">' + value.jenis_ibadah + ' - ' + value.tanggal + ' (' + namaCabang + ')</option>');
+            }
+        });
+    });
+    
     // Submit Filter
     $('#formFilter').on('submit', function(e) {
         e.preventDefault();
@@ -278,7 +294,7 @@ $(document).ready(function() {
                                 <td><span class="badge badge-primary">${value.tugas || '-'}</span></td>
                                 <td>${value.tanggal || '-'}</td>
                                 <td>${value.jenis_ibadah || '-'}</td>
-                                <td><span class="badge badge-info">${value.nama_sektor || '-'}</span></td>
+                                <td><span class="badge badge-info">${value.nama_cabang || '-'}</span></td>
                                 <td>${value.waktu_mulai || '-'}</td>
                                 <td>${getStatusBadge(value.status)}</td>
                                 <td>${value.keterangan || '-'}</td>

@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\LaporanPelayanModel;
 use App\Models\IbadahModel;
+use App\Models\CabangGerejaModel;
 use CodeIgniter\Controller;
 
 class LaporanPelayan extends Controller
@@ -60,7 +61,12 @@ class LaporanPelayan extends Controller
                 'tidak_hadir' => 'Tidak Hadir'
             ];
             
+            
+            $cabangModel = new \App\Models\CabangGerejaModel();
+            $allCabangGereja = $cabangModel->findAll();
+            
             $data = [
+                'cabangGereja' => $allCabangGereja,
                 'active_menu' => 'laporan',
                 'sub_menu' => 'laporan_pelayan',
                 'title' => 'Laporan Pelayan',

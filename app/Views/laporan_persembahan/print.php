@@ -186,7 +186,7 @@
                     <td><?= $p->no_anggota ?? '-' ?></td>
                     <td><?= $p->tanggal ?? '-' ?></td>
                     <td><?= $p->jenis_ibadah ?? '-' ?></td>
-                    <td><?= $p->nama_sektor ?? '-' ?></td>
+                    <td><?= $p->nama_cabang ?? '-' ?></td>
                     <td class="text-right"><strong>Rp <?= number_format($p->nominal ?? 0, 0, ',', '.') ?></strong></td>
                     <td>
                         <span class="badge badge-<?= $p->jenis == 'kantong_putih' ? 'info' : ($p->jenis == 'kantong_cokelat' ? 'warning' : 'danger') ?>">

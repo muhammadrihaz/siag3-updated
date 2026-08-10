@@ -193,7 +193,7 @@
                     <td><?= $a->jenis_kelamin == 'L' ? 'L' : 'P' ?></td>
                     <td><?= $a->tanggal ?? '-' ?></td>
                     <td><?= $a->jenis_ibadah ?? '-' ?></td>
-                    <td><?= $a->nama_sektor ?? '-' ?></td>
+                    <td><?= $a->nama_cabang ?? '-' ?></td>
                     <td><?= $a->waktu ?? '-' ?></td>
                     <td>
                         <span class="badge badge-<?= $a->status == 'hadir' ? 'success' : ($a->status == 'izin' ? 'warning' : ($a->status == 'sakit' ? 'info' : 'danger')) ?>">

@@ -20,20 +20,31 @@
     <div class="card-body">
         <form id="formFilter">
             <div class="row">
+                                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="id_cabang_gereja">Cabang Gereja</label>
+                        <select class="form-control" id="id_cabang_gereja" name="id_cabang_gereja">
+                            <option value="">-- Semua Cabang --</option>
+                            <?php foreach ($cabangGereja as $c): ?>
+                                <option value="<?= $c->id ?>"><?= $c->nama_cabang ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
                 <div class="col-md-4">
                     <div class="form-group">
                         <label for="id_ibadah">Ibadah</label>
                         <select class="form-control" id="id_ibadah" name="id_ibadah">
                             <option value="">-- Semua Ibadah --</option>
                             <?php foreach ($ibadah as $i): ?>
-                                <option value="<?= $i->id ?>">
-                                    <?= $i->jenis_ibadah ?> - <?= $i->tanggal ?> (<?= str_replace('Sektor', 'Cabang Gereja', $i->nama_sektor ?? '-') ?>)
+                                <option value="<?= $i->id ?>" data-cabang="<?= $i->id_cabang_gereja ?>">
+                                    <?= $i->jenis_ibadah ?> - <?= $i->tanggal ?> (<?= $i->nama_cabang ?? '-' ?>)
                                 </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <div class="form-group">
                         <label for="jenis">Jenis Persembahan</label>
                         <select class="form-control" id="jenis" name="jenis">
@@ -211,6 +222,22 @@
 $(document).ready(function() {
     var table = null;
 
+        var allIbadah = <?= json_encode($ibadah) ?>;
+    
+    $('#id_cabang_gereja').on('change', function() {
+        var selectedCabang = $(this).val();
+        var select = $('#id_ibadah');
+        select.empty();
+        select.append('<option value="">-- Semua Ibadah --</option>');
+        
+        $.each(allIbadah, function(index, value) {
+            if (selectedCabang === '' || value.id_cabang_gereja == selectedCabang) {
+                var namaCabang = value.nama_cabang ? value.nama_cabang : '-';
+                select.append('<option value="' + value.id + '">' + value.jenis_ibadah + ' - ' + value.tanggal + ' (' + namaCabang + ')</option>');
+            }
+        });
+    });
+    
     // Submit Filter
     $('#formFilter').on('submit', function(e) {
         e.preventDefault();
@@ -292,7 +319,7 @@ $(document).ready(function() {
                                 <td>${value.no_anggota || '-'}</td>
                                 <td>${value.tanggal || '-'}</td>
                                 <td>${value.jenis_ibadah || '-'}</td>
-                                <td><span class="badge badge-info">${value.nama_sektor || '-'}</span></td>
+                                <td><span class="badge badge-info">${value.nama_cabang || '-'}</span></td>
                                 <td class="text-right"><strong>${formatRupiah(value.nominal || 0)}</strong></td>
                                 <td>${getJenisBadge(value.jenis)}</td>
                                 <td>${getMetodeBadge(value.metode)}</td>

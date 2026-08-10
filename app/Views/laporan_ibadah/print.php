@@ -121,10 +121,10 @@
     <div class="header">
         <h1>LAPORAN IBADAH</h1>
         <p>GEREJA KRISTEN</p>
-        <?php if ($sektorPelayanan): ?>
-            <div class="sub-info">Wilayah: <?= $sektorPelayanan->nama_sektor ?></div>
+        <?php if ($cabangGereja): ?>
+            <div class="sub-info">Cabang Gereja: <?= $cabangGereja->nama_cabang ?></div>
         <?php else: ?>
-            <div class="sub-info">Semua Wilayah</div>
+            <div class="sub-info">Semua Cabang Gereja</div>
         <?php endif; ?>
         <?php if ($tanggal_awal && $tanggal_akhir): ?>
             <div class="sub-info">Periode: <?= $tanggal_awal ?> s/d <?= $tanggal_akhir ?></div>
@@ -174,7 +174,7 @@
                 <th width="10%">Tanggal</th>
                 <th width="8%">Waktu</th>
                 <th width="15%">Jenis Ibadah</th>
-                <th width="12%">Wilayah</th>
+                <th width="12%">Cabang Gereja</th>
                 <th width="8%">Hadir</th>
                 <th width="8%">Total Peserta</th>
                 <th width="8%">Pelayan</th>
@@ -190,7 +190,7 @@
                     <td><?= $i->tanggal ?></td>
                     <td><?= $i->waktu_mulai ?? '-' ?></td>
                     <td><?= $i->jenis_ibadah ?? '-' ?></td>
-                    <td><?= $i->nama_sektor ?? '-' ?></td>
+                    <td><?= $i->nama_cabang ?? '-' ?></td>
                     <td class="text-center"><?= $i->total_hadir ?? 0 ?></td>
                     <td class="text-center"><?= $i->total_peserta ?? 0 ?></td>
                     <td class="text-center"><?= $i->total_pelayan ?? 0 ?></td>

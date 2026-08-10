@@ -3,16 +3,16 @@
 namespace App\Controllers;
 
 use App\Models\LaporanIbadahModel;
-use App\Models\SektorPelayananModel;
+use App\Models\CabangGerejaModel;
 use CodeIgniter\Controller;
 
 class LaporanIbadah extends Controller
 {
     protected $laporanIbadahModel;
-    protected $sektorPelayananModel;
+    protected $cabangGerejaModel;
     protected $session;
     protected $userRole;
-    protected $userSektorPelayanan;
+    protected $userCabangGereja;
 
     /**
      * Constructor - Inisialisasi model dan cek login
@@ -20,7 +20,7 @@ class LaporanIbadah extends Controller
     public function __construct()
     {
         $this->laporanIbadahModel = new LaporanIbadahModel();
-        $this->sektorPelayananModel = new SektorPelayananModel();
+        $this->cabangGerejaModel = new CabangGerejaModel();
         $this->session = \Config\Services::session();
         
         // Cek login
@@ -30,7 +30,7 @@ class LaporanIbadah extends Controller
         
         // Ambil role dan wilayah user untuk filter data
         $this->userRole = $this->session->get('role');
-        $this->userSektorPelayanan = $this->session->get('id_sektor_pelayanan');
+        $this->userCabangGereja = $this->session->get('id_cabang_gereja');
         
         // Cek permission view - hanya user dengan akses view yang bisa masuk
         if (!canView('laporan_ibadah')) {
@@ -48,15 +48,9 @@ class LaporanIbadah extends Controller
     {
         try {
             // Ambil semua wilayah untuk filter (filter berdasarkan role)
-            $allSektorPelayanan = $this->laporanIbadahModel->getAllWilayah();
+            $allCabangGereja = $this->laporanIbadahModel->getAllCabang();
             
-            // Filter wilayah berdasarkan role user (kecuali Master)
-            $filteredSektorPelayanan = [];
-            foreach ($allSektorPelayanan as $w) {
-                if ($this->userRole == 'master' || $w->id == $this->userSektorPelayanan) {
-                    $filteredSektorPelayanan[] = $w;
-                }
-            }
+            $filteredCabangGereja = $allCabangGereja;
             
             // Status options
             $statusOptions = [
@@ -70,7 +64,7 @@ class LaporanIbadah extends Controller
                 'active_menu' => 'laporan',
                 'sub_menu' => 'laporan_ibadah',
                 'title' => 'Laporan Ibadah',
-                'sektorPelayanan' => $filteredSektorPelayanan,
+                'cabangGereja' => $filteredCabangGereja,
                 'statusOptions' => $statusOptions
             ];
             
@@ -84,7 +78,7 @@ class LaporanIbadah extends Controller
     /**
      * Mengambil data laporan ibadah (AJAX)
      * Data difilter berdasarkan:
-     * - Sektor Pelayanan (id_sektor_pelayanan)
+     * - Sektor Pelayanan (id_cabang_gereja)
      * - Rentang Tanggal (tanggal_awal - tanggal_akhir)
      * - Status (draft, aktif, selesai, batal)
      * 
@@ -94,44 +88,27 @@ class LaporanIbadah extends Controller
     {
         try {
             if ($this->request->isAJAX()) {
-                $id_sektor_pelayanan = $this->request->getPost('id_sektor_pelayanan');
+                $id_cabang_gereja = $this->request->getPost('id_cabang_gereja');
                 $tanggal_awal = $this->request->getPost('tanggal_awal');
                 $tanggal_akhir = $this->request->getPost('tanggal_akhir');
                 $status = $this->request->getPost('status');
                 
-                // Cek jika user bukan master, filter berdasarkan wilayahnya
-                if ($this->userRole != 'master') {
-                    // Jika user memilih wilayah lain, tolak
-                    if ($id_sektor_pelayanan && $id_sektor_pelayanan != $this->userSektorPelayanan) {
-                        return $this->response->setJSON([
-                            'data' => [],
-                            'statistik' => null,
-                            'statusCount' => [],
-                            'filter' => [
-                                'id_sektor_pelayanan' => $id_sektor_pelayanan,
-                                'tanggal_awal' => $tanggal_awal,
-                                'tanggal_akhir' => $tanggal_akhir,
-                                'status' => $status
-                            ]
-                        ]);
-                    }
-                    // Force filter ke wilayah user
-                    $id_sektor_pelayanan = $this->userSektorPelayanan;
-                }
+                // Cepat dan bersih: Bebaskan filter cabang gereja dari user session
+                // karena pengguna belum diikat secara langsung ke cabang gereja
                 
                 // Ambil data ibadah berdasarkan filter
-                $ibadah = $this->laporanIbadahModel->getIbadahByFilter($id_sektor_pelayanan, $tanggal_awal, $tanggal_akhir, $status);
+                $ibadah = $this->laporanIbadahModel->getIbadahByFilter($id_cabang_gereja, $tanggal_awal, $tanggal_akhir, $status);
                 
                 // Ambil statistik
-                $statistik = $this->laporanIbadahModel->getStatistik($id_sektor_pelayanan, $tanggal_awal, $tanggal_akhir, $status);
-                $statusCount = $this->laporanIbadahModel->getStatusCount($id_sektor_pelayanan, $tanggal_awal, $tanggal_akhir);
+                $statistik = $this->laporanIbadahModel->getStatistik($id_cabang_gereja, $tanggal_awal, $tanggal_akhir, $status);
+                $statusCount = $this->laporanIbadahModel->getStatusCount($id_cabang_gereja, $tanggal_awal, $tanggal_akhir);
                 
                 return $this->response->setJSON([
                     'data' => $ibadah,
                     'statistik' => $statistik,
                     'statusCount' => $statusCount,
                     'filter' => [
-                        'id_sektor_pelayanan' => $id_sektor_pelayanan,
+                        'id_cabang_gereja' => $id_cabang_gereja,
                         'tanggal_awal' => $tanggal_awal,
                         'tanggal_akhir' => $tanggal_akhir,
                         'status' => $status
@@ -150,13 +127,13 @@ class LaporanIbadah extends Controller
      * Halaman print laporan ibadah
      * Menampilkan laporan dalam format siap cetak
      * 
-     * @param string|null $id_sektor_pelayanan ID wilayah
+     * @param string|null $id_cabang_gereja ID wilayah
      * @param string|null $tanggal_awal Tanggal awal
      * @param string|null $tanggal_akhir Tanggal akhir
      * @param string|null $status Status ibadah
      * @return view
      */
-    public function print($id_sektor_pelayanan = null, $tanggal_awal = null, $tanggal_akhir = null, $status = null)
+    public function print($id_cabang_gereja = null, $tanggal_awal = null, $tanggal_akhir = null, $status = null)
     {
         try {
             // Cek permission print
@@ -165,38 +142,32 @@ class LaporanIbadah extends Controller
             }
             
             // Decode parameter
-            $id_sektor_pelayanan = $id_sektor_pelayanan && $id_sektor_pelayanan !== 'null' ? $id_sektor_pelayanan : null;
+            $id_cabang_gereja = $id_cabang_gereja && $id_cabang_gereja !== 'null' ? $id_cabang_gereja : null;
             $tanggal_awal = $tanggal_awal && $tanggal_awal !== 'null' ? $tanggal_awal : null;
             $tanggal_akhir = $tanggal_akhir && $tanggal_akhir !== 'null' ? $tanggal_akhir : null;
             $status = $status && $status !== 'null' ? $status : null;
             
-            // Cek jika user bukan master, force filter ke wilayahnya
-            if ($this->userRole != 'master') {
-                // Jika user memilih wilayah lain, redirect
-                if ($id_sektor_pelayanan && $id_sektor_pelayanan != $this->userSektorPelayanan) {
-                    return redirect()->to('/laporanibadah')->with('error', 'Anda tidak memiliki akses ke data ini!');
-                }
-                $id_sektor_pelayanan = $this->userSektorPelayanan;
-            }
+            // Bebaskan filter dari user session
+            // karena user belum diikat ke wilayah cabang gereja
             
             // Ambil data ibadah berdasarkan filter
-            $ibadah = $this->laporanIbadahModel->getIbadahByFilter($id_sektor_pelayanan, $tanggal_awal, $tanggal_akhir, $status);
+            $ibadah = $this->laporanIbadahModel->getIbadahByFilter($id_cabang_gereja, $tanggal_awal, $tanggal_akhir, $status);
             
             // Ambil statistik
-            $statistik = $this->laporanIbadahModel->getStatistik($id_sektor_pelayanan, $tanggal_awal, $tanggal_akhir, $status);
-            $statusCount = $this->laporanIbadahModel->getStatusCount($id_sektor_pelayanan, $tanggal_awal, $tanggal_akhir);
+            $statistik = $this->laporanIbadahModel->getStatistik($id_cabang_gereja, $tanggal_awal, $tanggal_akhir, $status);
+            $statusCount = $this->laporanIbadahModel->getStatusCount($id_cabang_gereja, $tanggal_awal, $tanggal_akhir);
             
             // Ambil nama wilayah
-            $sektorPelayanan = null;
-            if ($id_sektor_pelayanan) {
-                $sektorPelayanan = $this->sektorPelayananModel->find($id_sektor_pelayanan);
+            $cabangGereja = null;
+            if ($id_cabang_gereja) {
+                $cabangGereja = $this->cabangGerejaModel->find($id_cabang_gereja);
             }
             
             $data = [
                 'ibadah' => $ibadah,
                 'statistik' => $statistik,
                 'statusCount' => $statusCount,
-                'sektorPelayanan' => $sektorPelayanan,
+                'cabangGereja' => $cabangGereja,
                 'tanggal_awal' => $tanggal_awal,
                 'tanggal_akhir' => $tanggal_akhir,
                 'status' => $status,

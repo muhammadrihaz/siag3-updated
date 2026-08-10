@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\LaporanPersembahanModel;
 use App\Models\IbadahModel;
+use App\Models\CabangGerejaModel;
 use CodeIgniter\Controller;
 
 class LaporanPersembahan extends Controller
@@ -54,7 +55,12 @@ class LaporanPersembahan extends Controller
             $jenisOptions = $this->laporanPersembahanModel->getJenisOptions();
             $metodeOptions = $this->laporanPersembahanModel->getMetodeOptions();
             
+            
+            $cabangModel = new \App\Models\CabangGerejaModel();
+            $allCabangGereja = $cabangModel->findAll();
+            
             $data = [
+                'cabangGereja' => $allCabangGereja,
                 'active_menu' => 'laporan',
                 'sub_menu' => 'laporan_persembahan',
                 'title' => 'Laporan Persembahan',

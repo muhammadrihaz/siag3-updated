@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\LaporanAbsensiModel;
 use App\Models\IbadahModel;
+use App\Models\CabangGerejaModel;
 use CodeIgniter\Controller;
 
 class LaporanAbsensi extends Controller
@@ -50,13 +51,7 @@ class LaporanAbsensi extends Controller
             // Ambil data ibadah (filter berdasarkan wilayah)
             $ibadah = $this->laporanAbsensiModel->getAllIbadah();
             
-            // Filter ibadah berdasarkan wilayah user (kecuali Master)
-            $filteredIbadah = [];
-            foreach ($ibadah as $i) {
-                if ($this->userRole == 'master' || $i->id_sektor_pelayanan == $this->userSektorPelayanan) {
-                    $filteredIbadah[] = $i;
-                }
-            }
+            $filteredIbadah = $ibadah;
             
             $statusOptions = [
                 'hadir' => 'Hadir',
@@ -70,7 +65,12 @@ class LaporanAbsensi extends Controller
                 'manual' => 'Manual'
             ];
             
+            
+            $cabangModel = new \App\Models\CabangGerejaModel();
+            $allCabangGereja = $cabangModel->findAll();
+            
             $data = [
+                'cabangGereja' => $allCabangGereja,
                 'active_menu' => 'laporan',
                 'sub_menu' => 'laporan_absensi',
                 'title' => 'Laporan Absensi',
@@ -108,28 +108,7 @@ class LaporanAbsensi extends Controller
                 $status = (empty($status) || $status === 'null') ? null : $status;
                 $metode = (empty($metode) || $metode === 'null') ? null : $metode;
                 
-                // Cek jika user bukan master, filter berdasarkan wilayahnya
-                if ($this->userRole != 'master') {
-                    // Ambil data ibadah dengan filter wilayah
-                    $ibadah = $this->ibadahModel->where('id_sektor_pelayanan', $this->userSektorPelayanan)->findAll();
-                    $ibadahIds = array_column($ibadah, 'id');
-                    
-                    // Jika ada filter id_ibadah, cek apakah termasuk di wilayah user
-                    if ($id_ibadah && !in_array($id_ibadah, $ibadahIds)) {
-                        return $this->response->setJSON([
-                            'data' => [],
-                            'statistik' => null,
-                            'statusCount' => [],
-                            'metodeCount' => [],
-                            'ibadahDetail' => null,
-                            'filter' => [
-                                'id_ibadah' => $id_ibadah,
-                                'status' => $status,
-                                'metode' => $metode
-                            ]
-                        ]);
-                    }
-                }
+                // Filter dicabut agar menampilkan Ibadah terlepas dari session
                 
                 // Ambil data absensi berdasarkan filter
                 $absensi = $this->laporanAbsensiModel->getAbsensiByFilter($id_ibadah, $status, $metode);
@@ -186,15 +165,7 @@ class LaporanAbsensi extends Controller
             $status = ($status && $status !== 'null') ? $status : null;
             $metode = ($metode && $metode !== 'null') ? $metode : null;
             
-            // Cek jika user bukan master, filter berdasarkan wilayahnya
-            if ($this->userRole != 'master') {
-                $ibadah = $this->ibadahModel->where('id_sektor_pelayanan', $this->userSektorPelayanan)->findAll();
-                $ibadahIds = array_column($ibadah, 'id');
-                
-                if ($id_ibadah && !in_array($id_ibadah, $ibadahIds)) {
-                    return redirect()->to('/laporanabsensi')->with('error', 'Anda tidak memiliki akses ke data ini!');
-                }
-            }
+            
             
             $absensi = $this->laporanAbsensiModel->getAbsensiByFilter($id_ibadah, $status, $metode);
             $statistik = $this->laporanAbsensiModel->getStatistik($id_ibadah, $status, $metode);
