@@ -848,17 +848,12 @@ class Ibadah extends Controller
             // Ambil data persembahan yang sudah ada
             $persembahan = $this->persembahanModel->getByIbadah($id_ibadah);
             
-            // Ambil daftar jemaat aktif untuk dropdown
-            $jemaatModel = new \App\Models\JemaatModel();
-            $jemaat = $jemaatModel->getActive();
-            
             $data = [
                 'active_menu' => 'pelayanan',
                 'sub_menu' => 'ibadah',
                 'title' => 'Persembahan Ibadah - ' . $ibadah->jenis_ibadah,
                 'ibadah' => $ibadah,
                 'persembahan' => $persembahan,
-                'jemaat' => $jemaat,
                 'id_ibadah' => $id_ibadah
             ];
             
@@ -896,7 +891,6 @@ class Ibadah extends Controller
             // Validasi input
             $rules = [
                 'id_ibadah' => 'required|numeric',
-                'id_jemaat' => 'required|numeric',
                 'nominal' => 'required|numeric|greater_than[0]',
                 'jenis' => 'required|in_list[putih,cokelat,khusus]',
                 'metode' => 'required|in_list[tunai,transfer,qris]',
@@ -925,7 +919,7 @@ class Ibadah extends Controller
             
             $data = [
                 'id_ibadah' => $id_ibadah,
-                'id_jemaat' => $this->request->getPost('id_jemaat'),
+                'id_jemaat' => $this->request->getPost('id_jemaat') ?: null,
                 'nominal' => $nominal,
                 'jenis' => $this->request->getPost('jenis'),
                 'metode' => $this->request->getPost('metode'),

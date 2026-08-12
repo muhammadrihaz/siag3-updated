@@ -75,16 +75,6 @@
                 <form id="formPersembahan">
                     <input type="hidden" name="id_ibadah" value="<?= $id_ibadah ?>">
                     
-                    <div class="form-group">
-                        <label>Nama Jemaat <span class="text-danger">*</span></label>
-                        <select class="select2 w-100" name="id_jemaat" id="id_jemaat" required>
-                            <option value="">-- Pilih Jemaat --</option>
-                            <?php foreach ($jemaat as $j): ?>
-                                <option value="<?= $j->id ?>"><?= $j->nama_jemaat ?> (<?= $j->no_anggota ?>)</option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
@@ -154,7 +144,6 @@
                         <thead>
                             <tr>
                                 <th width="5%">No</th>
-                                <th>Nama Jemaat</th>
                                 <th>Nominal</th>
                                 <th>Jenis</th>
                                 <th>Metode</th>
@@ -169,7 +158,6 @@
                                 ?>
                                 <tr id="persembahan-<?= $p->id ?>">
                                     <td><?= $no++ ?></td>
-                                    <td><?= $p->nama_jemaat ?? '-' ?></td>
                                     <td><strong>Rp <?= number_format($p->nominal ?? 0, 0, ',', '.') ?></strong></td>
                                     <td>
                                         <span class="badge badge-<?= $p->jenis == 'putih' ? 'primary' : ($p->jenis == 'cokelat' ? 'warning' : 'danger') ?>">
@@ -210,13 +198,13 @@
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr id="emptyRow">
-                                    <td colspan="6" class="text-center text-muted">Belum ada persembahan</td>
+                                    <td colspan="5" class="text-center text-muted">Belum ada persembahan</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
                         <tfoot>
                             <tr style="background: #f8f9fc; font-weight: 700;">
-                                <td colspan="2" class="text-right">TOTAL</td>
+                                <td colspan="1" class="text-right">TOTAL</td>
                                 <td colspan="4" id="totalNominalFooter">
                                     <?php 
                                         $totalAll = 0;
@@ -294,7 +282,7 @@ $(document).ready(function() {
         var total = 0;
         var count = 0;
         $('#tablePersembahan tbody tr:not(#emptyRow)').each(function() {
-            var nominalText = $(this).find('td:eq(2)').text().replace(/[^0-9]/g, '');
+            var nominalText = $(this).find('td:eq(1)').text().replace(/[^0-9]/g, '');
             var nominal = parseInt(nominalText) || 0;
             total += nominal;
             count++;
@@ -310,37 +298,14 @@ $(document).ready(function() {
     $('#formPersembahan').on('submit', function(e) {
         e.preventDefault();
         
-        var id_jemaat = $('#id_jemaat').val();
         var nominalDisplay = $('#nominal').val();
         var nominalClean = nominalDisplay.replace(/[^0-9]/g, '');
-        var jenis = $('#jenis').val();
-        var metode = $('#metode').val();
-        var keterangan = $('#keterangan').val();
-        
-        // Validasi
-        if (!id_jemaat) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Peringatan!',
-                text: 'Silakan pilih jemaat!'
-            });
-            $('#id_jemaat').focus();
-            return;
-        }
-        
-        if (!nominalClean || parseInt(nominalClean) <= 0) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Peringatan!',
-                text: 'Nominal harus diisi dan lebih dari 0!'
-            });
             $('#nominal').focus();
             return;
         }
         
         // Konfirmasi sebelum simpan
         var nominalFormatted = parseInt(nominalClean).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        var jemaatText = $('#id_jemaat option:selected').text();
         var jenisText = $('#jenis option:selected').text();
         var metodeText = $('#metode option:selected').text();
         
@@ -350,7 +315,6 @@ $(document).ready(function() {
                 <p>Apakah Anda yakin ingin menyimpan persembahan ini?</p>
                 <hr>
                 <div class="text-left">
-                    <p><strong>Jemaat:</strong> ${jemaatText}</p>
                     <p><strong>Nominal:</strong> Rp ${nominalFormatted}</p>
                     <p><strong>Jenis:</strong> ${jenisText}</p>
                     <p><strong>Metode:</strong> ${metodeText}</p>
@@ -364,12 +328,12 @@ $(document).ready(function() {
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
-                savePersembahan(id_jemaat, nominalClean, jenis, metode, keterangan);
+                savePersembahan(nominalClean, jenis, metode, keterangan);
             }
         });
     });
     
-    function savePersembahan(id_jemaat, nominal, jenis, metode, keterangan) {
+    function savePersembahan(nominal, jenis, metode, keterangan) {
         $('#btnSimpan').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Menyimpan...');
         
         $.ajax({
@@ -377,7 +341,7 @@ $(document).ready(function() {
             type: 'POST',
             data: {
                 id_ibadah: <?= $id_ibadah ?>,
-                id_jemaat: id_jemaat,
+                id_jemaat: null,
                 nominal: nominal,
                 jenis: jenis,
                 metode: metode,
@@ -396,12 +360,10 @@ $(document).ready(function() {
                     var metodeLabel = metode.charAt(0).toUpperCase() + metode.slice(1);
                     var badgeJenis = jenis == 'putih' ? 'primary' : (jenis == 'cokelat' ? 'warning' : 'danger');
                     var badgeMetode = metode == 'tunai' ? 'success' : (metode == 'transfer' ? 'info' : 'dark');
-                    var jemaatText = $('#id_jemaat option:selected').text();
                     
                     var newRow = `
                         <tr id="persembahan-new">
                             <td></td>
-                            <td>${jemaatText}</td>
                             <td><strong>Rp ${formattedNominal}</strong></td>
                             <td><span class="badge badge-${badgeJenis}">${jenisLabel[jenis]}</span></td>
                             <td><span class="badge badge-${badgeMetode}">${metodeLabel}</span></td>
@@ -440,7 +402,6 @@ $(document).ready(function() {
                     // Reset form
                     $('#formPersembahan')[0].reset();
                     $('#nominal').val('');
-                    $('#id_jemaat').val('').trigger('change');
                     
                     // Update total
                     updateTotal();
@@ -488,14 +449,14 @@ $(document).ready(function() {
     $(document).on('click', '.btn-delete-persembahan', function() {
         var id = $(this).data('id');
         var row = $(this).closest('tr');
-        var nama = row.find('td:eq(1)').text();
-        var nominal = row.find('td:eq(2)').text();
+        var nominal = row.find('td:eq(1)').text();
+        var jenis = row.find('td:eq(2)').text();
         
         Swal.fire({
             title: 'Yakin hapus?',
             html: `
-                <p>Apakah Anda yakin ingin menghapus persembahan dari <strong>${nama}</strong>?</p>
-                <p class="text-muted">Nominal: ${nominal}</p>
+                <p>Apakah Anda yakin ingin menghapus persembahan ini?</p>
+                <p class="text-muted">Nominal: ${nominal} (${jenis})</p>
             `,
             icon: 'warning',
             showCancelButton: true,
@@ -522,7 +483,7 @@ $(document).ready(function() {
                             if ($('#tablePersembahan tbody tr').length === 0) {
                                 $('#tablePersembahan tbody').append(`
                                     <tr id="emptyRow">
-                                        <td colspan="6" class="text-center text-muted">Belum ada persembahan</td>
+                                        <td colspan="5" class="text-center text-muted">Belum ada persembahan</td>
                                     </tr>
                                 `);
                             }
@@ -562,12 +523,12 @@ $(document).ready(function() {
     $(document).on('click', '.btn-approve-persembahan', function() {
         var id = $(this).data('id');
         var row = $(this).closest('tr');
-        var nama = row.find('td:eq(1)').text();
-        var nominal = row.find('td:eq(2)').text();
+        var nominal = row.find('td:eq(1)').text();
+        var jenis = row.find('td:eq(2)').text();
         
         Swal.fire({
             title: 'Konfirmasi Approval',
-            html: `Setujui persembahan dari <strong>${nama}</strong> sebesar ${nominal}?`,
+            html: `Setujui persembahan sebesar <strong>${nominal}</strong> (${jenis})?`,
             icon: 'question',
             showCancelButton: true,
             confirmButtonColor: '#28a745',
@@ -583,8 +544,8 @@ $(document).ready(function() {
                     success: function(response) {
                         if (response.status == 'success') {
                             // Update UI
-                            row.find('td:eq(5)').html('<span class="badge badge-success">Approved</span>');
-                            row.find('td:eq(6)').html(''); // Remove buttons
+                            row.find('td:eq(4)').html('<span class="badge badge-success">Approved</span>');
+                            row.find('td:eq(5)').html(''); // Remove buttons
                             Swal.fire({ icon: 'success', title: 'Berhasil!', text: response.message, timer: 1500, showConfirmButton: false });
                         } else {
                             Swal.fire({ icon: 'error', title: 'Gagal', text: response.message });
