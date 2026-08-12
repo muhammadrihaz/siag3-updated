@@ -280,7 +280,6 @@
                 <thead>
                     <tr>
                         <th width="5%">No</th>
-                        <th>Nama Jemaat</th>
                         <th>Nominal</th>
                         <th>Jenis</th>
                         <th>Metode</th>
@@ -292,7 +291,6 @@
                         <?php $no = 1; foreach ($persembahan as $p): ?>
                         <tr>
                             <td><?= $no++ ?></td>
-                            <td><?= $p->nama_jemaat ?? '-' ?></td>
                             <td><strong>Rp <?= number_format($p->nominal ?? 0, 0, ',', '.') ?></strong></td>
                             <td>
                                 <span class="badge badge-<?= $p->jenis == 'kantong_putih' ? 'primary' : ($p->jenis == 'kantong_cokelat' ? 'warning' : 'danger') ?>">
@@ -316,7 +314,7 @@
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="6" class="text-center text-muted">Belum ada data persembahan</td>
+                            <td colspan="5" class="text-center text-muted">Belum ada data persembahan</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
