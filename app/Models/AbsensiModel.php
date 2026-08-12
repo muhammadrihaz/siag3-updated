@@ -40,11 +40,11 @@ class AbsensiModel extends Model
             ibadah.tanggal,
             ibadah.jenis_ibadah,
             ibadah.waktu_mulai,
-            sektor_pelayanan.nama_sektor
+            cabang_gereja.nama_cabang
         ');
         $this->builder->join('jemaat', 'jemaat.id = absensi.id_jemaat', 'left');
         $this->builder->join('ibadah', 'ibadah.id = absensi.id_ibadah', 'left');
-        $this->builder->join('sektor_pelayanan', 'sektor_pelayanan.id = ibadah.id_sektor_pelayanan', 'left');
+        $this->builder->join('cabang_gereja', 'cabang_gereja.id = ibadah.id_cabang_gereja', 'left');
         
         $i = 0;
         $searchValue = $this->request->getPost('search')['value'] ?? '';
@@ -129,11 +129,11 @@ class AbsensiModel extends Model
                 jemaat.no_anggota,
                 ibadah.tanggal,
                 ibadah.jenis_ibadah,
-                sektor_pelayanan.nama_sektor
+                cabang_gereja.nama_cabang
             ');
             $this->builder->join('jemaat', 'jemaat.id = absensi.id_jemaat', 'left');
             $this->builder->join('ibadah', 'ibadah.id = absensi.id_ibadah', 'left');
-            $this->builder->join('sektor_pelayanan', 'sektor_pelayanan.id = ibadah.id_sektor_pelayanan', 'left');
+            $this->builder->join('cabang_gereja', 'cabang_gereja.id = ibadah.id_cabang_gereja', 'left');
             $this->builder->orderBy('absensi.id', 'DESC');
             $query = $this->builder->get();
             return $query->getResult();
@@ -153,11 +153,11 @@ class AbsensiModel extends Model
                 ibadah.tanggal,
                 ibadah.jenis_ibadah,
                 ibadah.waktu_mulai,
-                sektor_pelayanan.nama_sektor
+                cabang_gereja.nama_cabang
             ');
             $this->builder->join('jemaat', 'jemaat.id = absensi.id_jemaat', 'left');
             $this->builder->join('ibadah', 'ibadah.id = absensi.id_ibadah', 'left');
-            $this->builder->join('sektor_pelayanan', 'sektor_pelayanan.id = ibadah.id_sektor_pelayanan', 'left');
+            $this->builder->join('cabang_gereja', 'cabang_gereja.id = ibadah.id_cabang_gereja', 'left');
             $this->builder->where('absensi.id', $id);
             $query = $this->builder->get();
             return $query->getRow();

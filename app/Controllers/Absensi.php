@@ -81,7 +81,7 @@ public function __construct()
                 // Filter data berdasarkan wilayah user (kecuali Master)
                 $filteredList = [];
                 foreach ($list as $absensi) {
-                    if ($this->userRole == 'master' || $absensi->id_sektor_pelayanan == $this->userSektorPelayanan) {
+                    if ($this->userRole == 'master' || $absensi->id_cabang_gereja == $this->userSektorPelayanan) {
                         $filteredList[] = $absensi;
                     }
                 }
@@ -200,7 +200,7 @@ public function __construct()
             $id_ibadah = $this->request->getPost('id_ibadah');
             $ibadah = $this->ibadahModel->find($id_ibadah);
             
-            if ($this->userRole != 'master' && $ibadah->id_sektor_pelayanan != $this->userSektorPelayanan) {
+            if ($this->userRole != 'master' && $ibadah->id_cabang_gereja != $this->userSektorPelayanan) {
                 return $this->response->setJSON([
                     'status' => 'error',
                     'message' => 'Anda hanya dapat mengelola data di wilayah Anda!'
@@ -288,7 +288,7 @@ public function __construct()
                 $data = $this->absensiModel->getAbsensiById($id);
                 
                 // Cek jika user bukan master, hanya bisa lihat data di wilayahnya
-                if ($this->userRole != 'master' && $data->id_sektor_pelayanan != $this->userSektorPelayanan) {
+                if ($this->userRole != 'master' && $data->id_cabang_gereja != $this->userSektorPelayanan) {
                     return $this->response->setJSON([
                         'error' => 'Anda tidak memiliki akses ke data ini!'
                     ]);
@@ -328,7 +328,7 @@ public function __construct()
                 $ibadah = $this->ibadahModel->find($absensi->id_ibadah);
                 
                 // Cek jika user bukan master, hanya bisa hapus data di wilayahnya
-                if ($this->userRole != 'master' && $ibadah->id_sektor_pelayanan != $this->userSektorPelayanan) {
+                if ($this->userRole != 'master' && $ibadah->id_cabang_gereja != $this->userSektorPelayanan) {
                     return $this->response->setJSON([
                         'status' => 'error',
                         'message' => 'Anda hanya dapat menghapus data di wilayah Anda!'
@@ -374,11 +374,11 @@ public function __construct()
                 // Filter ibadah berdasarkan wilayah user (kecuali master)
                 $this->ibadahModel
                     ->select('ibadah.*, sektor_pelayanan.nama_sektor')
-                    ->join('sektor_pelayanan', 'sektor_pelayanan.id = ibadah.id_sektor_pelayanan', 'left')
+                    ->join('sektor_pelayanan', 'sektor_pelayanan.id = ibadah.id_cabang_gereja', 'left')
                     ->where('ibadah.status !=', 'batal');
                 
                 if ($this->userRole != 'master') {
-                    $this->ibadahModel->where('ibadah.id_sektor_pelayanan', $this->userSektorPelayanan);
+                    $this->ibadahModel->where('ibadah.id_cabang_gereja', $this->userSektorPelayanan);
                 }
                 
                 $ibadah = $this->ibadahModel->orderBy('ibadah.tanggal', 'DESC')->findAll();
@@ -520,7 +520,7 @@ public function __construct()
             }
             
             // Cek jika user bukan master, hanya bisa scan di wilayahnya
-            if ($this->userRole != 'master' && $ibadah->id_sektor_pelayanan != $this->userSektorPelayanan) {
+            if ($this->userRole != 'master' && $ibadah->id_cabang_gereja != $this->userSektorPelayanan) {
                 return redirect()->to('/ibadah')->with('error', 'Anda tidak memiliki akses ke ibadah ini!');
             }
             
@@ -580,7 +580,7 @@ public function __construct()
 
             // Cek apakah user bisa mengakses ibadah ini (filter wilayah)
             $ibadah = $this->ibadahModel->find($id_ibadah);
-            if ($this->userRole != 'master' && $ibadah->id_sektor_pelayanan != $this->userSektorPelayanan) {
+            if ($this->userRole != 'master' && $ibadah->id_cabang_gereja != $this->userSektorPelayanan) {
                 return $this->response->setJSON([
                     'status' => 'error',
                     'message' => 'Anda tidak memiliki akses ke ibadah ini!'
@@ -662,7 +662,7 @@ public function __construct()
             }
             
             // Cek jika user bukan master, hanya bisa lihat data di wilayahnya
-            if ($this->userRole != 'master' && $absensi->id_sektor_pelayanan != $this->userSektorPelayanan) {
+            if ($this->userRole != 'master' && $absensi->id_cabang_gereja != $this->userSektorPelayanan) {
                 return redirect()->to('/absensi')->with('error', 'Anda tidak memiliki akses ke data ini!');
             }
             
