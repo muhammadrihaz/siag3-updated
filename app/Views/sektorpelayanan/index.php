@@ -64,7 +64,7 @@
                     
                     <div class="form-group">
                         <label for="koordinator_sektor">Ketua Sektor Pelayanan <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="koordinator_sektor" name="koordinator_sektor" placeholder="Masukkan nama ketua sektor pelayanan">
+                        <input type="text" class="form-control" id="koordinator_sektor" name="koordinator_sektor" placeholder="Masukkan Nama Ketua Sektor Pelayanan">
                         <small class="text-danger error-text" id="error_koordinator_sektor"></small>
                     </div>
                     
