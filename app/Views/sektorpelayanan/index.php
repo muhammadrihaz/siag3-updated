@@ -10,7 +10,7 @@
     
     <?php if (canCreate('sektorpelayanan')): ?>
     <button class="btn btn-primary btn-sm" id="btnTambah">
-        <i class="fas fa-plus"></i> Tambah Wilayah
+        <i class="fas fa-plus"></i> Tambah Sektor
     </button>
     <?php endif; ?>
 </div>
@@ -46,7 +46,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="modalWilayahLabel">
-                    <i class="fas fa-map-marker-alt"></i> <span id="modalTitle">Tambah Wilayah</span>
+                    <i class="fas fa-map-marker-alt"></i> <span id="modalTitle">Tambah Sektor</span>
                 </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -58,13 +58,13 @@
                     
                     <div class="form-group">
                         <label for="nama_sektor">Nama Sektor <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="nama_sektor" name="nama_sektor" placeholder="Masukkan nama wilayah">
+                        <input type="text" class="form-control" id="nama_sektor" name="nama_sektor" placeholder="Masukkan Nama Sektor Pelayanan">
                         <small class="text-danger error-text" id="error_nama_sektor"></small>
                     </div>
                     
                     <div class="form-group">
                         <label for="koordinator_sektor">Ketua Sektor Pelayanan <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="koordinator_sektor" name="koordinator_sektor" placeholder="Masukkan nama ketua wilayah">
+                        <input type="text" class="form-control" id="koordinator_sektor" name="koordinator_sektor" placeholder="Masukkan nama ketua sektor pelayanan">
                         <small class="text-danger error-text" id="error_koordinator_sektor"></small>
                     </div>
                     
@@ -161,7 +161,7 @@ $(document).ready(function() {
     <?php if (canCreate('sektorpelayanan')): ?>
     // Tambah Data
     $('#btnTambah').on('click', function() {
-        $('#modalTitle').text('Tambah Wilayah');
+        $('#modalTitle').text('Tambah Sektor');
         $('#formWilayah')[0].reset();
         $('#id').val('');
         $('.error-text').text('');
@@ -173,7 +173,7 @@ $(document).ready(function() {
     // Edit Data
     $(document).on('click', '.btn-edit', function() {
         var id = $(this).data('id');
-        $('#modalTitle').text('Edit Wilayah');
+        $('#modalTitle').text('Edit Sektor');
         $('#formWilayah')[0].reset();
         $('#id').val(id);
         $('.error-text').text('');
