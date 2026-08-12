@@ -198,14 +198,14 @@
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr id="emptyRow">
-                                    <td colspan="5" class="text-center text-muted">Belum ada persembahan</td>
+                                    <td colspan="6" class="text-center text-muted">Belum ada persembahan</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
                         <tfoot>
                             <tr style="background: #f8f9fc; font-weight: 700;">
                                 <td colspan="1" class="text-right">TOTAL</td>
-                                <td colspan="4" id="totalNominalFooter">
+                                <td colspan="5" id="totalNominalFooter">
                                     <?php 
                                         $totalAll = 0;
                                         foreach ($persembahan as $p) {
@@ -300,6 +300,16 @@ $(document).ready(function() {
         
         var nominalDisplay = $('#nominal').val();
         var nominalClean = nominalDisplay.replace(/[^0-9]/g, '');
+        var jenis = $('#jenis').val();
+        var metode = $('#metode').val();
+        var keterangan = $('#keterangan').val();
+        
+        if (!nominalClean || parseInt(nominalClean) <= 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Peringatan!',
+                text: 'Nominal harus diisi dan lebih dari 0!'
+            });
             $('#nominal').focus();
             return;
         }
@@ -483,7 +493,7 @@ $(document).ready(function() {
                             if ($('#tablePersembahan tbody tr').length === 0) {
                                 $('#tablePersembahan tbody').append(`
                                     <tr id="emptyRow">
-                                        <td colspan="5" class="text-center text-muted">Belum ada persembahan</td>
+                                        <td colspan="6" class="text-center text-muted">Belum ada persembahan</td>
                                     </tr>
                                 `);
                             }
