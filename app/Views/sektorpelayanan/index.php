@@ -70,13 +70,13 @@
                     
                     <div class="form-group">
                         <label for="telepon">Telepon <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="telepon" name="telepon" placeholder="Masukkan nomor telepon">
+                        <input type="text" class="form-control" id="telepon" name="telepon" placeholder="Masukkan Nomor Telepon">
                         <small class="text-danger error-text" id="error_telepon"></small>
                     </div>
                     
                     <div class="form-group">
                         <label for="keterangan">Keterangan</label>
-                        <textarea class="form-control" id="keterangan" name="keterangan" rows="2" placeholder="Keterangan tambahan"></textarea>
+                        <textarea class="form-control" id="keterangan" name="keterangan" rows="2" placeholder="Keterangan Tambahan"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
