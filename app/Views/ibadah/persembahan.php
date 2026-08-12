@@ -20,12 +20,6 @@
         <i class="fas fa-hand-holding-heart"></i> Persembahan Ibadah
     </h1>
     <div>
-        <?php if (canCreate('persembahan')): ?>
-        <button class="btn btn-success btn-sm" id="btnTambahPersembahan">
-            <i class="fas fa-plus"></i> Tambah Persembahan
-        </button>
-        <?php endif; ?>
-        
         <?php if (canPrint('laporan_persembahan')): ?>
         <a href="<?= base_url('laporanpersembahan') ?>" class="btn btn-info btn-sm" target="_blank">
             <i class="fas fa-print"></i> Laporan
@@ -107,8 +101,6 @@
                                 <label>Metode <span class="text-danger">*</span></label>
                                 <select class="form-control" name="metode" id="metode" required>
                                     <option value="tunai">Tunai</option>
-                                    <option value="transfer">Transfer</option>
-                                    <option value="qris">QRIS</option>
                                 </select>
                             </div>
                         </div>
