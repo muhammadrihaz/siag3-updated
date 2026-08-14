@@ -558,7 +558,7 @@ public function __construct()
                 ]);
             }
 
-            $qr_token = $this->request->getPost('qr_token');
+            $qr_token = trim($this->request->getPost('qr_token'));
             $id_ibadah = $this->request->getPost('id_ibadah');
             
             if (empty($qr_token) || empty($id_ibadah)) {
@@ -568,8 +568,14 @@ public function __construct()
                 ]);
             }
 
-            // Cari jemaat berdasarkan no_anggota (qr_token = no_anggota)
-            $jemaat = $this->jemaatModel->where('no_anggota', $qr_token)->where('status_aktif', 1)->first();
+            // Cari jemaat berdasarkan no_anggota atau qr_token (untuk backward compatibility)
+            $jemaat = $this->jemaatModel
+                ->groupStart()
+                    ->where('no_anggota', $qr_token)
+                    ->orWhere('qr_token', $qr_token)
+                ->groupEnd()
+                ->where('status_aktif', 1)
+                ->first();
             
             if (!$jemaat) {
                 return $this->response->setJSON([
