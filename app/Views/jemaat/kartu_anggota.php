@@ -45,16 +45,10 @@
                 <!-- Kolom Kiri - QR Code -->
                 <div class="kartu-qr">
                     <?php 
-                        $qrFile = FCPATH . 'assets/qrcodes/jemaat_' . $jemaat->id . '.png';
-                        if (file_exists($qrFile)): 
+                        $qrData = urlencode($jemaat->no_anggota);
+                        $qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" . $qrData;
                     ?>
-                    <img src="<?= base_url('assets/qrcodes/jemaat_' . $jemaat->id . '.png') ?>" alt="QR Code">
-                    <?php else: ?>
-                    <div class="text-center text-muted">
-                        <i class="fas fa-qrcode fa-4x"></i>
-                        <p class="mt-2 small">QR Code belum tersedia</p>
-                    </div>
-                    <?php endif; ?>
+                    <img src="<?= $qrUrl ?>" alt="QR Code" crossorigin="anonymous">
                     <span class="qr-label">Scan untuk verifikasi</span>
                 </div>
                 

@@ -88,25 +88,19 @@
                     </div>
                     <div class="card-body text-center">
                         <?php 
-                            $qrFile = FCPATH . 'assets/qrcodes/jemaat_' . $jemaat->id . '.png';
-                            if (file_exists($qrFile)): 
+                            $qrData = urlencode($jemaat->no_anggota);
+                            $qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" . $qrData;
                         ?>
-                        <img src="<?= base_url('assets/qrcodes/jemaat_' . $jemaat->id . '.png') ?>" 
+                        <img src="<?= $qrUrl ?>" 
                              alt="QR Code" 
                              style="max-width: 180px; height: auto;"
-                             class="img-fluid">
-                        <?php else: ?>
-                        <div class="alert alert-warning">
-                            <i class="fas fa-exclamation-triangle"></i> QR Code belum tersedia
-                        </div>
-                        <?php endif; ?>
+                             class="img-fluid" crossorigin="anonymous">
+                        
                         <p class="text-muted mt-2 small">Scan untuk verifikasi data jemaat</p>
                         
-                        <?php if (file_exists($qrFile)): ?>
                         <a href="<?= base_url('jemaat/downloadQr/' . $jemaat->id) ?>" class="btn btn-sm btn-success">
                             <i class="fas fa-download"></i> Download QR
                         </a>
-                        <?php endif; ?>
                     </div>
                 </div>
                 

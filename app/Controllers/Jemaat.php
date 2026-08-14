@@ -245,9 +245,6 @@ class Jemaat extends Controller
                 
                 $insert = $this->jemaatModel->insert($data);
                 if ($insert) {
-                    // Generate QR Code menggunakan no_anggota
-                    $this->generateQrCode($insert, $no_anggota);
-                    
                     return $this->response->setJSON([
                         'status' => 'success',
                         'message' => 'Data jemaat berhasil ditambahkan! No Anggota: ' . $no_anggota
@@ -364,12 +361,6 @@ class Jemaat extends Controller
                 }
                 
                 if ($this->jemaatModel->delete($id)) {
-                    // Hapus file QR Code
-                    $qrFile = FCPATH . 'assets/qrcodes/jemaat_' . $id . '.png';
-                    if (file_exists($qrFile)) {
-                        unlink($qrFile);
-                    }
-                    
                     return $this->response->setJSON([
                         'status' => 'success',
                         'message' => 'Data jemaat berhasil dihapus!'
@@ -478,17 +469,22 @@ class Jemaat extends Controller
                 throw new \Exception('Data jemaat tidak ditemukan!');
             }
             
-            $qrFile = FCPATH . 'assets/qrcodes/jemaat_' . $id . '.png';
+            $qrData = urlencode($jemaat->no_anggota);
+            $qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" . $qrData;
             
-            if (!file_exists($qrFile)) {
-                // Generate ulang jika file tidak ada
-                $this->generateQrCode($id, $jemaat->no_anggota);
-            }
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $qrUrl);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+            $qrImage = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
             
-            if (file_exists($qrFile)) {
-                return $this->response->download($qrFile, null);
+            if ($qrImage !== false && $httpCode == 200) {
+                return $this->response->download('QR_Code_Jemaat_' . $jemaat->no_anggota . '.png', $qrImage);
             } else {
-                throw new \Exception('File QR Code tidak ditemukan!');
+                throw new \Exception('Gagal mengunduh QR Code dari server penyedia.');
             }
         } catch (\Exception $e) {
             log_message('error', 'downloadQr error: ' . $e->getMessage());
@@ -573,11 +569,14 @@ class Jemaat extends Controller
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
             $qrImage = curl_exec($ch);
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $curlError = curl_error($ch);
             curl_close($ch);
             
             if ($qrImage !== false && $httpCode == 200) {
                 file_put_contents($filename, $qrImage);
                 return true;
+            } else {
+                log_message('error', 'cURL Error in generateQrCode: ' . $curlError . ' HTTP Code: ' . $httpCode);
             }
             return false;
         } catch (\Exception $e) {
