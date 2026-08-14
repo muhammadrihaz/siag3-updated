@@ -252,8 +252,16 @@ class JemaatModel extends Model
             $qrData = urlencode($data);
             $qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" . $qrData;
             
-            $qrImage = file_get_contents($qrUrl);
-            if ($qrImage !== false) {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $qrUrl);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+            $qrImage = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+            
+            if ($qrImage !== false && $httpCode == 200) {
                 file_put_contents($filename, $qrImage);
                 return true;
             }
