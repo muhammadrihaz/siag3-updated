@@ -194,7 +194,7 @@ class JemaatModel extends Model
     public function getLastNumber($tahun)
     {
         try {
-            $this->builder->select('MAX(CAST(SUBSTRING(no_anggota, 9) AS UNSIGNED)) as last');
+            $this->builder->select('MAX(CAST(SUBSTRING(no_anggota, 10) AS UNSIGNED)) as last');
             $this->builder->like('no_anggota', "JMT-{$tahun}-", 'after');
             $query = $this->builder->get();
             $result = $query->getRow();
