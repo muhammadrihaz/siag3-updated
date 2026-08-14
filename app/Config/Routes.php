@@ -126,20 +126,20 @@ $routes->group('', ['filter' => 'login'], function($routes) {
             $routes->get('detail/(:num)', 'Pelayan::detail/$1');
         });
         
-        // // ABSENSI
-        // $routes->group('absensi', function($routes) {
-        //     $routes->get('/', 'Absensi::index');
-        //     $routes->post('getData', 'Absensi::getData');
-        //     $routes->post('save', 'Absensi::save');
-        //     $routes->get('getById/(:num)', 'Absensi::getById/$1');
-        //     $routes->post('delete/(:num)', 'Absensi::delete/$1');
-        //     $routes->get('getIbadah', 'Absensi::getIbadah');
-        //     $routes->get('getJemaat', 'Absensi::getJemaat');
-        //     $routes->get('getJemaatByIbadah/(:num)', 'Absensi::getJemaatByIbadah/$1');
-        //     $routes->get('scan', 'Absensi::scan');
-        //     $routes->post('processScan', 'Absensi::processScan');
-        //     $routes->get('detail/(:num)', 'Absensi::detail/$1');
-        // });
+        // ABSENSI
+        $routes->group('absensi', function($routes) {
+            $routes->get('/', 'Absensi::index');
+            $routes->post('getData', 'Absensi::getData');
+            $routes->post('save', 'Absensi::save');
+            $routes->get('getById/(:num)', 'Absensi::getById/$1');
+            $routes->post('delete/(:num)', 'Absensi::delete/$1');
+            $routes->get('getIbadah', 'Absensi::getIbadah');
+            $routes->get('getJemaat', 'Absensi::getJemaat');
+            $routes->get('getJemaatByIbadah/(:num)', 'Absensi::getJemaatByIbadah/$1');
+            $routes->get('scan', 'Absensi::scan');
+            $routes->post('processScan', 'Absensi::processScan');
+            $routes->get('detail/(:num)', 'Absensi::detail/$1');
+        });
     });
     
     // =============================================
