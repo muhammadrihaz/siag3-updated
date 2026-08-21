@@ -1,0 +1,169 @@
+/* 
+  Custom Theme Overrides
+  Palette:
+  - Primary Dark: #581C1C (Burgundy Dark)
+  - Secondary Accent: #7F1D1D (Maroon)
+  - CTA/Highlights: #D4AF37 (Warm Gold)
+  - Background: #FFF7ED (Light Cream)
+  - Text on Dark: #FFFFEF (Bone White)
+*/
+
+/* --- Typography --- */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+  font-family: "Playfair Display", "Merriweather", "Lora", serif !important;
+  color: #581c1c !important;
+  font-weight: 700;
+}
+
+/* Ensure clean sans-serif for body text */
+body,
+p,
+span,
+div,
+a,
+li,
+input,
+button,
+select,
+textarea {
+  font-family:
+    "Nunito",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+}
+
+body,
+#content-wrapper {
+  background-color: #fff7ed !important;
+}
+
+/* --- Color Palette Overrides --- */
+
+/* Sidebar (Burgundy Dark) */
+.bg-gradient-primary {
+  background-color: #581c1c !important;
+  background-image: linear-gradient(
+    180deg,
+    #581c1c 10%,
+    #3d1414 100%
+  ) !important;
+  background-size: cover !important;
+}
+
+.sidebar-dark .nav-item .nav-link,
+.sidebar-dark .sidebar-brand {
+  color: #ffffef !important;
+}
+
+.sidebar-dark .nav-item .nav-link i,
+.sidebar-dark .sidebar-brand i {
+  color: #d4af37 !important; /* Gold highlights for icons */
+}
+
+.sidebar-dark .nav-item .nav-link:hover,
+.sidebar-dark .nav-item .nav-link:focus,
+.sidebar-dark .nav-item.active .nav-link {
+  color: #d4af37 !important;
+}
+
+/* Primary Background & Text Utilities */
+.bg-primary {
+  background-color: #581c1c !important;
+}
+.text-primary {
+  color: #581c1c !important;
+}
+
+.bg-white {
+  background-color: #ffffff !important;
+  /* Keep actual cards white, but the page background is light cream */
+}
+
+/* --- Buttons & Inputs (Element Refresh) --- */
+.btn {
+  border-radius: 4px !important;
+}
+
+.form-control {
+  border-radius: 4px !important;
+}
+
+.btn-primary {
+  background-color: #581c1c !important;
+  border-color: #581c1c !important;
+  color: #ffffef !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary.active {
+  background-color: #7f1d1d !important; /* Maroon for hover/accent */
+  border-color: #7f1d1d !important;
+}
+
+/* CTA/Highlight components using Warm Gold */
+.btn-warning, /* Assuming they might use warning for gold, or we force specific CTAs to gold */
+.btn-gold {
+  background-color: #d4af37 !important;
+  border-color: #d4af37 !important;
+  color: #fff !important;
+}
+
+.btn-warning:hover,
+.btn-gold:hover {
+  background-color: #b5952f !important;
+  border-color: #b5952f !important;
+}
+
+/* --- Cards & Visuals --- */
+.card {
+  border: none !important;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(88, 28, 28, 0.1) !important;
+  margin-bottom: 24px; /* Increased spacing */
+}
+
+.card-header {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #d4af37 !important; /* Gold border for cards */
+}
+
+.card-header h6 {
+  color: #581c1c !important;
+}
+
+/* --- Topbar Nav --- */
+.topbar {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #e3e6f0;
+}
+
+/* Focus and active states with Gold where needed */
+.page-item.active .page-link {
+  background-color: #581c1c !important;
+  border-color: #581c1c !important;
+}
+
+.dropdown-item:active {
+  background-color: #581c1c !important;
+}
+
+.sidebar .sidebar-heading {
+  color: rgba(255, 255, 239, 0.6) !important; /* Muted Bone white */
+}

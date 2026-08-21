@@ -16,6 +16,8 @@
 
     <!-- Custom styles for this template-->
     <link href="<?= base_url('assets/css/sb-admin-2.min.css') ?>" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link href="<?= base_url('assets/css/custom-theme.css') ?>" rel="stylesheet">
     
     <!-- SweetAlert2 -->
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
@@ -23,21 +25,23 @@
     <style>
  
         .btn-login {
-            background: linear-gradient(135deg, #1a3a6b, #2d5a9a);
+            background: #D4AF37; /* Warm Gold */
             border: none;
             color: white;
             transition: all 0.3s ease;
+            border-radius: 4px;
         }
         .btn-login:hover {
-            background: linear-gradient(135deg, #2d5a9a, #1a3a6b);
+            background: #b5952f;
             transform: scale(1.02);
+            color: white;
         }
         .login-header {
-            color: #1a3a6b;
+            color: #581C1C;
             font-weight: 700;
         }
         .login-header i {
-            color: #2d5a9a;
+            color: #7F1D1D;
         }
     </style>
 </head>

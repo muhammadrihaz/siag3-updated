@@ -9,12 +9,14 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link href="<?= base_url('assets/css/custom-theme.css') ?>" rel="stylesheet">
     
     <style>
         body {
-            background: linear-gradient(135deg, #4e73df 0%, #1cc88a 100%);
+            background: #FFF7ED !important; /* Light Cream */
             min-height: 100vh;
-            color: #fff;
+            color: #581C1C;
         }
         .container {
             padding-top: 10vh;
@@ -27,9 +29,9 @@
             color: #333; /* Text color inside card */
         }
         .btn-search {
-            background: #4e73df;
+            background: #D4AF37; /* Warm Gold */
             color: white;
-            border-radius: 50px;
+            border-radius: 4px;
             padding: 10px 30px;
             font-weight: 600;
             border: none;
@@ -48,7 +50,7 @@
         }
         .search-input:focus {
             box-shadow: none;
-            border-color: #4e73df;
+            border-color: #581C1C;
         }
         .qr-result {
             max-height: 350px;
@@ -62,13 +64,13 @@
             display: inline-flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58,59,69,.15);
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(88,28,28,.15);
         }
         .text-primary {
-            color: #4e73df !important;
+            color: #581C1C !important;
         }
         .border-left-primary {
-            border-left: .25rem solid #4e73df !important;
+            border-left: .25rem solid #581C1C !important;
         }
     </style>
 </head>
@@ -120,7 +122,7 @@
                     </div>
                 </div>
                 
-                <p class="text-center small text-white-50">&copy; <?= date('Y') ?> Sistem Informasi Gereja - GPIB Maranatha</p>
+                <p class="text-center small text-muted">&copy; <?= date('Y') ?> Sistem Informasi Gereja - GPIB Maranatha</p>
             </div>
         </div>
     </div>
