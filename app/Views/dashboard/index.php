@@ -393,17 +393,36 @@ $(document).ready(function() {
         line-height: 1.2;
     }
     .card.border-left-primary {
-        border-left: 0.25rem solid #4e73df !important;
+        border-left: 0.25rem solid #581C1C !important; /* Burgundy Dark */
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     .card.border-left-success {
-        border-left: 0.25rem solid #1cc88a !important;
+        border-left: 0.25rem solid #7F1D1D !important; /* Maroon */
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     .card.border-left-info {
-        border-left: 0.25rem solid #36b9cc !important;
+        border-left: 0.25rem solid #D4AF37 !important; /* Warm Gold */
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     .card.border-left-warning {
-        border-left: 0.25rem solid #f6c23e !important;
+        border-left: 0.25rem solid #a37a27 !important; /* Darker Gold / Bronze */
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
+    
+    /* Hover effects for premium feel */
+    .card.border-left-primary:hover,
+    .card.border-left-success:hover,
+    .card.border-left-info:hover,
+    .card.border-left-warning:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 2rem rgba(88, 28, 28, 0.15) !important;
+    }
+
+    /* Override text colors to match the borders */
+    .text-primary { color: #581C1C !important; }
+    .text-success { color: #7F1D1D !important; }
+    .text-info { color: #D4AF37 !important; }
+    .text-warning { color: #a37a27 !important; }
     .card .card-body {
         padding: 1rem 1.25rem;
     }
