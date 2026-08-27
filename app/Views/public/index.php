@@ -126,6 +126,7 @@
             font-weight: 700;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
             margin-bottom: 20px;
+            color: #FFF7ED;
         }
         .hero-subtitle {
             font-size: 1.8rem;
