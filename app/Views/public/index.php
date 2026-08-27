@@ -106,7 +106,7 @@
             min-height: 600px;
             display: flex;
             align-items: center;
-            background: url('https://images.unsplash.com/photo-1548625361-ec858760086c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center center/cover no-repeat fixed;
+            background: url('<?= base_url('assets/hero-section.jpeg') ?>') center center/cover no-repeat fixed;
         }
         .hero-overlay {
             position: absolute;
