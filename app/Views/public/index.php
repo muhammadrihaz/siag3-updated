@@ -422,7 +422,7 @@
             <div class="row justify-content-center">
                 <div class="col-lg-10">
                     <i class="fas fa-church text-white mb-4" style="font-size: 3rem; opacity: 0.9;"></i>
-                    <h1 class="hero-title" style="color: #FFF7ED;">GPIB "Maranatha"<br>Denpasar</h1>
+                    <h1 class="hero-title" style="color: #FFF7ED !important;">GPIB "Maranatha"<br>Denpasar</h1>
                     <p class="hero-subtitle">"Bertumbuh Dalam Keselamatan" <br><span style="font-size: 1.2rem; font-weight:400; opacity: 0.8; font-family: 'Inter', sans-serif;">(1 Petrus 2:2)</span></p>
                     <div class="d-flex flex-wrap justify-content-center mt-4">
                         <a href="#jadwal-ibadah" class="btn btn-hero">Lihat Jadwal Ibadah</a>
