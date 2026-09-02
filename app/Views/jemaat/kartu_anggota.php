@@ -168,18 +168,20 @@
     }
     /* Header Kartu */
     .kartu-header {
-        background: linear-gradient(135deg, #1a3a6b, #2d5a9a);
+        background: linear-gradient(135deg, #581C1C, #7F1D1D);
         color: white;
         padding: 18px 25px;
         text-align: center;
     }
     .kartu-header h2 {
+        color: white !important;
         font-size: 22px;
         font-weight: 700;
         letter-spacing: 3px;
         margin: 0;
     }
     .kartu-header small {
+        color: white !important;
         font-size: 13px;
         opacity: 0.85;
         letter-spacing: 1px;
