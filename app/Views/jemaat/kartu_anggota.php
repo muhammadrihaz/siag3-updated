@@ -237,7 +237,7 @@
     .detail-label {
         font-size: 12px;
         font-weight: 700;
-        color: #4e73df;
+        color: #7F1D1D;
         width: 115px;
         flex-shrink: 0;
         letter-spacing: 0.3px;
