@@ -604,7 +604,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-5 mb-4 pr-lg-5">
-                    <h5 class="footer-logo font-weight-bold" style="margin-top: -4px;">GPIB Maranatha</h5>
+                    <h5 class="footer-logo font-weight-bold" style="margin-top: -4px; color:#b5952d;">GPIB Maranatha</h5>
                     <p class="mb-4" style="line-height: 1.8; opacity: 0.8;">Gereja Protestan di Indonesia bagian Barat bermisi menghadirkan damai sejahtera bagi seluruh ciptaan, terkhususnya di kerindangan kota Denpasar, Bali.</p>
                 </div>
                 
