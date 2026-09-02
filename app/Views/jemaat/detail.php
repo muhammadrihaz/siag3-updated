@@ -151,7 +151,7 @@
     .table th {
         background-color: #f8f9fc;
         font-weight: 600;
-        color: #4e73df;
+        color: #7F1D1D;
     }
     .table td {
         vertical-align: middle;
