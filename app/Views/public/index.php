@@ -565,13 +565,13 @@
                         </div>
                         <div class="col-sm-6 fade-block" style="transition-delay: 0.2s;">
                             <div class="stat-item bg-white shadow-sm rounded-lg mb-4 mb-sm-0">
-                                <div class="stat-number">17</div>
+                                <div class="stat-number">18</div>
                                 <div class="stat-label">Sektor Pelayanan</div>
                             </div>
                         </div>
                         <div class="col-sm-6 fade-block" style="transition-delay: 0.3s;">
-                            <div class="stat-item bg-white shadow-sm rounded-lg border border-warning" style="background:#fffcf5;">
-                                <div class="stat-number" style="color: var(--accent);">01</div>
+                            <div class="stat-item bg-white shadow-sm rounded-lg mb-4 mb-sm-0">
+                                <div class="stat-number">01</div>
                                 <div class="stat-label">Bakal Jemaat Tabanan</div>
                             </div>
                         </div>
