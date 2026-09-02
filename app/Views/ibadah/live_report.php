@@ -38,7 +38,7 @@
         }
         /* Header */
         .live-header {
-            background: linear-gradient(135deg, #1a3a6b, #2d5a9a);
+            background: linear-gradient(135deg, #581C1C, #7F1D1D);
             color: white;
             padding: 12px 25px;
             border-radius: 12px;
