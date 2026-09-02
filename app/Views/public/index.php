@@ -16,7 +16,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Custom Theme (if any) -->
-    <link href="<?= base_url('assets/css/custom-theme.css') ?>" rel="stylesheet">
+    <link href="<?= base_url('assets/css/custom-theme.css?v=' . time()) ?>" rel="stylesheet">
     
     <style>
         :root {
@@ -31,7 +31,7 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', sans-serif !important;
             background-color: var(--bg-cream);
             color: var(--text-dark);
             overflow-x: hidden;
@@ -39,7 +39,7 @@
         }
 
         h1, h2, h3, h4, h5, h6, .brand-text {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', sans-serif !important;
         }
 
         /* Navbar Custom */
@@ -299,7 +299,7 @@
         }
         .stat-number {
             font-size: 3.5rem;
-            font-family: 'Playfair Display', serif;
+            font-family: 'Inter', sans-serif;
             font-weight: 700;
             color: var(--primary);
             margin-bottom: 10px;
@@ -342,7 +342,7 @@
         }
         .footer-logo {
             color: var(--accent);
-            font-family: 'Playfair Display', serif;
+            font-family: 'Inter', sans-serif;
             font-size: 1.8rem;
             font-weight: 700;
             margin-bottom: 20px;
