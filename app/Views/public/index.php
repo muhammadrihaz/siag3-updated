@@ -342,10 +342,11 @@
         }
         .footer-logo {
             color: var(--accent);
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', sans-serif !important;
             font-size: 1.8rem;
             font-weight: 700;
-            margin-bottom: 20px;
+            margin-bottom: 1.5rem;
+            margin-top: -6px;
         }
         .footer-contact li {
             margin-bottom: 15px;
@@ -445,10 +446,10 @@
                 <div class="col-lg-6 mb-4 fade-block">
                     <div class="sejarah-card">
                         <h4 class="mb-4 font-weight-bold" style="color: var(--primary);">Sejarah & Nilai</h4>
-                        <p class="text-secondary" style="line-height: 1.8;">
+                        <p class="text-secondary text-justify" style="line-height: 1.8;">
                             GPIB Jemaat "Maranatha" Denpasar adalah bagian integral dari Gereja Protestan di Indonesia bagian Barat. Sebagai gereja beraliran Calvinis, kami berkomitmen pada pengajaran yang alkitabiah dan sakramen yang kudus.
                         </p>
-                        <p class="text-secondary" style="line-height: 1.8;">
+                        <p class="text-secondary text-justify" style="line-height: 1.8;">
                             Sistem pemerintahan gereja kami berasas <strong>Presbiterial Sinodal</strong>, yang berarti kepemimpinan dijalankan secara majelis (presbiter) yang mewakili jemaat, serta terhubung erat dalam persekutuan dengan jemaat-jemaat lain dalam satu sinode.
                         </p>
                     </div>
@@ -603,7 +604,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-5 mb-4 pr-lg-5">
-                    <div class="footer-logo">GPIB Maranatha</div>
+                    <h5 class="footer-logo font-weight-bold" style="margin-top: -4px;">GPIB Maranatha</h5>
                     <p class="mb-4" style="line-height: 1.8; opacity: 0.8;">Gereja Protestan di Indonesia bagian Barat bermisi menghadirkan damai sejahtera bagi seluruh ciptaan, terkhususnya di kerindangan kota Denpasar, Bali.</p>
                 </div>
                 

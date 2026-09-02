@@ -8,15 +8,15 @@ class PersembahanModel extends Model
 {
     protected $table = 'persembahan';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['id_ibadah', 'id_jemaat', 'nominal', 'jenis', 'metode', 'keterangan', 'status_approval', 'approved_by', 'approved_at'];
+    protected $allowedFields = ['id_ibadah', 'id_jemaat', 'nominal', 'jumlah_lembar', 'jenis', 'metode', 'keterangan', 'status_approval', 'approved_by', 'approved_at'];
     protected $useTimestamps = true;
     protected $createdField = 'created_at';
     protected $updatedField = 'updated_at';
     protected $returnType = 'object';
     protected $useSoftDeletes = false;
     
-    protected $column_order = ['id', 'nama_jemaat', 'no_anggota', 'tanggal', 'jenis_ibadah', 'nominal', 'jenis', 'metode'];
-    protected $column_search = ['nama_jemaat', 'no_anggota', 'tanggal', 'jenis_ibadah', 'nominal', 'jenis', 'metode'];
+    protected $column_order = ['id', 'nama_jemaat', 'no_anggota', 'tanggal', 'jenis_ibadah', 'nominal', 'jumlah_lembar', 'jenis', 'metode'];
+    protected $column_search = ['nama_jemaat', 'no_anggota', 'tanggal', 'jenis_ibadah', 'nominal', 'jumlah_lembar', 'jenis', 'metode'];
     protected $order = ['id' => 'DESC'];
     
     protected $request;

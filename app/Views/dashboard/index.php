@@ -25,26 +25,7 @@
         <h1 class="h3 mb-0 text-gray-800">
             <i class="fas fa-tachometer-alt"></i> Dashboard
         </h1>
-        <div>
-            <?php if (!empty($user_sektor) && !$is_master): ?>
-            <span class="badge badge-info p-2 mr-2">
-                <i class="fas fa-map-marker-alt"></i> <?= $user_sektor ?>
-            </span>
-            <?php endif; ?>
-            
-            <?php if ($is_master): ?>
-            <span class="badge badge-danger p-2 mr-2">
-                <i class="fas fa-crown"></i> Master
-            </span>
-            <?php endif; ?>
-            
-            <span class="badge badge-primary p-2">
-                <i class="fas fa-user"></i> <?= $user_name ?? 'Admin' ?>
-            </span>
-            <span class="badge badge-info p-2 ml-2">
-                <i class="fas fa-user-tag"></i> <?= ucfirst(str_replace('_', ' ', $user_role ?? 'Admin')) ?>
-            </span>
-        </div>
+        
     </div>
 
     <!-- Content Row -->
@@ -138,8 +119,8 @@
     <div class="row">
 
         <!-- Absensi Hari Ini -->
-        <div class="col-xl-6 col-lg-6">
-            <div class="card shadow mb-4">
+        <div class="col-xl-6 col-lg-6 mb-4">
+            <div class="card shadow h-100">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
                         <i class="fas fa-qrcode"></i> 
@@ -161,8 +142,8 @@
         </div>
 
         <!-- Selamat Datang -->
-        <div class="col-xl-6 col-lg-6">
-            <div class="card shadow mb-4">
+        <div class="col-xl-6 col-lg-6 mb-4">
+            <div class="card shadow h-100">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
                         <i class="fas fa-info-circle"></i> Selamat Datang

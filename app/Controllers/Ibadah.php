@@ -896,6 +896,7 @@ class Ibadah extends Controller
             $rules = [
                 'id_ibadah' => 'required|numeric',
                 'nominal' => 'required|numeric|greater_than[0]',
+                'jumlah_lembar' => 'permit_empty|numeric|greater_than_equal_to[0]',
                 'jenis' => 'required|in_list[putih,cokelat,khusus]',
                 'metode' => 'required|in_list[tunai,transfer,qris]',
             ];
@@ -925,6 +926,7 @@ class Ibadah extends Controller
                 'id_ibadah' => $id_ibadah,
                 'id_jemaat' => $this->request->getPost('id_jemaat') ?: null,
                 'nominal' => $nominal,
+                'jumlah_lembar' => $this->request->getPost('jumlah_lembar') !== '' ? $this->request->getPost('jumlah_lembar') : null,
                 'jenis' => $this->request->getPost('jenis'),
                 'metode' => $this->request->getPost('metode'),
                 'keterangan' => $this->request->getPost('keterangan')

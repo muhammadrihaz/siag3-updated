@@ -106,6 +106,12 @@
                         </div>
                         <small class="text-muted">Contoh: 1000000 atau 1.000.000</small>
                     </div>
+
+                    <div class="form-group">
+                        <label>Jumlah Lembar Uang/Koin</label>
+                        <input type="number" class="form-control" name="jumlah_lembar" id="jumlah_lembar" min="0" placeholder="Opsional (contoh: 10)">
+                        <small class="text-muted">Kosongkan jika bukan metode tunai</small>
+                    </div>
                     
                     <div class="form-group">
                         <label>Keterangan</label>
@@ -145,6 +151,7 @@
                             <tr>
                                 <th width="5%">No</th>
                                 <th>Nominal</th>
+                                <th>Jumlah Lembar</th>
                                 <th>Jenis</th>
                                 <th>Metode</th>
                                 <th>Status</th>
@@ -159,6 +166,7 @@
                                 <tr id="persembahan-<?= $p->id ?>">
                                     <td><?= $no++ ?></td>
                                     <td><strong>Rp <?= number_format($p->nominal ?? 0, 0, ',', '.') ?></strong></td>
+                                    <td><?= $p->jumlah_lembar ?? '-' ?></td>
                                     <td>
                                         <span class="badge badge-<?= $p->jenis == 'putih' ? 'primary' : ($p->jenis == 'cokelat' ? 'warning' : 'danger') ?>">
                                             <?php 
@@ -205,7 +213,7 @@
                         <tfoot>
                             <tr style="background: #f8f9fc; font-weight: 700;">
                                 <td colspan="1" class="text-right">TOTAL</td>
-                                <td colspan="5" id="totalNominalFooter">
+                                <td colspan="6" id="totalNominalFooter">
                                     <?php 
                                         $totalAll = 0;
                                         foreach ($persembahan as $p) {
@@ -300,6 +308,7 @@ $(document).ready(function() {
         
         var nominalDisplay = $('#nominal').val();
         var nominalClean = nominalDisplay.replace(/[^0-9]/g, '');
+        var jumlah_lembar = $('#jumlah_lembar').val();
         var jenis = $('#jenis').val();
         var metode = $('#metode').val();
         var keterangan = $('#keterangan').val();
@@ -326,6 +335,7 @@ $(document).ready(function() {
                 <hr>
                 <div class="text-left">
                     <p><strong>Nominal:</strong> Rp ${nominalFormatted}</p>
+                    <p><strong>Jumlah Lembar:</strong> ${jumlah_lembar || '-'}</p>
                     <p><strong>Jenis:</strong> ${jenisText}</p>
                     <p><strong>Metode:</strong> ${metodeText}</p>
                 </div>
@@ -338,12 +348,12 @@ $(document).ready(function() {
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
-                savePersembahan(nominalClean, jenis, metode, keterangan);
+                savePersembahan(nominalClean, jumlah_lembar, jenis, metode, keterangan);
             }
         });
     });
     
-    function savePersembahan(nominal, jenis, metode, keterangan) {
+    function savePersembahan(nominal, jumlah_lembar, jenis, metode, keterangan) {
         $('#btnSimpan').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Menyimpan...');
         
         $.ajax({
@@ -353,6 +363,7 @@ $(document).ready(function() {
                 id_ibadah: <?= $id_ibadah ?>,
                 id_jemaat: null,
                 nominal: nominal,
+                jumlah_lembar: jumlah_lembar,
                 jenis: jenis,
                 metode: metode,
                 keterangan: keterangan
@@ -375,6 +386,7 @@ $(document).ready(function() {
                         <tr id="persembahan-new">
                             <td></td>
                             <td><strong>Rp ${formattedNominal}</strong></td>
+                            <td>${jumlah_lembar || '-'}</td>
                             <td><span class="badge badge-${badgeJenis}">${jenisLabel[jenis]}</span></td>
                             <td><span class="badge badge-${badgeMetode}">${metodeLabel}</span></td>
                             <td><span class="badge badge-warning">Draft</span></td>
@@ -412,6 +424,7 @@ $(document).ready(function() {
                     // Reset form
                     $('#formPersembahan')[0].reset();
                     $('#nominal').val('');
+                    $('#jumlah_lembar').val('');
                     
                     // Update total
                     updateTotal();

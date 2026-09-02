@@ -22,19 +22,7 @@
                         $namaSektorPelayanan = session()->get('nama_sektor');
                     ?>
                     
-                    <?php if ($role == 'master'): ?>
-                        <span class="badge badge-danger ml-1">
-                            <i class="fas fa-crown"></i> Master
-                        </span>
-                    <?php elseif (!empty($namaSektorPelayanan)): ?>
-                        <span class="badge badge-info ml-1">
-                            <i class="fas fa-map-marker-alt"></i> <?= $namaSektorPelayanan ?>
-                        </span>
-                    <?php else: ?>
-                        <span class="badge badge-secondary ml-1">
-                            <?= ucfirst(str_replace('_', ' ', $role)) ?>
-                        </span>
-                    <?php endif; ?>
+                    
                 </span>
                 <img class="img-profile rounded-circle" src="<?= base_url('assets/img/undraw_profile.svg') ?>">
             </a>
