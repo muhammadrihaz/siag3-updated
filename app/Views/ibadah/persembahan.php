@@ -217,7 +217,9 @@
                                     <?php 
                                         $totalAll = 0;
                                         foreach ($persembahan as $p) {
-                                            $totalAll += $p->nominal ?? 0;
+                                            $nominal = $p->nominal ?? 0;
+                                            $lembar = (!empty($p->jumlah_lembar) && $p->jumlah_lembar > 0) ? $p->jumlah_lembar : 1;
+                                            $totalAll += ($nominal * $lembar);
                                         }
                                         echo 'Rp ' . number_format($totalAll, 0, ',', '.');
                                     ?>
@@ -292,7 +294,14 @@ $(document).ready(function() {
         $('#tablePersembahan tbody tr:not(#emptyRow)').each(function() {
             var nominalText = $(this).find('td:eq(1)').text().replace(/[^0-9]/g, '');
             var nominal = parseInt(nominalText) || 0;
-            total += nominal;
+            
+            var lembarText = $(this).find('td:eq(2)').text().trim();
+            var lembar = parseInt(lembarText);
+            if (isNaN(lembar) || lembar <= 0) {
+                lembar = 1;
+            }
+            
+            total += (nominal * lembar);
             count++;
         });
         
