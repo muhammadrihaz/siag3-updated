@@ -46,6 +46,18 @@ class SektorPelayanan extends Controller
      */
     public function index()
     {
+        // Recalculate jumlah_jemaat for all sektor_pelayanan automatically
+        try {
+            $sektors = $this->sektorPelayananModel->findAll();
+            $jemaatModel = new \App\Models\JemaatModel();
+            foreach ($sektors as $sektor) {
+                $count = $jemaatModel->countByWilayah($sektor->id);
+                $this->sektorPelayananModel->update($sektor->id, ['jumlah_jemaat' => $count]);
+            }
+        } catch (\Exception $e) {
+            log_message('error', 'Recalculate error: ' . $e->getMessage());
+        }
+
         $data = [
             'active_menu' => 'data_master',
             'sub_menu' => 'sektorpelayanan',
