@@ -31,8 +31,9 @@ class SektorPelayananModel extends Model
         $this->request = \Config\Services::request();
     }
 
-    private function _getDatatablesQuery()
+    private function _getDatatablesQuery($where = [])
     {
+        if (!empty($where)) { $this->builder->where($where); }
         $i = 0;
         $searchValue = $this->request->getPost('search')['value'] ?? '';
         
@@ -63,9 +64,9 @@ class SektorPelayananModel extends Model
         }
     }
 
-    public function getDatatables()
+    public function getDatatables($where = [])
     {
-        $this->_getDatatablesQuery();
+        $this->_getDatatablesQuery($where);
         
         $length = $this->request->getPost('length') ?? 10;
         $start = $this->request->getPost('start') ?? 0;
@@ -78,14 +79,16 @@ class SektorPelayananModel extends Model
         return $query->getResult();
     }
 
-    public function countFiltered()
+    public function countFiltered($where = [])
     {
-        $this->_getDatatablesQuery();
-        return $this->builder->countAllResults();
+        $this->_getDatatablesQuery($where);
+        if (!empty($where)) { $this->builder->where($where); }
+            return $this->builder->countAllResults();
     }
 
-    public function countAll()
+    public function countAll($where = [])
     {
-        return $this->builder->countAllResults();
+        if (!empty($where)) { $this->builder->where($where); }
+            return $this->builder->countAllResults();
     }
 }

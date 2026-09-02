@@ -31,11 +31,12 @@ class KeluargaModel extends Model
         $this->request = \Config\Services::request();
     }
 
-    private function _getDatatablesQuery()
+    private function _getDatatablesQuery($where = [])
     {
         $this->builder->select('keluarga.*, sektor_pelayanan.nama_sektor');
         $this->builder->join('sektor_pelayanan', 'sektor_pelayanan.id = keluarga.id_sektor_pelayanan', 'left');
         
+        if (!empty($where)) { $this->builder->where($where); }
         $i = 0;
         $searchValue = $this->request->getPost('search')['value'] ?? '';
         
@@ -66,10 +67,10 @@ class KeluargaModel extends Model
         }
     }
 
-    public function getDatatables()
+    public function getDatatables($where = [])
     {
         try {
-            $this->_getDatatablesQuery();
+            $this->_getDatatablesQuery($where);
             
             $length = $this->request->getPost('length') ?? 10;
             $start = $this->request->getPost('start') ?? 0;
@@ -86,10 +87,11 @@ class KeluargaModel extends Model
         }
     }
 
-    public function countFiltered()
+    public function countFiltered($where = [])
     {
         try {
-            $this->_getDatatablesQuery();
+            $this->_getDatatablesQuery($where);
+            if (!empty($where)) { $this->builder->where($where); }
             return $this->builder->countAllResults();
         } catch (\Exception $e) {
             log_message('error', 'countFiltered error: ' . $e->getMessage());
@@ -97,11 +99,12 @@ class KeluargaModel extends Model
         }
     }
 
-    public function countAll()
+    public function countAll($where = [])
     {
         try {
             $this->builder->select('keluarga.*');
             $this->builder->join('sektor_pelayanan', 'sektor_pelayanan.id = keluarga.id_sektor_pelayanan', 'left');
+            if (!empty($where)) { $this->builder->where($where); }
             return $this->builder->countAllResults();
         } catch (\Exception $e) {
             log_message('error', 'countAll error: ' . $e->getMessage());

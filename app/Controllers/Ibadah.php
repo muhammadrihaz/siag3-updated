@@ -77,13 +77,17 @@ class Ibadah extends Controller
     {
         try {
             if ($this->request->isAJAX()) {
-                $list = $this->ibadahModel->getDatatables();
+                $filter = [];
+            if ($this->userRole != 'master') {
+                $filter['ibadah.id_sektor_pelayanan'] = $this->userSektorPelayanan;
+            }
+            $list = $this->ibadahModel->getDatatables($filter);
                 $data = [];
                 $no = $this->request->getPost('start');
                 
-                $filteredList = $list;
                 
-                foreach ($filteredList as $ibadah) {
+                
+                foreach ($list as $ibadah) {
                     $no++;
                     
                     // Cek permission untuk tombol aksi
@@ -158,8 +162,8 @@ class Ibadah extends Controller
                 
                 $output = [
                     "draw" => $this->request->getPost('draw'),
-                    "recordsTotal" => count($filteredList),
-                    "recordsFiltered" => count($filteredList),
+                    "recordsTotal" => $this->ibadahModel->countAll($filter),
+                    "recordsFiltered" => $this->ibadahModel->countFiltered($filter),
                     "data" => $data,
                 ];
                 

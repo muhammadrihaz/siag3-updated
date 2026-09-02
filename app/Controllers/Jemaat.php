@@ -78,7 +78,11 @@ class Jemaat extends Controller
 {
     try {
         if ($this->request->isAJAX()) {
-            $list = $this->jemaatModel->getDatatables();
+            $filter = [];
+            if ($this->userRole != 'master') {
+                $filter['keluarga.id_sektor_pelayanan'] = $this->userSektorPelayanan;
+            }
+            $list = $this->jemaatModel->getDatatables($filter);
             $data = [];
             $no = $this->request->getPost('start');
             
@@ -86,24 +90,17 @@ class Jemaat extends Controller
             if (empty($list)) {
                 return $this->response->setJSON([
                     "draw" => $this->request->getPost('draw'),
-                    "recordsTotal" => 0,
-                    "recordsFiltered" => 0,
+                    "recordsTotal" => $this->jemaatModel->countAll($filter),
+                    "recordsFiltered" => $this->jemaatModel->countFiltered($filter),
                     "data" => []
                 ]);
             }
             
             // Filter berdasarkan wilayah (kecuali master)
-            $filteredList = [];
-            foreach ($list as $jemaat) {
-                // Pastikan properti id_sektor_pelayanan ada
-                $id_sektor_pelayanan = isset($jemaat->id_sektor_pelayanan) ? $jemaat->id_sektor_pelayanan : null;
-                
-                if ($this->userRole == 'master' || $id_sektor_pelayanan == $this->userSektorPelayanan) {
-                    $filteredList[] = $jemaat;
-                }
-            }
             
-            foreach ($filteredList as $jemaat) {
+            
+            
+            foreach ($list as $jemaat) {
                 $no++;
                 
                 // Cek permission
@@ -146,8 +143,8 @@ class Jemaat extends Controller
             
             $output = [
                 "draw" => $this->request->getPost('draw'),
-                "recordsTotal" => count($filteredList),
-                "recordsFiltered" => count($filteredList),
+                "recordsTotal" => $this->jemaatModel->countAll($filter),
+                "recordsFiltered" => $this->jemaatModel->countFiltered($filter),
                 "data" => $data,
             ];
             

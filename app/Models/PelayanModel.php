@@ -31,7 +31,7 @@ class PelayanModel extends Model
         $this->request = \Config\Services::request();
     }
 
-    private function _getDatatablesQuery()
+    private function _getDatatablesQuery($where = [])
     {
         $this->builder->select('
             pelayan.*, 
@@ -46,6 +46,7 @@ class PelayanModel extends Model
         $this->builder->join('ibadah', 'ibadah.id = pelayan.id_ibadah', 'left');
         $this->builder->join('sektor_pelayanan', 'sektor_pelayanan.id = ibadah.id_sektor_pelayanan', 'left');
         
+        if (!empty($where)) { $this->builder->where($where); }
         $i = 0;
         $searchValue = $this->request->getPost('search')['value'] ?? '';
         
@@ -76,10 +77,10 @@ class PelayanModel extends Model
         }
     }
 
-    public function getDatatables()
+    public function getDatatables($where = [])
     {
         try {
-            $this->_getDatatablesQuery();
+            $this->_getDatatablesQuery($where);
             
             $length = $this->request->getPost('length') ?? 10;
             $start = $this->request->getPost('start') ?? 0;
@@ -96,10 +97,11 @@ class PelayanModel extends Model
         }
     }
 
-    public function countFiltered()
+    public function countFiltered($where = [])
     {
         try {
-            $this->_getDatatablesQuery();
+            $this->_getDatatablesQuery($where);
+            if (!empty($where)) { $this->builder->where($where); }
             return $this->builder->countAllResults();
         } catch (\Exception $e) {
             log_message('error', 'countFiltered error: ' . $e->getMessage());
@@ -107,12 +109,13 @@ class PelayanModel extends Model
         }
     }
 
-    public function countAll()
+    public function countAll($where = [])
     {
         try {
             $this->builder->select('pelayan.*');
             $this->builder->join('jemaat', 'jemaat.id = pelayan.id_jemaat', 'left');
             $this->builder->join('ibadah', 'ibadah.id = pelayan.id_ibadah', 'left');
+            if (!empty($where)) { $this->builder->where($where); }
             return $this->builder->countAllResults();
         } catch (\Exception $e) {
             log_message('error', 'countAll error: ' . $e->getMessage());
@@ -215,6 +218,7 @@ class PelayanModel extends Model
             if ($status) {
                 $this->builder->where('status', $status);
             }
+            if (!empty($where)) { $this->builder->where($where); }
             return $this->builder->countAllResults();
         } catch (\Exception $e) {
             log_message('error', 'getStatusCount error: ' . $e->getMessage());

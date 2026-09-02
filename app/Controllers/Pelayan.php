@@ -73,19 +73,19 @@ class Pelayan extends Controller
     {
         try {
             if ($this->request->isAJAX()) {
-                $list = $this->pelayanModel->getDatatables();
+                $filter = [];
+            if ($this->userRole != 'master') {
+                $filter['pelayan.id_sektor_pelayanan'] = $this->userSektorPelayanan;
+            }
+            $list = $this->pelayanModel->getDatatables($filter);
                 $data = [];
                 $no = $this->request->getPost('start');
                 
                 // Filter berdasarkan wilayah (kecuali master)
-                $filteredList = [];
-                foreach ($list as $pelayan) {
-                    if ($this->userRole == 'master' || $pelayan->id_sektor_pelayanan == $this->userSektorPelayanan) {
-                        $filteredList[] = $pelayan;
-                    }
-                }
                 
-                foreach ($filteredList as $pelayan) {
+                
+                
+                foreach ($list as $pelayan) {
                     $no++;
                     
                     // Cek permission
@@ -129,8 +129,8 @@ class Pelayan extends Controller
                 
                 $output = [
                     "draw" => $this->request->getPost('draw'),
-                    "recordsTotal" => count($filteredList),
-                    "recordsFiltered" => count($filteredList),
+                    "recordsTotal" => $this->pelayanModel->countAll($filter),
+                    "recordsFiltered" => $this->pelayanModel->countFiltered($filter),
                     "data" => $data,
                 ];
                 

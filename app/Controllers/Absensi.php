@@ -74,19 +74,16 @@ public function __construct()
     {
         try {
             if ($this->request->isAJAX()) {
-                $list = $this->absensiModel->getDatatables();
+                $filter = [];
+            if ($this->userRole != 'master') {
+                $filter['absensi.id_cabang_gereja'] = $this->userSektorPelayanan;
+            }
+            $list = $this->absensiModel->getDatatables($filter);
                 $data = [];
                 $no = $this->request->getPost('start');
                 
                 // Filter data berdasarkan wilayah user (kecuali Master)
-                $filteredList = [];
-                foreach ($list as $absensi) {
-                    if ($this->userRole == 'master' || $absensi->id_cabang_gereja == $this->userSektorPelayanan) {
-                        $filteredList[] = $absensi;
-                    }
-                }
-                
-                foreach ($filteredList as $absensi) {
+            foreach ($list as $absensi) {
                     $no++;
                     
                     // Cek permission untuk tombol aksi
@@ -132,8 +129,8 @@ public function __construct()
                 
                 $output = [
                     "draw" => $this->request->getPost('draw'),
-                    "recordsTotal" => count($filteredList),
-                    "recordsFiltered" => count($filteredList),
+                    "recordsTotal" => $this->absensiModel->countAll($filter),
+                    "recordsFiltered" => $this->absensiModel->countFiltered($filter),
                     "data" => $data,
                 ];
                 

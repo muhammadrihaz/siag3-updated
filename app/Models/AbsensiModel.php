@@ -31,7 +31,7 @@ class AbsensiModel extends Model
         $this->request = \Config\Services::request();
     }
 
-    private function _getDatatablesQuery()
+    private function _getDatatablesQuery($where = [])
     {
         $this->builder->select('
             absensi.*, 
@@ -46,6 +46,7 @@ class AbsensiModel extends Model
         $this->builder->join('ibadah', 'ibadah.id = absensi.id_ibadah', 'left');
         $this->builder->join('cabang_gereja', 'cabang_gereja.id = ibadah.id_cabang_gereja', 'left');
         
+        if (!empty($where)) { $this->builder->where($where); }
         $i = 0;
         $searchValue = $this->request->getPost('search')['value'] ?? '';
         
@@ -76,10 +77,10 @@ class AbsensiModel extends Model
         }
     }
 
-    public function getDatatables()
+    public function getDatatables($where = [])
     {
         try {
-            $this->_getDatatablesQuery();
+            $this->_getDatatablesQuery($where);
             
             $length = $this->request->getPost('length') ?? 10;
             $start = $this->request->getPost('start') ?? 0;
@@ -96,10 +97,11 @@ class AbsensiModel extends Model
         }
     }
 
-    public function countFiltered()
+    public function countFiltered($where = [])
     {
         try {
-            $this->_getDatatablesQuery();
+            $this->_getDatatablesQuery($where);
+            if (!empty($where)) { $this->builder->where($where); }
             return $this->builder->countAllResults();
         } catch (\Exception $e) {
             log_message('error', 'countFiltered error: ' . $e->getMessage());
@@ -107,12 +109,13 @@ class AbsensiModel extends Model
         }
     }
 
-    public function countAll()
+    public function countAll($where = [])
     {
         try {
             $this->builder->select('absensi.*');
             $this->builder->join('jemaat', 'jemaat.id = absensi.id_jemaat', 'left');
             $this->builder->join('ibadah', 'ibadah.id = absensi.id_ibadah', 'left');
+            if (!empty($where)) { $this->builder->where($where); }
             return $this->builder->countAllResults();
         } catch (\Exception $e) {
             log_message('error', 'countAll error: ' . $e->getMessage());

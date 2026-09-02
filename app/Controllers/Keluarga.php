@@ -83,30 +83,28 @@ class Keluarga extends Controller
 {
     try {
         if ($this->request->isAJAX()) {
-            $list = $this->keluargaModel->getDatatables();
+            $filter = [];
+            if ($this->userRole != 'master') {
+                $filter['keluarga.id_sektor_pelayanan'] = $this->userSektorPelayanan;
+            }
+            $list = $this->keluargaModel->getDatatables($filter);
             $data = [];
             $no = $this->request->getPost('start');
             
             if (empty($list)) {
                 return $this->response->setJSON([
                     "draw" => $this->request->getPost('draw'),
-                    "recordsTotal" => 0,
-                    "recordsFiltered" => 0,
+                    "recordsTotal" => $this->keluargaModel->countAll($filter),
+                    "recordsFiltered" => $this->keluargaModel->countFiltered($filter),
                     "data" => []
                 ]);
             }
             
             // Filter berdasarkan wilayah (kecuali master)
-            $filteredList = [];
-            foreach ($list as $keluarga) {
-                $id_sektor_pelayanan = isset($keluarga->id_sektor_pelayanan) ? $keluarga->id_sektor_pelayanan : null;
-                
-                if ($this->userRole == 'master' || $id_sektor_pelayanan == $this->userSektorPelayanan) {
-                    $filteredList[] = $keluarga;
-                }
-            }
             
-            foreach ($filteredList as $keluarga) {
+            
+            
+            foreach ($list as $keluarga) {
                 $no++;
                 
                 // Cek permission
@@ -137,8 +135,8 @@ class Keluarga extends Controller
             
             $output = [
                 "draw" => $this->request->getPost('draw'),
-                "recordsTotal" => count($filteredList),
-                "recordsFiltered" => count($filteredList),
+                "recordsTotal" => $this->keluargaModel->countAll($filter),
+                "recordsFiltered" => $this->keluargaModel->countFiltered($filter),
                 "data" => $data,
             ];
             

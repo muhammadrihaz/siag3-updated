@@ -63,19 +63,19 @@ class SektorPelayanan extends Controller
     {
         if ($this->request->isAJAX()) {
             try {
-                $list = $this->sektorPelayananModel->getDatatables();
+                $filter = [];
+            if ($this->userRole != 'master') {
+                $filter['sektor_pelayanan.id'] = $this->userSektorPelayanan;
+            }
+            $list = $this->sektorPelayananModel->getDatatables($filter);
                 $data = [];
                 $no = $this->request->getPost('start');
                 
                 // Filter berdasarkan wilayah (kecuali master)
-                $filteredList = [];
-                foreach ($list as $sektorPelayanan) {
-                    if ($this->userRole == 'master' || $sektorPelayanan->id == $this->userSektorPelayanan) {
-                        $filteredList[] = $sektorPelayanan;
-                    }
-                }
                 
-                foreach ($filteredList as $sektorPelayanan) {
+                
+                
+                foreach ($list as $sektorPelayanan) {
                     $no++;
                     
                     // Cek permission
@@ -107,8 +107,8 @@ class SektorPelayanan extends Controller
                 
                 $output = [
                     "draw" => $this->request->getPost('draw'),
-                    "recordsTotal" => count($filteredList),
-                    "recordsFiltered" => count($filteredList),
+                    "recordsTotal" => $this->sektorPelayananModel->countAll($filter),
+                    "recordsFiltered" => $this->sektorPelayananModel->countFiltered($filter),
                     "data" => $data,
                 ];
                 
