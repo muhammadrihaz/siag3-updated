@@ -250,16 +250,16 @@
                     <option value="triwulan">Triwulan</option>
                 </select>
                 <select id="filter_lokasi" class="form-control d-inline-block w-auto ml-2">
-                    <option value="all">Semua Wilayah</option>
-                    <?php if(!empty($sektor_list)): foreach($sektor_list as $sl): ?>
-                        <option value="<?= $sl->id ?>"><?= htmlspecialchars($sl->nama_sektor) ?></option>
+                    <option value="all">Semua Cabang</option>
+                    <?php if(!empty($cabang_list)): foreach($cabang_list as $cl): ?>
+                        <option value="<?= $cl->id ?>"><?= htmlspecialchars($cl->nama_cabang) ?></option>
                     <?php endforeach; endif; ?>
                 </select>
                 <select id="filter_jam" class="form-control d-inline-block w-auto ml-2">
                     <option value="all">Semua Jam Ibadah</option>
-                    <option value="06:00">06:00</option>
+                    <option value="05:30">05:30</option>
                     <option value="09:00">09:00</option>
-                    <option value="17:00">17:00</option>
+                    <option value="18:00">18:00</option>
                 </select>
             </div>
         </div>

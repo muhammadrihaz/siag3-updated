@@ -127,7 +127,7 @@ class Dashboard extends Controller
                 'user_role' => $userRole,
                 'user_sektor' => $this->session->get('nama_sektor'),
                 'is_master' => $isMaster,
-                'sektor_list' => $this->sektorPelayananModel->findAll(), // For location filter
+                'cabang_list' => (new \App\Models\CabangGerejaModel())->findAll(), // For location filter
             ];
             
             return view('dashboard/index', $data);
@@ -154,8 +154,8 @@ class Dashboard extends Controller
         
         // Base where string building
         $whereIbadah = "1=1";
-        if ($lokasi !== 'all') { // id_sektor_pelayanan
-            $whereIbadah .= " AND i.id_sektor_pelayanan = " . $db->escape($lokasi);
+        if ($lokasi !== 'all') { // id_cabang_gereja
+            $whereIbadah .= " AND i.id_cabang_gereja = " . $db->escape($lokasi);
         }
         if ($jam_ibadah !== 'all') {
             $whereIbadah .= " AND i.waktu_mulai LIKE " . $db->escape($jam_ibadah . '%');
