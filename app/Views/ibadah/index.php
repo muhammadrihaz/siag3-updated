@@ -82,7 +82,12 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="waktu_mulai">Waktu Mulai <span class="text-danger">*</span></label>
-                                <input type="time" class="form-control" id="waktu_mulai" name="waktu_mulai">
+                                <select class="form-control" id="waktu_mulai" name="waktu_mulai">
+                                    <option value="">-- Pilih Waktu --</option>
+                                    <option value="05:30:00">05.30 WITA</option>
+                                    <option value="09:00:00">09.00 WITA</option>
+                                    <option value="18:00:00">18.00 WITA</option>
+                                </select>
                                 <small class="text-danger error-text" id="error_waktu_mulai"></small>
                             </div>
                         </div>
@@ -91,6 +96,7 @@
                                 <label for="jenis_ibadah">Jenis Ibadah <span class="text-danger">*</span></label>
                                 <select class="form-control" id="jenis_ibadah" name="jenis_ibadah">
                                     <option value="">-- Pilih Jenis --</option>
+                                    <option value="Minggu Subuh">Minggu Subuh</option>
                                     <option value="Minggu Pagi">Minggu Pagi</option>
                                     <option value="Minggu Sore">Minggu Sore</option>
                                     <option value="Persekutuan">Persekutuan</option>
@@ -109,7 +115,6 @@
                                     <option value="draft">Draft</option>
                                     <option value="aktif">Aktif</option>
                                     <option value="selesai">Selesai</option>
-                                    <option value="batal">Batal</option>
                                 </select>
                                 <small class="text-danger error-text" id="error_status"></small>
                             </div>
@@ -232,6 +237,18 @@ $(document).ready(function() {
         $('#tanggal').val(today);
     }
     <?php endif; ?>
+    
+    // Auto-select jenis_ibadah based on waktu_mulai
+    $('#waktu_mulai').on('change', function() {
+        var val = $(this).val();
+        if (val == '05:30:00') {
+            $('#jenis_ibadah').val('Minggu Subuh');
+        } else if (val == '09:00:00') {
+            $('#jenis_ibadah').val('Minggu Pagi');
+        } else if (val == '18:00:00') {
+            $('#jenis_ibadah').val('Minggu Sore');
+        }
+    });
     
     <?php if (canCreate('ibadah')): ?>
     // Tambah Data

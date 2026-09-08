@@ -539,6 +539,56 @@
         </div>
     </section>
 
+    <!-- Pendaftaran Sakramen -->
+    <section id="pendaftaran-sakramen" class="section-padding" style="background-color: white;">
+        <div class="container">
+            <div class="text-center mb-5 fade-block">
+                <h2 class="section-title">Pendaftaran Sakramen</h2>
+                <p class="text-muted mt-3">Daftarkan diri Anda untuk pelayanan sakramen secara online.</p>
+            </div>
+            
+            <div class="row justify-content-center">
+                <div class="col-lg-8 fade-block">
+                    <div class="card shadow-sm border-0" style="border-radius: 15px;">
+                        <div class="card-body p-4 p-md-5">
+                            <form id="formSakramen">
+                                <div class="form-group mb-4">
+                                    <label for="no_anggota" class="font-weight-bold">Nomor Kartu Anggota <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="no_anggota" name="no_anggota" placeholder="Masukkan Nomor Anggota Anda" required>
+                                    <small class="form-text text-muted"><i class="fas fa-info-circle"></i> Pastikan nomor anggota Anda sudah terdaftar di sistem.</small>
+                                </div>
+                                
+                                <div class="form-group mb-4">
+                                    <label for="jenis_sakramen" class="font-weight-bold">Jenis Pelayanan <span class="text-danger">*</span></label>
+                                    <select class="form-control" id="jenis_sakramen" name="jenis_sakramen" required>
+                                        <option value="">-- Pilih Jenis Pelayanan --</option>
+                                        <option value="baptis_anak">Baptisan Anak</option>
+                                        <option value="baptis_dewasa">Baptisan Dewasa</option>
+                                        <option value="sidi">Sidi</option>
+                                        <option value="pernikahan">Pernikahan</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group mb-4">
+                                    <label for="catatan" class="font-weight-bold">Catatan / Pesan Tambahan</label>
+                                    <textarea class="form-control" id="catatan" name="catatan" rows="3" placeholder="Tambahkan catatan jika diperlukan..."></textarea>
+                                </div>
+                                
+                                <div id="alertSakramen" class="alert d-none"></div>
+                                
+                                <div class="text-center mt-4">
+                                    <button type="submit" id="btnSubmitSakramen" class="btn btn-portal px-5 py-2">
+                                        <i class="fas fa-paper-plane mr-2"></i> Ajukan Pendaftaran
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Informasi Jemaat -->
     <section id="informasi" class="section-padding">
         <div class="container">
@@ -755,6 +805,39 @@
                     error: function() {
                         $('#loading').addClass('d-none');
                         $('#btnSearch').prop('disabled', false).html('<i class="fas fa-search"></i> Cari');
+                        Swal.fire({icon: 'error', title: 'Error Koneksi', text: 'Gagal terhubung ke sistem server.'});
+                    }
+                });
+            });
+            // FORM SAKRAMEN AJAX SUBMIT
+            $('#formSakramen').on('submit', function(e) {
+                e.preventDefault();
+                
+                var btn = $('#btnSubmitSakramen');
+                var originalText = btn.html();
+                
+                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...');
+                $('#alertSakramen').addClass('d-none').removeClass('alert-success alert-danger');
+                
+                $.ajax({
+                    url: '<?= base_url('home/registerSakramen') ?>',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    dataType: 'json',
+                    success: function(response) {
+                        btn.prop('disabled', false).html(originalText);
+                        
+                        if (response.status == 'success') {
+                            Swal.fire({icon: 'success', title: 'Berhasil!', text: response.message});
+                            $('#formSakramen')[0].reset();
+                        } else {
+                            $('#alertSakramen').html('<i class="fas fa-exclamation-triangle mr-2"></i> ' + response.message)
+                                             .removeClass('d-none alert-success')
+                                             .addClass('alert-danger');
+                        }
+                    },
+                    error: function() {
+                        btn.prop('disabled', false).html(originalText);
                         Swal.fire({icon: 'error', title: 'Error Koneksi', text: 'Gagal terhubung ke sistem server.'});
                     }
                 });

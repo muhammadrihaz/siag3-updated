@@ -57,12 +57,70 @@ class Home extends BaseController
                 $resultHtml .= '</div>';
                 $resultHtml .= '<div class="col-4 text-center">';
                 $resultHtml .= '<img src="'.$qrUrl.'" class="img-fluid border p-1 rounded bg-white shadow-sm" style="max-width:90px;" onerror="this.src=\''.base_url('assets/img/placeholder.png').'\'" alt="QR Code">';
-                $resultHtml .= '<br><a href="'.$qrUrl.'" download="QR_'.$j->no_anggota.'.png" class="btn btn-sm btn-outline-primary mt-2 flex justify-content-center"><i class="fas fa-download"></i> Simpan</a>';
+                $resultHtml .= '<br><a href="'.base_url('home/kartuAnggota/' . $j->id).'" target="_blank" class="btn btn-sm btn-outline-primary mt-2 flex justify-content-center"><i class="fas fa-qrcode"></i> Lihat & Simpan Barcode</a>';
                 $resultHtml .= '</div>';
                 $resultHtml .= '</div></div></div>';
             }
             
             return $this->response->setJSON(['status' => 'success', 'html' => $resultHtml]);
+        }
+    }
+    
+    public function kartuAnggota($id)
+    {
+        $jemaat = $this->jemaatModel->getJemaatById($id);
+        
+        if (!$jemaat) {
+            throw new \Exception('Data jemaat tidak ditemukan!');
+        }
+        
+        // Generate QR Code jika belum ada
+        $qrFile = FCPATH . 'assets/qrcodes/jemaat_' . $id . '.png';
+        if (!file_exists($qrFile)) {
+            $this->jemaatModel->generateQrCode($id, $jemaat->no_anggota);
+        }
+        
+        $data = [
+            'title' => 'Kartu Anggota - ' . $jemaat->nama_jemaat,
+            'jemaat' => $jemaat,
+            'qr_file' => base_url('assets/qrcodes/jemaat_' . $id . '.png')
+        ];
+        
+        return view('public/kartu_anggota', $data);
+    }
+
+    public function registerSakramen()
+    {
+        if ($this->request->isAJAX()) {
+            $noAnggota = $this->request->getPost('no_anggota');
+            $jenisSakramen = $this->request->getPost('jenis_sakramen');
+            $catatan = $this->request->getPost('catatan');
+
+            if (empty($noAnggota) || empty($jenisSakramen)) {
+                return $this->response->setJSON(['status' => 'error', 'message' => 'Nomor Anggota dan Jenis Pelayanan wajib diisi!']);
+            }
+
+            // Validasi jemaat
+            $jemaat = $this->jemaatModel->where('no_anggota', $noAnggota)->first();
+            if (!$jemaat) {
+                return $this->response->setJSON(['status' => 'error', 'message' => 'Nomor Kartu Anggota tidak terdaftar!']);
+            }
+
+            // Simpan ke waitlist_sakramen
+            $waitlistModel = new \App\Models\WaitlistSakramenModel();
+            
+            $data = [
+                'id_jemaat' => $jemaat->id,
+                'jenis_sakramen' => $jenisSakramen,
+                'status_pendaftaran' => 'pending',
+                'keterangan_admin' => $catatan
+            ];
+            
+            if ($waitlistModel->insert($data)) {
+                return $this->response->setJSON(['status' => 'success', 'message' => 'Pendaftaran berhasil!']);
+            } else {
+                return $this->response->setJSON(['status' => 'error', 'message' => 'Terjadi kesalahan saat menyimpan data.']);
+            }
         }
     }
 }

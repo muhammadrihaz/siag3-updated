@@ -11,6 +11,8 @@ $routes->get('/', 'Home::index');
 $routes->post('home/search', 'Home::search');
 $routes->get('login', 'Auth::login');
 $routes->post('auth/loginProcess', 'Auth::loginProcess');
+$routes->get('home/kartuAnggota/(:num)', 'Home::kartuAnggota/$1');
+$routes->post('home/registerSakramen', 'Home::registerSakramen');
 $routes->get('logout', 'Auth::logout');
 
 // =============================================
