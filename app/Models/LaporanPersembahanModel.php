@@ -176,8 +176,6 @@ class LaporanPersembahanModel extends Model
     {
         return [
             'tunai' => 'Tunai',
-            'transfer' => 'Transfer',
-            'qris' => 'QRIS'
         ];
     }
 }

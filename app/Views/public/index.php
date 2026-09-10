@@ -543,8 +543,8 @@
     <section id="pendaftaran-sakramen" class="section-padding" style="background-color: white;">
         <div class="container">
             <div class="text-center mb-5 fade-block">
-                <h2 class="section-title">Pendaftaran Sakramen</h2>
-                <p class="text-muted mt-3">Daftarkan diri Anda untuk pelayanan sakramen secara online.</p>
+                <h2 class="section-title">Pelayanan & Sakramen</h2>
+                <p class="text-muted mt-3">Daftarkan diri Anda untuk Pelayanan & Sakramen secara online.</p>
             </div>
             
             <div class="row justify-content-center">
@@ -564,8 +564,8 @@
                                         <option value="">-- Pilih Jenis Pelayanan --</option>
                                         <option value="baptis_anak">Baptisan Anak</option>
                                         <option value="baptis_dewasa">Baptisan Dewasa</option>
-                                        <option value="sidi">Sidi</option>
-                                        <option value="pernikahan">Pernikahan</option>
+                                        <option value="sidi">Peneguhan Sidi</option>
+                                        <option value="pernikahan">Pemberkatan Perkawinan</option>
                                     </select>
                                 </div>
                                 

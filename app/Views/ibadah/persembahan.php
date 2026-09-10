@@ -95,6 +95,14 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Jenis Mata Uang <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="jenis_mata_uang" id="jenis_mata_uang" placeholder="Contoh: Rupiah" value="Rupiah" required>
+                            </div>
+                        </div>
+                    </div>
                     
                     <div class="form-group">
                         <label>Nominal <span class="text-danger">*</span></label>
@@ -151,7 +159,8 @@
                             <tr>
                                 <th width="5%">No</th>
                                 <th>Nominal</th>
-                                <th>Jumlah Lembar</th>
+                                <th>Mata Uang</th>
+                                <th>Jumlah Lembar / Koin</th>
                                 <th>Jenis</th>
                                 <th>Metode</th>
                                 <th>Status</th>
@@ -166,6 +175,7 @@
                                 <tr id="persembahan-<?= $p->id ?>">
                                     <td><?= $no++ ?></td>
                                     <td><strong>Rp <?= number_format($p->nominal ?? 0, 0, ',', '.') ?></strong></td>
+                                    <td><?= $p->jenis_mata_uang ?? 'Rupiah' ?></td>
                                     <td><?= $p->jumlah_lembar ?? '-' ?></td>
                                     <td>
                                         <span class="badge badge-<?= $p->jenis == 'putih' ? 'primary' : ($p->jenis == 'cokelat' ? 'warning' : 'danger') ?>">
@@ -206,14 +216,14 @@
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr id="emptyRow">
-                                    <td colspan="6" class="text-center text-muted">Belum ada persembahan</td>
+                                    <td colspan="7" class="text-center text-muted">Belum ada persembahan</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
                         <tfoot>
                             <tr style="background: #f8f9fc; font-weight: 700;">
                                 <td colspan="1" class="text-right">TOTAL</td>
-                                <td colspan="6" id="totalNominalFooter">
+                                <td colspan="7" id="totalNominalFooter">
                                     <?php 
                                         $totalAll = 0;
                                         foreach ($persembahan as $p) {
@@ -317,6 +327,7 @@ $(document).ready(function() {
         
         var nominalDisplay = $('#nominal').val();
         var nominalClean = nominalDisplay.replace(/[^0-9]/g, '');
+        var jenis_mata_uang = $('#jenis_mata_uang').val();
         var jumlah_lembar = $('#jumlah_lembar').val();
         var jenis = $('#jenis').val();
         var metode = $('#metode').val();
@@ -344,6 +355,7 @@ $(document).ready(function() {
                 <hr>
                 <div class="text-left">
                     <p><strong>Nominal:</strong> Rp ${nominalFormatted}</p>
+                    <p><strong>Mata Uang:</strong> ${jenis_mata_uang}</p>
                     <p><strong>Jumlah Lembar:</strong> ${jumlah_lembar || '-'}</p>
                     <p><strong>Jenis:</strong> ${jenisText}</p>
                     <p><strong>Metode:</strong> ${metodeText}</p>
@@ -357,12 +369,12 @@ $(document).ready(function() {
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
-                savePersembahan(nominalClean, jumlah_lembar, jenis, metode, keterangan);
+                savePersembahan(nominalClean, jenis_mata_uang, jumlah_lembar, jenis, metode, keterangan);
             }
         });
     });
     
-    function savePersembahan(nominal, jumlah_lembar, jenis, metode, keterangan) {
+    function savePersembahan(nominal, jenis_mata_uang, jumlah_lembar, jenis, metode, keterangan) {
         $('#btnSimpan').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Menyimpan...');
         
         $.ajax({
@@ -372,6 +384,7 @@ $(document).ready(function() {
                 id_ibadah: <?= $id_ibadah ?>,
                 id_jemaat: null,
                 nominal: nominal,
+                jenis_mata_uang: jenis_mata_uang,
                 jumlah_lembar: jumlah_lembar,
                 jenis: jenis,
                 metode: metode,
@@ -395,6 +408,7 @@ $(document).ready(function() {
                         <tr id="persembahan-new">
                             <td></td>
                             <td><strong>Rp ${formattedNominal}</strong></td>
+                            <td>${jenis_mata_uang}</td>
                             <td>${jumlah_lembar || '-'}</td>
                             <td><span class="badge badge-${badgeJenis}">${jenisLabel[jenis]}</span></td>
                             <td><span class="badge badge-${badgeMetode}">${metodeLabel}</span></td>
@@ -434,6 +448,7 @@ $(document).ready(function() {
                     $('#formPersembahan')[0].reset();
                     $('#nominal').val('');
                     $('#jumlah_lembar').val('');
+                    $('#jenis_mata_uang').val('Rupiah');
                     
                     // Update total
                     updateTotal();
@@ -515,7 +530,7 @@ $(document).ready(function() {
                             if ($('#tablePersembahan tbody tr').length === 0) {
                                 $('#tablePersembahan tbody').append(`
                                     <tr id="emptyRow">
-                                        <td colspan="6" class="text-center text-muted">Belum ada persembahan</td>
+                                        <td colspan="7" class="text-center text-muted">Belum ada persembahan</td>
                                     </tr>
                                 `);
                             }
@@ -576,8 +591,8 @@ $(document).ready(function() {
                     success: function(response) {
                         if (response.status == 'success') {
                             // Update UI
-                            row.find('td:eq(4)').html('<span class="badge badge-success">Approved</span>');
-                            row.find('td:eq(5)').html(''); // Remove buttons
+                            row.find('td:eq(5)').html('<span class="badge badge-success">Approved</span>');
+                            row.find('td:eq(6)').html(''); // Remove buttons
                             Swal.fire({ icon: 'success', title: 'Berhasil!', text: response.message, timer: 1500, showConfirmButton: false });
                         } else {
                             Swal.fire({ icon: 'error', title: 'Gagal', text: response.message });
