@@ -89,8 +89,11 @@
                                     <option value="09:00:00">09.00 WITA</option>
                                     <option value="09:30:00">09.30 WITA</option>
                                     <option value="10:00:00">10.00 WITA</option>
+                                    <option value="17:00:00">17.00 WITA</option>
+                                    <option value="17:30:00">17.30 WITA</option>
                                     <option value="18:00:00">18.00 WITA</option>
                                     <option value="19:00:00">19.00 WITA</option>
+                                    <option value="19:30:00">19.00 WITA</option>
                                 </select>
                                 <small class="text-danger error-text" id="error_waktu_mulai"></small>
                             </div>
