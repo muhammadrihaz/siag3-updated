@@ -215,7 +215,7 @@ class Ibadah extends Controller
                 'id_cabang_gereja' => 'required|numeric',
                 'tanggal' => 'required|valid_date',
                 'waktu_mulai' => 'required',
-                'jenis_ibadah' => 'required|in_list[Minggu Pagi,Minggu Sore,Persekutuan,Kebaktian Khusus]',
+                'jenis_ibadah' => 'required|in_list[Minggu Subuh,Minggu Pagi,Minggu Sore,Persekutuan,Kebaktian Khusus]',
                 'status' => 'required|in_list[draft,aktif,selesai,batal]',
             ];
 
