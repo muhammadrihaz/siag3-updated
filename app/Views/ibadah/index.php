@@ -85,8 +85,12 @@
                                 <select class="form-control" id="waktu_mulai" name="waktu_mulai">
                                     <option value="">-- Pilih Waktu --</option>
                                     <option value="05:30:00">05.30 WITA</option>
+                                    <option value="07:00:00">07.00 WITA</option>
                                     <option value="09:00:00">09.00 WITA</option>
+                                    <option value="09:30:00">09.30 WITA</option>
+                                    <option value="10:00:00">10.00 WITA</option>
                                     <option value="18:00:00">18.00 WITA</option>
+                                    <option value="19:00:00">19.00 WITA</option>
                                 </select>
                                 <small class="text-danger error-text" id="error_waktu_mulai"></small>
                             </div>
@@ -99,8 +103,15 @@
                                     <option value="Minggu Subuh">Minggu Subuh</option>
                                     <option value="Minggu Pagi">Minggu Pagi</option>
                                     <option value="Minggu Sore">Minggu Sore</option>
-                                    <option value="Persekutuan">Persekutuan</option>
-                                    <option value="Kebaktian Khusus">Kebaktian Khusus</option>
+                                    <option value="Ibadah Keluarga">Ibadah Keluarga</option>
+                                    <option value="Ibadah Pemuda">Ibadah Pemuda</option>
+                                    <option value="Ibadah Sekolah Minggu">Ibadah Sekolah Minggu</option>
+                                    <option value="Ibadah Persekutuan Kaum Bapak">Ibadah Persekutuan Kaum Bapak</option>
+                                    <option value="Ibadah Persekutuan Kaum Perempuan">Ibadah Persekutuan Kaum Perempuan</option>
+                                    <option value="Ibadah Subuh">Ibadah Subuh</option>
+                                    <option value="Ibadah Syukur">Ibadah Syukur</option>
+                                    <option value="Ibadah Penghiburan">Ibadah Penghiburan</option>
+                                    <option value="Lainnya">Lainnya</option>
                                 </select>
                                 <small class="text-danger error-text" id="error_jenis_ibadah"></small>
                             </div>
