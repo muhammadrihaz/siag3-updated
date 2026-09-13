@@ -180,7 +180,7 @@ class AbsensiModel extends Model
             ');
             $this->builder->join('jemaat', 'jemaat.id = absensi.id_jemaat', 'left');
             $this->builder->where('absensi.id_ibadah', $id_ibadah);
-            $this->builder->orderBy('absensi.waktu', 'ASC');
+            $this->builder->orderBy('absensi.waktu', 'DESC');
             $query = $this->builder->get();
             return $query->getResult();
         } catch (\Exception $e) {
