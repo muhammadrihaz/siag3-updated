@@ -16,7 +16,7 @@ class LaporanPersembahanModel extends Model
         $this->builder = $this->db->table('persembahan');
     }
 
-    public function getPersembahanByFilter($id_ibadah = null, $jenis = null, $metode = null)
+    public function getPersembahanByFilter($id_ibadah = null, $jenis = null, $metode = null, $id_cabang_gereja = null)
     {
         try {
             // Reset builder
@@ -49,6 +49,9 @@ class LaporanPersembahanModel extends Model
             if ($metode !== null && $metode !== '' && $metode !== 'null') {
                 $this->builder->where('persembahan.metode', $metode);
             }
+            if ($id_cabang_gereja !== null) {
+                $this->builder->where('ibadah.id_cabang_gereja', $id_cabang_gereja);
+            }
             
             $this->builder->orderBy('persembahan.created_at', 'DESC');
             $query = $this->builder->get();
@@ -61,13 +64,16 @@ class LaporanPersembahanModel extends Model
         }
     }
 
-    public function getAllIbadah()
+    public function getAllIbadah($id_cabang_gereja = null)
     {
         try {
             $this->builder = $this->db->table('ibadah');
             $this->builder->select('ibadah.*, cabang_gereja.nama_cabang');
             $this->builder->join('cabang_gereja', 'cabang_gereja.id = ibadah.id_cabang_gereja', 'left');
             $this->builder->where('ibadah.status !=', 'batal');
+            if ($id_cabang_gereja !== null) {
+                $this->builder->where('ibadah.id_cabang_gereja', $id_cabang_gereja);
+            }
             $this->builder->orderBy('ibadah.tanggal', 'DESC');
             $query = $this->builder->get();
             return $query->getResult();
@@ -77,7 +83,7 @@ class LaporanPersembahanModel extends Model
         }
     }
 
-    public function getStatistik($id_ibadah = null, $jenis = null, $metode = null)
+    public function getStatistik($id_ibadah = null, $jenis = null, $metode = null, $id_cabang_gereja = null)
     {
         try {
             $this->builder = $this->db->table('persembahan');
@@ -104,6 +110,9 @@ class LaporanPersembahanModel extends Model
             if ($metode !== null && $metode !== '' && $metode !== 'null') {
                 $this->builder->where('persembahan.metode', $metode);
             }
+            if ($id_cabang_gereja !== null) {
+                $this->builder->where('ibadah.id_cabang_gereja', $id_cabang_gereja);
+            }
             
             $query = $this->builder->get();
             return $query->getRow();
@@ -113,7 +122,7 @@ class LaporanPersembahanModel extends Model
         }
     }
 
-    public function getJenisCount($id_ibadah = null, $metode = null)
+    public function getJenisCount($id_ibadah = null, $metode = null, $id_cabang_gereja = null)
     {
         try {
             $this->builder = $this->db->table('persembahan');
@@ -128,6 +137,9 @@ class LaporanPersembahanModel extends Model
             if ($metode !== null && $metode !== '' && $metode !== 'null') {
                 $this->builder->where('persembahan.metode', $metode);
             }
+            if ($id_cabang_gereja !== null) {
+                $this->builder->where('ibadah.id_cabang_gereja', $id_cabang_gereja);
+            }
             
             $this->builder->groupBy('persembahan.jenis');
             $query = $this->builder->get();
@@ -138,7 +150,7 @@ class LaporanPersembahanModel extends Model
         }
     }
 
-    public function getMetodeCount($id_ibadah = null, $jenis = null)
+    public function getMetodeCount($id_ibadah = null, $jenis = null, $id_cabang_gereja = null)
     {
         try {
             $this->builder = $this->db->table('persembahan');
@@ -152,6 +164,9 @@ class LaporanPersembahanModel extends Model
             }
             if ($jenis !== null && $jenis !== '' && $jenis !== 'null') {
                 $this->builder->where('persembahan.jenis', $jenis);
+            }
+            if ($id_cabang_gereja !== null) {
+                $this->builder->where('ibadah.id_cabang_gereja', $id_cabang_gereja);
             }
             
             $this->builder->groupBy('persembahan.metode');

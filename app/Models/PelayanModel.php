@@ -40,11 +40,12 @@ class PelayanModel extends Model
             ibadah.tanggal,
             ibadah.jenis_ibadah,
             ibadah.waktu_mulai,
-            sektor_pelayanan.nama_sektor
+            ibadah.id_cabang_gereja,
+            cabang_gereja.nama_cabang
         ');
         $this->builder->join('jemaat', 'jemaat.id = pelayan.id_jemaat', 'left');
         $this->builder->join('ibadah', 'ibadah.id = pelayan.id_ibadah', 'left');
-        $this->builder->join('sektor_pelayanan', 'sektor_pelayanan.id = ibadah.id_sektor_pelayanan', 'left');
+        $this->builder->join('cabang_gereja', 'cabang_gereja.id = ibadah.id_cabang_gereja', 'left');
         
         if (!empty($where)) { $this->builder->where($where); }
         $i = 0;
@@ -101,7 +102,6 @@ class PelayanModel extends Model
     {
         try {
             $this->_getDatatablesQuery($where);
-            if (!empty($where)) { $this->builder->where($where); }
             return $this->builder->countAllResults();
         } catch (\Exception $e) {
             log_message('error', 'countFiltered error: ' . $e->getMessage());
@@ -132,11 +132,12 @@ class PelayanModel extends Model
                 jemaat.no_anggota,
                 ibadah.tanggal,
                 ibadah.jenis_ibadah,
-                sektor_pelayanan.nama_sektor
+                ibadah.id_cabang_gereja,
+                cabang_gereja.nama_cabang
             ');
             $this->builder->join('jemaat', 'jemaat.id = pelayan.id_jemaat', 'left');
             $this->builder->join('ibadah', 'ibadah.id = pelayan.id_ibadah', 'left');
-            $this->builder->join('sektor_pelayanan', 'sektor_pelayanan.id = ibadah.id_sektor_pelayanan', 'left');
+            $this->builder->join('cabang_gereja', 'cabang_gereja.id = ibadah.id_cabang_gereja', 'left');
             $this->builder->orderBy('pelayan.id', 'DESC');
             $query = $this->builder->get();
             return $query->getResult();
@@ -156,11 +157,12 @@ class PelayanModel extends Model
                 ibadah.tanggal,
                 ibadah.jenis_ibadah,
                 ibadah.waktu_mulai,
-                sektor_pelayanan.nama_sektor
+                ibadah.id_cabang_gereja,
+                cabang_gereja.nama_cabang
             ');
             $this->builder->join('jemaat', 'jemaat.id = pelayan.id_jemaat', 'left');
             $this->builder->join('ibadah', 'ibadah.id = pelayan.id_ibadah', 'left');
-            $this->builder->join('sektor_pelayanan', 'sektor_pelayanan.id = ibadah.id_sektor_pelayanan', 'left');
+            $this->builder->join('cabang_gereja', 'cabang_gereja.id = ibadah.id_cabang_gereja', 'left');
             $this->builder->where('pelayan.id', $id);
             $query = $this->builder->get();
             return $query->getRow();
@@ -218,7 +220,6 @@ class PelayanModel extends Model
             if ($status) {
                 $this->builder->where('status', $status);
             }
-            if (!empty($where)) { $this->builder->where($where); }
             return $this->builder->countAllResults();
         } catch (\Exception $e) {
             log_message('error', 'getStatusCount error: ' . $e->getMessage());

@@ -8,15 +8,15 @@ class UserModel extends Model
 {
     protected $table = 'user';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['id_jemaat', 'id_sektor_pelayanan', 'username', 'password', 'role', 'status', 'last_login'];
+    protected $allowedFields = ['id_jemaat', 'id_sektor_pelayanan', 'id_cabang_gereja', 'username', 'password', 'role', 'status', 'last_login'];
     protected $useTimestamps = true;
     protected $createdField = 'created_at';
     protected $updatedField = 'updated_at';
     protected $returnType = 'object';
     protected $useSoftDeletes = false;
     
-    protected $column_order = ['id', 'username', 'role', 'status', 'last_login', 'nama_jemaat', 'nama_sektor'];
-    protected $column_search = ['username', 'role', 'nama_jemaat', 'nama_sektor'];
+    protected $column_order = ['id', 'username', 'role', 'status', 'last_login', 'nama_jemaat', 'nama_cabang'];
+    protected $column_search = ['username', 'role', 'nama_jemaat', 'nama_cabang'];
     protected $order = ['id' => 'DESC'];
     
     protected $request;
@@ -37,16 +37,17 @@ class UserModel extends Model
             user.id,
             user.id_jemaat,
             user.id_sektor_pelayanan,
+            user.id_cabang_gereja,
             user.username,
             user.role,
             user.status,
             user.last_login,
             user.created_at,
             jemaat.nama_jemaat,
-            sektor_pelayanan.nama_sektor
+            cabang_gereja.nama_cabang
         ');
         $this->builder->join('jemaat', 'jemaat.id = user.id_jemaat', 'left');
-        $this->builder->join('sektor_pelayanan', 'sektor_pelayanan.id = user.id_sektor_pelayanan', 'left');
+        $this->builder->join('cabang_gereja', 'cabang_gereja.id = user.id_cabang_gereja', 'left');
         
         $i = 0;
         $searchValue = $this->request->getPost('search')['value'] ?? '';
@@ -114,7 +115,7 @@ class UserModel extends Model
         try {
             $this->builder->select('user.id');
             $this->builder->join('jemaat', 'jemaat.id = user.id_jemaat', 'left');
-            $this->builder->join('sektor_pelayanan', 'sektor_pelayanan.id = user.id_sektor_pelayanan', 'left');
+            $this->builder->join('cabang_gereja', 'cabang_gereja.id = user.id_cabang_gereja', 'left');
             return $this->builder->countAllResults();
         } catch (\Exception $e) {
             log_message('error', 'countAll error: ' . $e->getMessage());
@@ -129,16 +130,17 @@ class UserModel extends Model
                 user.id,
                 user.id_jemaat,
                 user.id_sektor_pelayanan,
+                user.id_cabang_gereja,
                 user.username,
                 user.password,
                 user.role,
                 user.status,
                 user.last_login,
                 jemaat.nama_jemaat,
-                sektor_pelayanan.nama_sektor
+                cabang_gereja.nama_cabang
             ');
             $this->builder->join('jemaat', 'jemaat.id = user.id_jemaat', 'left');
-            $this->builder->join('sektor_pelayanan', 'sektor_pelayanan.id = user.id_sektor_pelayanan', 'left');
+            $this->builder->join('cabang_gereja', 'cabang_gereja.id = user.id_cabang_gereja', 'left');
             $this->builder->where('user.username', $username);
             $query = $this->builder->get();
             return $query->getRow();
@@ -155,15 +157,16 @@ class UserModel extends Model
                 user.id,
                 user.id_jemaat,
                 user.id_sektor_pelayanan,
+                user.id_cabang_gereja,
                 user.username,
                 user.role,
                 user.status,
                 user.last_login,
                 jemaat.nama_jemaat,
-                sektor_pelayanan.nama_sektor
+                cabang_gereja.nama_cabang
             ');
             $this->builder->join('jemaat', 'jemaat.id = user.id_jemaat', 'left');
-            $this->builder->join('sektor_pelayanan', 'sektor_pelayanan.id = user.id_sektor_pelayanan', 'left');
+            $this->builder->join('cabang_gereja', 'cabang_gereja.id = user.id_cabang_gereja', 'left');
             $this->builder->where('user.id', $id);
             $query = $this->builder->get();
             return $query->getRow();
@@ -187,10 +190,13 @@ class UserModel extends Model
     {
         return [
             'master' => 'Master (Super Admin)',
+            'admin_master' => 'Admin Master',
             'admin_area' => 'Admin Area',
             'pendeta' => 'Pendeta',
             'sekretaris' => 'Sekretaris',
-            'bendahara' => 'Bendahara'
+            'bendahara' => 'Bendahara',
+            'kasir' => 'Kasit Gereja',
+            'ketua_5' => 'Ketua 5',
         ];
     }
 
@@ -202,5 +208,10 @@ class UserModel extends Model
             log_message('error', 'getUsersBySektorPelayanan error: ' . $e->getMessage());
             return [];
         }
+    }
+
+    public function getUsersByCabang($id_cabang_gereja)
+    {
+        return $this->where('id_cabang_gereja', $id_cabang_gereja)->findAll();
     }
 }

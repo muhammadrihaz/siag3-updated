@@ -67,12 +67,13 @@
         <div class="card shadow mb-4">
             <div class="card-header py-3">
                 <h6 class="m-0 font-weight-bold text-primary">
-                    <i class="fas fa-plus-circle"></i> Tambah Persembahan
+                    <i class="fas fa-plus-circle"></i> <span id="formTitle">Tambah Persembahan</span>
                 </h6>
             </div>
             <div class="card-body">
-                <?php if (canCreate('persembahan')): ?>
+                <?php if (canCreate('persembahan') || canEdit('persembahan')): ?>
                 <form id="formPersembahan">
+                    <input type="hidden" name="id" id="id_persembahan">
                     <input type="hidden" name="id_ibadah" value="<?= $id_ibadah ?>">
                     
                     <div class="row">
@@ -200,9 +201,13 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <?php if (($p->status_approval ?? 'draft') == 'draft' && in_array(session()->get('role'), ['bendahara', 'master', 'admin_master'])): ?>
-                                        <button class="btn btn-sm btn-success btn-approve-persembahan" data-id="<?= $p->id ?>" title="Approve">
-                                            <i class="fas fa-check"></i>
+                                        <button class="btn btn-sm btn-primary btn-detail-persembahan" data-id="<?= $p->id ?>" title="Lihat Detail">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+
+                                        <?php if (canEdit('persembahan') && ($p->status_approval ?? 'draft') == 'draft'): ?>
+                                        <button class="btn btn-sm btn-info btn-edit-persembahan" data-id="<?= $p->id ?>" title="Edit">
+                                            <i class="fas fa-edit"></i>
                                         </button>
                                         <?php endif; ?>
                                         
@@ -216,7 +221,7 @@
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr id="emptyRow">
-                                    <td colspan="7" class="text-center text-muted">Belum ada persembahan</td>
+                                    <td colspan="8" class="text-center text-muted">Belum ada persembahan</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
@@ -238,6 +243,39 @@
                         </tfoot>
                     </table>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detail wajib ditampilkan sebelum Bendahara melakukan approval. -->
+<div class="modal fade" id="modalDetailPersembahan" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-search-dollar"></i> Detail Persembahan</h5>
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-sm mb-0">
+                    <tr><th width="40%">Ibadah</th><td id="detailIbadah">-</td></tr>
+                    <tr><th>Cabang Gereja</th><td id="detailCabang">-</td></tr>
+                    <tr><th>Nominal</th><td id="detailNominal">-</td></tr>
+                    <tr><th>Mata Uang</th><td id="detailMataUang">-</td></tr>
+                    <tr><th>Jumlah Lembar/Koin</th><td id="detailLembar">-</td></tr>
+                    <tr><th>Jenis</th><td id="detailJenis">-</td></tr>
+                    <tr><th>Metode</th><td id="detailMetode">-</td></tr>
+                    <tr><th>Keterangan</th><td id="detailKeterangan">-</td></tr>
+                    <tr><th>Status Approval</th><td id="detailStatus">-</td></tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                <?php if (canApprovePersembahan()): ?>
+                <button type="button" class="btn btn-success" id="btnApproveDetail" style="display:none;">
+                    <i class="fas fa-check"></i> Approve Persembahan
+                </button>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -272,7 +310,7 @@ $(document).ready(function() {
         width: '100%'
     });
     
-    <?php if (canCreate('persembahan')): ?>
+    <?php if (canCreate('persembahan') || canEdit('persembahan')): ?>
     // Format Rupiah (tampilan saja)
     $('#nominal').on('keyup', function() {
         var value = $(this).val().replace(/[^,\d]/g, '');
@@ -305,7 +343,7 @@ $(document).ready(function() {
             var nominalText = $(this).find('td:eq(1)').text().replace(/[^0-9]/g, '');
             var nominal = parseInt(nominalText) || 0;
             
-            var lembarText = $(this).find('td:eq(2)').text().trim();
+            var lembarText = $(this).find('td:eq(3)').text().trim();
             var lembar = parseInt(lembarText);
             if (isNaN(lembar) || lembar <= 0) {
                 lembar = 1;
@@ -320,7 +358,7 @@ $(document).ready(function() {
         $('#totalCount').text(count);
     }
     
-    <?php if (canCreate('persembahan')): ?>
+    <?php if (canCreate('persembahan') || canEdit('persembahan')): ?>
     // Submit Form
     $('#formPersembahan').on('submit', function(e) {
         e.preventDefault();
@@ -381,6 +419,7 @@ $(document).ready(function() {
             url: '<?= base_url('ibadah/savePersembahanIbadah') ?>',
             type: 'POST',
             data: {
+                id: $('#id_persembahan').val(),
                 id_ibadah: <?= $id_ibadah ?>,
                 id_jemaat: null,
                 nominal: nominal,
@@ -393,73 +432,13 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(response) {
                 if (response.status == 'success') {
-                    // Tambahkan baris baru ke tabel
-                    var formattedNominal = parseInt(nominal).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-                    var jenisLabel = {
-                        'putih': 'Putih',
-                        'cokelat': 'Cokelat',
-                        'khusus': 'Khusus'
-                    };
-                    var metodeLabel = metode.charAt(0).toUpperCase() + metode.slice(1);
-                    var badgeJenis = jenis == 'putih' ? 'primary' : (jenis == 'cokelat' ? 'warning' : 'danger');
-                    var badgeMetode = metode == 'tunai' ? 'success' : (metode == 'transfer' ? 'info' : 'dark');
-                    
-                    var newRow = `
-                        <tr id="persembahan-new">
-                            <td></td>
-                            <td><strong>Rp ${formattedNominal}</strong></td>
-                            <td>${jenis_mata_uang}</td>
-                            <td>${jumlah_lembar || '-'}</td>
-                            <td><span class="badge badge-${badgeJenis}">${jenisLabel[jenis]}</span></td>
-                            <td><span class="badge badge-${badgeMetode}">${metodeLabel}</span></td>
-                            <td><span class="badge badge-warning">Draft</span></td>
-                            <td>
-                                <!-- Jika user adalah bendahara/master, mereka bisa langsung approve item baru -->
-                                <?php if (in_array(session()->get('role'), ['bendahara', 'master', 'admin_master'])): ?>
-                                <button class="btn btn-sm btn-success btn-approve-persembahan" data-id="${response.id}" title="Approve">
-                                    <i class="fas fa-check"></i>
-                                </button>
-                                <?php endif; ?>
-                                <button class="btn btn-sm btn-danger btn-delete-persembahan" data-id="${response.id}" title="Hapus">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                    
-                    // Hapus empty row jika ada
-                    if ($('#emptyRow').length) {
-                        $('#emptyRow').remove();
-                    }
-                    
-                    // Tambahkan row baru di akhir
-                    $('#tablePersembahan tbody').append(newRow);
-                    
-                    // Update ID baru
-                    $('#persembahan-new').attr('id', 'persembahan-' + response.id);
-                    $('#persembahan-new .btn-delete-persembahan').data('id', response.id);
-                    
-                    // Update nomor urut
-                    $('#tablePersembahan tbody tr').each(function(index) {
-                        $(this).find('td:first').text(index + 1);
-                    });
-                    
-                    // Reset form
-                    $('#formPersembahan')[0].reset();
-                    $('#nominal').val('');
-                    $('#jumlah_lembar').val('');
-                    $('#jenis_mata_uang').val('Rupiah');
-                    
-                    // Update total
-                    updateTotal();
-                    
                     Swal.fire({
                         icon: 'success',
                         title: 'Berhasil!',
                         text: response.message,
                         timer: 1500,
                         showConfirmButton: false
-                    });
+                    }).then(function() { window.location.reload(); });
                 } else {
                     var errorMsg = '';
                     if (typeof response.message === 'object') {
@@ -489,6 +468,38 @@ $(document).ready(function() {
             }
         });
     }
+    <?php endif; ?>
+
+    <?php if (canEdit('persembahan')): ?>
+    $(document).on('click', '.btn-edit-persembahan', function() {
+        $.ajax({
+            url: '<?= base_url('ibadah/getPersembahanById') ?>/' + $(this).data('id'),
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                if (response.status !== 'success') {
+                    Swal.fire({ icon: 'error', title: 'Gagal', text: response.message });
+                    return;
+                }
+
+                var data = response.data;
+                $('#id_persembahan').val(data.id);
+                $('#nominal').val(parseInt(data.nominal || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+                $('#jenis_mata_uang').val(data.jenis_mata_uang || 'Rupiah');
+                $('#jumlah_lembar').val(data.jumlah_lembar || '');
+                $('#jenis').val(data.jenis);
+                $('#metode').val(data.metode);
+                $('#keterangan').val(data.keterangan || '');
+                $('#formTitle').text('Edit Persembahan');
+                $('#btnSimpan').html('<i class="fas fa-save"></i> Update Persembahan');
+                $('html, body').animate({ scrollTop: $('#formPersembahan').offset().top - 100 }, 300);
+            },
+            error: function(xhr) {
+                var response = xhr.responseJSON || {};
+                Swal.fire({ icon: 'error', title: 'Gagal', text: response.message || 'Detail persembahan tidak dapat dimuat.' });
+            }
+        });
+    });
     <?php endif; ?>
     
     <?php if (canDelete('persembahan')): ?>
@@ -530,7 +541,7 @@ $(document).ready(function() {
                             if ($('#tablePersembahan tbody tr').length === 0) {
                                 $('#tablePersembahan tbody').append(`
                                     <tr id="emptyRow">
-                                        <td colspan="7" class="text-center text-muted">Belum ada persembahan</td>
+                                    <td colspan="8" class="text-center text-muted">Belum ada persembahan</td>
                                     </tr>
                                 `);
                             }
@@ -566,45 +577,88 @@ $(document).ready(function() {
     });
     <?php endif; ?>
     
-    // Approve Persembahan
-    $(document).on('click', '.btn-approve-persembahan', function() {
-        var id = $(this).data('id');
-        var row = $(this).closest('tr');
-        var nominal = row.find('td:eq(1)').text();
-        var jenis = row.find('td:eq(2)').text();
-        
-        Swal.fire({
-            title: 'Konfirmasi Approval',
-            html: `Setujui persembahan sebesar <strong>${nominal}</strong> (${jenis})?`,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#28a745',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Ya, Setujui',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: '<?= base_url('ibadah/approvePersembahan') ?>/' + id,
-                    type: 'POST',
-                    dataType: 'json',
-                    success: function(response) {
-                        if (response.status == 'success') {
-                            // Update UI
-                            row.find('td:eq(5)').html('<span class="badge badge-success">Approved</span>');
-                            row.find('td:eq(6)').html(''); // Remove buttons
-                            Swal.fire({ icon: 'success', title: 'Berhasil!', text: response.message, timer: 1500, showConfirmButton: false });
-                        } else {
-                            Swal.fire({ icon: 'error', title: 'Gagal', text: response.message });
-                        }
-                    },
-                    error: function() {
-                        Swal.fire({ icon: 'error', title: 'Error', text: 'Koneksi server gagal.' });
-                    }
-                });
+    var selectedPersembahanId = null;
+
+    // Semua role yang boleh melihat persembahan dapat membuka detailnya.
+    $(document).on('click', '.btn-detail-persembahan', function() {
+        selectedPersembahanId = $(this).data('id');
+
+        $.ajax({
+            url: '<?= base_url('ibadah/getPersembahanById') ?>/' + selectedPersembahanId,
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                if (response.status !== 'success') {
+                    Swal.fire({ icon: 'error', title: 'Gagal', text: response.message });
+                    return;
+                }
+
+                var data = response.data;
+                $('#detailIbadah').text((data.jenis_ibadah || '-') + ' - ' + (data.tanggal || '-'));
+                $('#detailCabang').text(data.nama_cabang || '-');
+                $('#detailNominal').text(formatRupiah(data.nominal));
+                $('#detailMataUang').text(data.jenis_mata_uang || 'Rupiah');
+                $('#detailLembar').text(data.jumlah_lembar || '-');
+                $('#detailJenis').text((data.jenis || '-').replace('_', ' '));
+                $('#detailMetode').text(data.metode || '-');
+                $('#detailKeterangan').text(data.keterangan || '-');
+                $('#detailStatus').html(data.status_approval === 'approved'
+                    ? '<span class="badge badge-success">Approved</span>'
+                    : '<span class="badge badge-warning">Draft</span>');
+                $('#btnApproveDetail').toggle(data.status_approval !== 'approved');
+                $('#modalDetailPersembahan').modal('show');
+            },
+            error: function(xhr) {
+                var response = xhr.responseJSON || {};
+                Swal.fire({ icon: 'error', title: 'Gagal', text: response.message || 'Detail persembahan tidak dapat dimuat.' });
             }
         });
     });
+
+    <?php if (canApprovePersembahan()): ?>
+    $('#btnApproveDetail').on('click', function() {
+        var button = $(this);
+        if (!selectedPersembahanId) {
+            return;
+        }
+
+        Swal.fire({
+            title: 'Konfirmasi Approval',
+            text: 'Setujui data persembahan yang sudah Anda periksa?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#28a745',
+            confirmButtonText: 'Ya, Setujui',
+            cancelButtonText: 'Batal'
+        }).then(function(result) {
+            if (!result.isConfirmed) {
+                return;
+            }
+
+            button.prop('disabled', true);
+            $.ajax({
+                url: '<?= base_url('ibadah/approvePersembahan') ?>/' + selectedPersembahanId,
+                type: 'POST',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success' && response.approval_status === 'approved') {
+                        Swal.fire({ icon: 'success', title: 'Berhasil', text: response.message })
+                            .then(function() { window.location.reload(); });
+                        return;
+                    }
+
+                    button.prop('disabled', false);
+                    Swal.fire({ icon: 'error', title: 'Gagal', text: response.message || 'Approval gagal.' });
+                },
+                error: function(xhr) {
+                    button.prop('disabled', false);
+                    var response = xhr.responseJSON || {};
+                    Swal.fire({ icon: 'error', title: 'Gagal', text: response.message || 'Koneksi server gagal.' });
+                }
+            });
+        });
+    });
+    <?php endif; ?>
     
     // Auto update total saat halaman dimuat
     updateTotal();

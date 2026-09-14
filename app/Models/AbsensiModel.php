@@ -40,6 +40,7 @@ class AbsensiModel extends Model
             ibadah.tanggal,
             ibadah.jenis_ibadah,
             ibadah.waktu_mulai,
+            ibadah.id_cabang_gereja,
             cabang_gereja.nama_cabang
         ');
         $this->builder->join('jemaat', 'jemaat.id = absensi.id_jemaat', 'left');
@@ -101,7 +102,6 @@ class AbsensiModel extends Model
     {
         try {
             $this->_getDatatablesQuery($where);
-            if (!empty($where)) { $this->builder->where($where); }
             return $this->builder->countAllResults();
         } catch (\Exception $e) {
             log_message('error', 'countFiltered error: ' . $e->getMessage());
@@ -130,9 +130,10 @@ class AbsensiModel extends Model
                 absensi.*, 
                 jemaat.nama_jemaat,
                 jemaat.no_anggota,
-                ibadah.tanggal,
-                ibadah.jenis_ibadah,
-                cabang_gereja.nama_cabang
+            ibadah.tanggal,
+            ibadah.jenis_ibadah,
+            ibadah.id_cabang_gereja,
+            cabang_gereja.nama_cabang
             ');
             $this->builder->join('jemaat', 'jemaat.id = absensi.id_jemaat', 'left');
             $this->builder->join('ibadah', 'ibadah.id = absensi.id_ibadah', 'left');
@@ -153,10 +154,11 @@ class AbsensiModel extends Model
                 absensi.*, 
                 jemaat.nama_jemaat,
                 jemaat.no_anggota,
-                ibadah.tanggal,
-                ibadah.jenis_ibadah,
-                ibadah.waktu_mulai,
-                cabang_gereja.nama_cabang
+            ibadah.tanggal,
+            ibadah.jenis_ibadah,
+            ibadah.waktu_mulai,
+            ibadah.id_cabang_gereja,
+            cabang_gereja.nama_cabang
             ');
             $this->builder->join('jemaat', 'jemaat.id = absensi.id_jemaat', 'left');
             $this->builder->join('ibadah', 'ibadah.id = absensi.id_ibadah', 'left');

@@ -123,4 +123,77 @@ class Home extends BaseController
             }
         }
     }
+
+    public function ibadahLive($id_ibadah)
+    {
+        $ibadahModel = new \App\Models\IbadahModel();
+        $ibadah = $ibadahModel->getIbadahById($id_ibadah);
+        
+        if (!$ibadah || $ibadah->status !== 'aktif') {
+            return redirect()->to('/')->with('error', 'Ibadah tidak ditemukan atau sedang tidak aktif.');
+        }
+
+        $data = [
+            'title' => 'Live Report - ' . $ibadah->jenis_ibadah,
+            'ibadah' => $ibadah,
+            'id_ibadah' => $id_ibadah
+        ];
+        
+        return view('ibadah/live_report', $data);
+    }
+
+    public function getLiveData($id_ibadah)
+    {
+        if ($this->request->isAJAX()) {
+            $ibadahModel = new \App\Models\IbadahModel();
+            $ibadah = $ibadahModel->find($id_ibadah);
+            
+            if (!$ibadah || $ibadah->status !== 'aktif') {
+                return $this->response->setStatusCode($ibadah ? 403 : 404)->setJSON([
+                    'status' => 'error',
+                    'message' => $ibadah ? 'Ibadah sedang tidak aktif!' : 'Data ibadah tidak ditemukan!',
+                ]);
+            }
+
+            $absensiModel = new \App\Models\AbsensiModel();
+            $pelayanModel = new \App\Models\PelayanModel();
+            $persembahanModel = new \App\Models\PersembahanModel();
+
+            // 5 data absensi terakhir
+            $absensi = $absensiModel
+                ->select('absensi.*, jemaat.nama_jemaat, jemaat.no_anggota')
+                ->join('jemaat', 'jemaat.id = absensi.id_jemaat', 'left')
+                ->where('absensi.id_ibadah', $id_ibadah)
+                ->orderBy('absensi.waktu', 'DESC')
+                ->limit(5)
+                ->findAll();
+            
+            // 5 data persembahan terakhir
+            $persembahan = $persembahanModel
+                ->select('persembahan.*, jemaat.nama_jemaat, jemaat.no_anggota')
+                ->join('jemaat', 'jemaat.id = persembahan.id_jemaat', 'left')
+                ->where('persembahan.id_ibadah', $id_ibadah)
+                ->orderBy('persembahan.created_at', 'DESC')
+                ->limit(5)
+                ->findAll();
+            
+            // Data pelayan
+            $pelayan = $pelayanModel
+                ->select('pelayan.*, jemaat.nama_jemaat')
+                ->join('jemaat', 'jemaat.id = pelayan.id_jemaat', 'left')
+                ->where('pelayan.id_ibadah', $id_ibadah)
+                ->orderBy('pelayan.tugas', 'ASC')
+                ->findAll();
+            
+            return $this->response->setJSON([
+                'status' => 'success',
+                'data' => [
+                    'absensi' => $absensi,
+                    'persembahan' => $persembahan,
+                    'pelayan' => $pelayan,
+                    'ibadah' => $ibadah
+                ]
+            ]);
+        }
+    }
 }

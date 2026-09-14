@@ -169,7 +169,7 @@
                 <th width="12%">Tugas</th>
                 <th width="12%">Tanggal Ibadah</th>
                 <th width="14%">Jenis Ibadah</th>
-                <th width="12%">Wilayah</th>
+                <th width="12%">Cabang Gereja</th>
                 <th width="8%">Waktu</th>
                 <th width="7%">Status</th>
                 <th width="5%">Keterangan</th>

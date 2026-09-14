@@ -186,7 +186,7 @@
                         <th>Tugas</th>
                         <th>Tanggal Ibadah</th>
                         <th>Jenis Ibadah</th>
-                        <th>Wilayah</th>
+                        <th>Cabang Gereja</th>
                         <th>Waktu</th>
                         <th>Status</th>
                         <th>Keterangan</th>

@@ -4,14 +4,14 @@ namespace App\Controllers;
 
 use App\Models\UserModel;
 use App\Models\JemaatModel;
-use App\Models\SektorPelayananModel;
+use App\Models\CabangGerejaModel;
 use CodeIgniter\Controller;
 
 class User extends Controller
 {
     protected $userModel;
     protected $jemaatModel;
-    protected $sektorPelayananModel;
+    protected $cabangGerejaModel;
     protected $session;
     protected $validation;
 
@@ -19,7 +19,7 @@ class User extends Controller
     {
         $this->userModel = new UserModel();
         $this->jemaatModel = new JemaatModel();
-        $this->sektorPelayananModel = new SektorPelayananModel();
+        $this->cabangGerejaModel = new CabangGerejaModel();
         $this->session = \Config\Services::session();
         $this->validation = \Config\Services::validation();
         
@@ -100,7 +100,7 @@ class User extends Controller
                     $row[] = $no;
                     $row[] = isset($user->username) ? $user->username : '-';
                     $row[] = isset($user->nama_jemaat) ? $user->nama_jemaat : '-';
-                    $row[] = isset($user->nama_sektor) ? $user->nama_sektor : '-';
+                    $row[] = isset($user->nama_cabang) ? $user->nama_cabang : '-';
                     $row[] = $roleBadge;
                     $row[] = $statusBadge;
                     $row[] = isset($user->last_login) ? $user->last_login : '-';
@@ -158,11 +158,17 @@ class User extends Controller
             }
 
             $id = $this->request->getPost('id');
+            $payload = $this->request->getPost();
+
+            if (empty($id) && empty($payload['id_cabang_gereja'])) {
+                $defaultCabang = $this->cabangGerejaModel->orderBy('id', 'ASC')->first();
+                $payload['id_cabang_gereja'] = $defaultCabang->id ?? null;
+            }
             
             $rules = [
                 'id_jemaat' => 'permit_empty|numeric',
-                'id_sektor_pelayanan' => 'required|numeric',
-                'role' => 'required|in_list[master,admin_area,pendeta,sekretaris,bendahara]',
+                'id_cabang_gereja' => 'required|is_natural_no_zero|is_not_unique[cabang_gereja.id]',
+                'role' => 'required|in_list[master,admin_master,admin_area,pendeta,sekretaris,bendahara,kasir,ketua_5]',
                 'username' => 'required|min_length[3]|max_length[50]|is_unique[user.username,id,{id}]',
             ];
             
@@ -175,7 +181,7 @@ class User extends Controller
             // Tambahkan aturan id untuk placeholder is_unique
             $rules['id'] = 'permit_empty|numeric';
 
-            if (!$this->validate($rules)) {
+            if (!$this->validation->setRules($rules)->run($payload)) {
                 return $this->response->setJSON([
                     'status' => 'error',
                     'message' => $this->validation->getErrors()
@@ -183,14 +189,14 @@ class User extends Controller
             }
 
             $data = [
-                'id_jemaat' => $this->request->getPost('id_jemaat') ?: null,
-                'id_sektor_pelayanan' => $this->request->getPost('id_sektor_pelayanan'),
-                'username' => $this->request->getPost('username'),
-                'role' => $this->request->getPost('role'),
-                'status' => $this->request->getPost('status') ?? 1,
+                'id_jemaat' => ($payload['id_jemaat'] ?? null) ?: null,
+                'id_cabang_gereja' => $payload['id_cabang_gereja'],
+                'username' => $payload['username'],
+                'role' => $payload['role'],
+                'status' => $payload['status'] ?? 1,
             ];
 
-            $password = $this->request->getPost('password');
+            $password = $payload['password'] ?? null;
             if (!empty($password)) {
                 $data['password'] = password_hash($password, PASSWORD_DEFAULT);
             }
@@ -379,7 +385,7 @@ class User extends Controller
         }
     }
 
-    public function getWilayah()
+    public function getCabangGereja()
     {
         try {
             // Cek akses
@@ -390,25 +396,14 @@ class User extends Controller
             }
             
             if ($this->request->isAJAX()) {
-                // Filter wilayah berdasarkan role user
-                $role = $this->session->get('role');
-                $userSektorPelayanan = $this->session->get('id_sektor_pelayanan');
-                
-                if ($role == 'master') {
-                    $sektorPelayanan = $this->sektorPelayananModel
-                        ->orderBy('nama_sektor', 'ASC')
-                        ->findAll();
-                } else {
-                    $sektorPelayanan = $this->sektorPelayananModel
-                        ->where('id', $userSektorPelayanan)
-                        ->orderBy('nama_sektor', 'ASC')
-                        ->findAll();
-                }
-                
-                return $this->response->setJSON($sektorPelayanan);
+                $cabangGereja = $this->cabangGerejaModel
+                    ->orderBy('id', 'ASC')
+                    ->findAll();
+
+                return $this->response->setJSON($cabangGereja);
             }
         } catch (\Exception $e) {
-            log_message('error', 'getSektorPelayanan error: ' . $e->getMessage());
+            log_message('error', 'getCabangGereja error: ' . $e->getMessage());
             return $this->response->setJSON([
                 'error' => $e->getMessage()
             ]);
@@ -544,6 +539,9 @@ class User extends Controller
             'pendeta' => '<span class="badge badge-success">Pendeta</span>',
             'sekretaris' => '<span class="badge badge-warning">Sekretaris</span>',
             'bendahara' => '<span class="badge badge-info">Bendahara</span>',
+            'kasir' => '<span class="badge badge-success">Kasit Gereja</span>',
+            'ketua_5' => '<span class="badge badge-dark">Ketua 5</span>',
+            'admin_master' => '<span class="badge badge-danger">Admin Master</span>',
         ];
         
         return $badge[$role] ?? '<span class="badge badge-secondary">' . $role . '</span>';

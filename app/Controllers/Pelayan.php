@@ -5,7 +5,6 @@ namespace App\Controllers;
 use App\Models\PelayanModel;
 use App\Models\IbadahModel;
 use App\Models\JemaatModel;
-use App\Models\SektorPelayananModel;
 use CodeIgniter\Controller;
 
 class Pelayan extends Controller
@@ -13,11 +12,11 @@ class Pelayan extends Controller
     protected $pelayanModel;
     protected $ibadahModel;
     protected $jemaatModel;
-    protected $sektorPelayananModel;
     protected $session;
     protected $validation;
     protected $userRole;
     protected $userSektorPelayanan;
+    protected $userCabangGereja;
 
     /**
      * Constructor - Inisialisasi model dan cek login
@@ -27,7 +26,6 @@ class Pelayan extends Controller
         $this->pelayanModel = new PelayanModel();
         $this->ibadahModel = new IbadahModel();
         $this->jemaatModel = new JemaatModel();
-        $this->sektorPelayananModel = new SektorPelayananModel();
         $this->session = \Config\Services::session();
         $this->validation = \Config\Services::validation();
         
@@ -39,6 +37,7 @@ class Pelayan extends Controller
         // Ambil role dan wilayah user
         $this->userRole = $this->session->get('role');
         $this->userSektorPelayanan = $this->session->get('id_sektor_pelayanan');
+        $this->userCabangGereja = $this->session->get('id_cabang_gereja');
         
         // Cek permission view - hanya user dengan akses view yang bisa masuk
         if (!canView('pelayan')) {
@@ -74,10 +73,10 @@ class Pelayan extends Controller
         try {
             if ($this->request->isAJAX()) {
                 $filter = [];
-            if ($this->userRole != 'master') {
-                $filter['pelayan.id_sektor_pelayanan'] = $this->userSektorPelayanan;
-            }
-            $list = $this->pelayanModel->getDatatables($filter);
+                if (!hasGlobalCabangAccess('pelayan')) {
+                    $filter['ibadah.id_cabang_gereja'] = $this->userCabangGereja;
+                }
+                $list = $this->pelayanModel->getDatatables($filter);
                 $data = [];
                 $no = $this->request->getPost('start');
                 
@@ -103,7 +102,7 @@ class Pelayan extends Controller
                     $row[] = $pelayan->tugas ?? '-';
                     $row[] = date('d-m-Y', strtotime($pelayan->tanggal));
                     $row[] = $pelayan->jenis_ibadah ?? '-';
-                    $row[] = $pelayan->nama_sektor ?? '-';
+                    $row[] = $pelayan->nama_cabang ?? '-';
                     $row[] = $statusBadge;
                     
                     // Tombol aksi berdasarkan permission
@@ -193,11 +192,22 @@ class Pelayan extends Controller
             // Cek akses wilayah ibadah
             $id_ibadah = $this->request->getPost('id_ibadah');
             $ibadah = $this->ibadahModel->find($id_ibadah);
-            if ($this->userRole != 'master' && $ibadah->id_sektor_pelayanan != $this->userSektorPelayanan) {
+            if (!$ibadah || !canAccessCabang($ibadah->id_cabang_gereja, 'pelayan')) {
                 return $this->response->setJSON([
                     'status' => 'error',
-                    'message' => 'Anda hanya dapat mengelola data di wilayah Anda!'
+                    'message' => $ibadah ? 'Anda hanya dapat mengelola pelayan di Cabang Gereja yang menjadi kewenangan Anda!' : 'Data ibadah tidak ditemukan!'
                 ]);
+            }
+
+            if (!empty($id)) {
+                $existingPelayan = $this->pelayanModel->find($id);
+                $existingIbadah = $existingPelayan ? $this->ibadahModel->find($existingPelayan->id_ibadah) : null;
+                if (!$existingPelayan || !$existingIbadah || !canAccessCabang($existingIbadah->id_cabang_gereja, 'pelayan')) {
+                    return $this->response->setStatusCode($existingPelayan ? 403 : 404)->setJSON([
+                        'status' => 'error',
+                        'message' => $existingPelayan ? 'Anda tidak memiliki akses ke data pelayan ini!' : 'Data pelayan tidak ditemukan!',
+                    ]);
+                }
             }
 
             $data = [
@@ -267,9 +277,14 @@ class Pelayan extends Controller
         try {
             if ($this->request->isAJAX()) {
                 $data = $this->pelayanModel->getPelayanById($id);
-                
-                // Cek akses wilayah
-                if ($this->userRole != 'master' && $data->id_sektor_pelayanan != $this->userSektorPelayanan) {
+
+                if (!$data) {
+                    return $this->response->setStatusCode(404)->setJSON([
+                        'error' => 'Data pelayan tidak ditemukan!',
+                    ]);
+                }
+
+                if (!canAccessCabang($data->id_cabang_gereja, 'pelayan')) {
                     return $this->response->setJSON([
                         'error' => 'Anda tidak memiliki akses ke data ini!'
                     ]);
@@ -302,13 +317,12 @@ class Pelayan extends Controller
                 }
                 
                 $pelayan = $this->pelayanModel->find($id);
-                $ibadah = $this->ibadahModel->find($pelayan->id_ibadah);
+                $ibadah = $pelayan ? $this->ibadahModel->find($pelayan->id_ibadah) : null;
                 
-                // Cek akses wilayah
-                if ($this->userRole != 'master' && $ibadah->id_sektor_pelayanan != $this->userSektorPelayanan) {
+                if (!$pelayan || !$ibadah || !canAccessCabang($ibadah->id_cabang_gereja, 'pelayan')) {
                     return $this->response->setJSON([
                         'status' => 'error',
-                        'message' => 'Anda hanya dapat menghapus data di wilayah Anda!'
+                        'message' => $pelayan ? 'Anda hanya dapat menghapus pelayan di Cabang Gereja yang menjadi kewenangan Anda!' : 'Data pelayan tidak ditemukan!'
                     ]);
                 }
                 
@@ -342,12 +356,12 @@ class Pelayan extends Controller
         try {
             if ($this->request->isAJAX()) {
                 $this->ibadahModel
-                    ->select('ibadah.*, sektor_pelayanan.nama_sektor')
-                    ->join('sektor_pelayanan', 'sektor_pelayanan.id = ibadah.id_sektor_pelayanan', 'left')
+                    ->select('ibadah.*, cabang_gereja.nama_cabang')
+                    ->join('cabang_gereja', 'cabang_gereja.id = ibadah.id_cabang_gereja', 'left')
                     ->where('ibadah.status !=', 'batal');
                 
-                if ($this->userRole != 'master') {
-                    $this->ibadahModel->where('ibadah.id_sektor_pelayanan', $this->userSektorPelayanan);
+                if (!hasGlobalCabangAccess('pelayan')) {
+                    $this->ibadahModel->where('ibadah.id_cabang_gereja', $this->userCabangGereja);
                 }
                 
                 $ibadah = $this->ibadahModel->orderBy('ibadah.tanggal', 'DESC')->findAll();
@@ -371,7 +385,7 @@ class Pelayan extends Controller
             if ($this->request->isAJAX()) {
                 $this->jemaatModel->where('status_aktif', 1);
                 
-                if ($this->userRole != 'master') {
+                if (!hasGlobalCabangAccess('pelayan') && $this->userRole !== 'admin_area') {
                     $this->jemaatModel->join('keluarga', 'keluarga.id = jemaat.id_keluarga', 'left');
                     $this->jemaatModel->where('keluarga.id_sektor_pelayanan', $this->userSektorPelayanan);
                 }
@@ -396,9 +410,9 @@ class Pelayan extends Controller
             if ($this->request->isAJAX()) {
                 // Cek akses wilayah ibadah
                 $ibadah = $this->ibadahModel->find($id_ibadah);
-                if ($this->userRole != 'master' && $ibadah->id_sektor_pelayanan != $this->userSektorPelayanan) {
+                if (!$ibadah || !canAccessCabang($ibadah->id_cabang_gereja, 'pelayan')) {
                     return $this->response->setJSON([
-                        'error' => 'Anda tidak memiliki akses ke data ini!'
+                        'error' => $ibadah ? 'Anda tidak memiliki akses ke data ini!' : 'Data ibadah tidak ditemukan!'
                     ]);
                 }
                 
@@ -415,7 +429,7 @@ class Pelayan extends Controller
                 // Get semua jemaat aktif kecuali yang sudah ditugaskan
                 $this->jemaatModel->where('status_aktif', 1);
                 
-                if ($this->userRole != 'master') {
+                if (!hasGlobalCabangAccess('pelayan') && $this->userRole !== 'admin_area') {
                     $this->jemaatModel->join('keluarga', 'keluarga.id = jemaat.id_keluarga', 'left');
                     $this->jemaatModel->where('keluarga.id_sektor_pelayanan', $this->userSektorPelayanan);
                 }
@@ -456,8 +470,7 @@ class Pelayan extends Controller
                 throw new \Exception('Data pelayan tidak ditemukan!');
             }
             
-            // Cek akses wilayah
-            if ($this->userRole != 'master' && $pelayan->id_sektor_pelayanan != $this->userSektorPelayanan) {
+            if (!canAccessCabang($pelayan->id_cabang_gereja, 'pelayan')) {
                 return redirect()->to('/pelayan')->with('error', 'Anda tidak memiliki akses ke data ini!');
             }
             

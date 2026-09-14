@@ -18,7 +18,7 @@ class Ibadah extends Controller
     protected $persembahanModel;
     protected $session;
     protected $validation;
-    protected $userRole;
+    protected $userCabangGereja;
     /**
      * Constructor - Inisialisasi model dan cek login
      */
@@ -38,7 +38,7 @@ class Ibadah extends Controller
         }
         
         // Ambil role dan wilayah user untuk filter data
-        $this->userRole = $this->session->get('role');
+        $this->userCabangGereja = $this->session->get('id_cabang_gereja');
         // Cek permission view - hanya user dengan akses view yang bisa masuk
         if (!canView('ibadah')) {
             return redirect()->to('/dashboard')->with('error', 'Anda tidak memiliki akses ke halaman ini!');
@@ -77,11 +77,17 @@ class Ibadah extends Controller
     {
         try {
             if ($this->request->isAJAX()) {
+                if (!canView('ibadah')) {
+                    return $this->response->setStatusCode(403)->setJSON([
+                        'error' => 'Anda tidak memiliki akses ke data ibadah!',
+                    ]);
+                }
+
                 $filter = [];
-            if ($this->userRole != 'master') {
-                $filter['ibadah.id_sektor_pelayanan'] = $this->userSektorPelayanan;
-            }
-            $list = $this->ibadahModel->getDatatables($filter);
+                if (!hasGlobalCabangAccess('ibadah')) {
+                    $filter['ibadah.id_cabang_gereja'] = $this->userCabangGereja;
+                }
+                $list = $this->ibadahModel->getDatatables($filter);
                 $data = [];
                 $no = $this->request->getPost('start');
                 
@@ -135,16 +141,17 @@ class Ibadah extends Controller
                             <i class="fas fa-hand-holding-heart"></i>
                         </a> ';
                     }
-                    // Tombol Live Report
-                    if ($canView) {
+                    // Live report memuat seluruh komponen ibadah, jadi hanya tampil
+                    // bila user berhak melihat semua komponennya.
+                    if ($canView && $canViewAbsensi && $canViewPersembahan && canView('pelayan')) {
                         $actions .= '<a href="' . base_url('ibadah/live/' . $ibadah->id) . '" class="btn btn-sm btn-danger" title="Live Report" target="_blank">
                             <i class="fas fa-circle"></i>
                         </a> ';
                     }
-                    if (in_array(session()->get('role'), ['master', 'admin_master', 'ketua_5']) && ($ibadah->approval_ketua5 ?? 'pending') == 'pending') {
-                        $actions .= '<button class="btn btn-sm btn-success btn-approve-ketua5" data-id="' . $ibadah->id . '" title="Approve Ketua 5">
-                            <i class="fas fa-check-double"></i>
-                        </button> ';
+                    if (canApproveKetua5() && ($ibadah->approval_ketua5 ?? 'pending') !== 'approved') {
+                        $actions .= '<a href="' . base_url('ibadah/detail/' . $ibadah->id) . '" class="btn btn-sm btn-outline-success" title="Periksa dan approve sebagai Ketua 5">
+                            <i class="fas fa-clipboard-check"></i>
+                        </a> ';
                     }
                     if ($canEdit) {
                         $actions .= '<button class="btn btn-sm btn-info btn-edit" data-id="' . $ibadah->id . '" title="Edit">
@@ -212,7 +219,7 @@ class Ibadah extends Controller
 
             // Validasi input
             $rules = [
-                'id_cabang_gereja' => 'required|numeric',
+                'id_cabang_gereja' => 'required|is_natural_no_zero|is_not_unique[cabang_gereja.id]',
                 'tanggal' => 'required|valid_date',
                 'waktu_mulai' => 'required',
                 'jenis_ibadah' => 'required|in_list[Minggu Subuh,Minggu Pagi,Minggu Sore,Persekutuan,Kebaktian Khusus]',
@@ -230,6 +237,36 @@ class Ibadah extends Controller
             }
 
             $id_cabang_gereja = $this->request->getPost('id_cabang_gereja');
+
+            $existingIbadah = empty($id) ? null : $this->ibadahModel->find($id);
+            if (!empty($id) && !$existingIbadah) {
+                return $this->response->setStatusCode(404)->setJSON([
+                    'status' => 'error',
+                    'message' => 'Data ibadah tidak ditemukan!',
+                ]);
+            }
+
+            if ($existingIbadah && !canAccessCabang($existingIbadah->id_cabang_gereja, 'ibadah')) {
+                return $this->response->setStatusCode(403)->setJSON([
+                    'status' => 'error',
+                    'message' => 'Anda tidak memiliki akses ke ibadah ini!',
+                ]);
+            }
+
+            if (!canAccessCabang($id_cabang_gereja, 'ibadah')) {
+                return $this->response->setStatusCode(403)->setJSON([
+                    'status' => 'error',
+                    'message' => 'Anda hanya dapat mengelola ibadah pada Cabang Gereja yang menjadi kewenangan Anda!',
+                ]);
+            }
+
+            if ($this->request->getPost('status') === 'selesai'
+                && (!$existingIbadah || ($existingIbadah->approval_ketua5 ?? 'pending') !== 'approved')) {
+                return $this->response->setStatusCode(422)->setJSON([
+                    'status' => 'error',
+                    'message' => 'Ibadah belum dapat diselesaikan karena approval Ketua 5 masih pending.',
+                ]);
+            }
             
             $data = [
                 'id_cabang_gereja' => $id_cabang_gereja,
@@ -256,8 +293,6 @@ class Ibadah extends Controller
                 }
             } else {
                 // Update data yang ada
-                $oldData = $this->ibadahModel->find($id);
-                
                 $update = $this->ibadahModel->update($id, $data);
                 if ($update) {
                     return $this->response->setJSON([
@@ -292,9 +327,14 @@ class Ibadah extends Controller
         try {
             if ($this->request->isAJAX()) {
                 $data = $this->ibadahModel->getIbadahById($id);
-                
-                // Cek jika user bukan master, hanya bisa lihat data di wilayahnya
-                if ($this->userRole != 'master' && $data->id_sektor_pelayanan != $this->userSektorPelayanan) {
+
+                if (!$data) {
+                    return $this->response->setStatusCode(404)->setJSON([
+                        'error' => 'Data ibadah tidak ditemukan!',
+                    ]);
+                }
+
+                if (!canAccessCabang($data->id_cabang_gereja, 'ibadah')) {
                     return $this->response->setJSON([
                         'error' => 'Anda tidak memiliki akses ke data ini!'
                     ]);
@@ -331,6 +371,13 @@ class Ibadah extends Controller
                 }
                 
                 $ibadah = $this->ibadahModel->find($id);
+
+                if (!$ibadah || !canAccessCabang($ibadah->id_cabang_gereja, 'ibadah')) {
+                    return $this->response->setStatusCode($ibadah ? 403 : 404)->setJSON([
+                        'status' => 'error',
+                        'message' => $ibadah ? 'Anda tidak memiliki akses ke ibadah ini!' : 'Data ibadah tidak ditemukan!',
+                    ]);
+                }
                 
                 // Cek relasi dengan absensi
                 $absensi = $this->absensiModel->where('id_ibadah', $id)->findAll();
@@ -390,7 +437,11 @@ class Ibadah extends Controller
     {
         try {
             if ($this->request->isAJAX()) {
-                $cabang = $this->cabangGerejaModel->findAll();
+                $query = $this->cabangGerejaModel->orderBy('id', 'ASC');
+                if (!hasGlobalCabangAccess('ibadah')) {
+                    $query->where('id', $this->userCabangGereja);
+                }
+                $cabang = $query->findAll();
                 return $this->response->setJSON($cabang);
             }
         } catch (\Exception $e) {
@@ -421,15 +472,15 @@ class Ibadah extends Controller
             if (!$ibadah) {
                 throw new \Exception('Data ibadah tidak ditemukan!');
             }
+
+            if (!canAccessCabang($ibadah->id_cabang_gereja, 'ibadah')) {
+                return redirect()->to('/ibadah')->with('error', 'Anda tidak memiliki akses ke ibadah ini!');
+            }
             
-            // Ambil data absensi
-            $absensi = $this->absensiModel->getByIbadah($id);
-            
-            // Ambil data pelayan
-            $pelayan = $this->pelayanModel->getByIbadah($id);
-            
-            // Ambil data persembahan
-            $persembahan = $this->persembahanModel->getByIbadah($id);
+            // Muat hanya komponen yang memang boleh dilihat oleh role aktif.
+            $absensi = canView('absensi') ? $this->absensiModel->getByIbadah($id) : [];
+            $pelayan = canView('pelayan') ? $this->pelayanModel->getByIbadah($id) : [];
+            $persembahan = canView('persembahan') ? $this->persembahanModel->getByIbadah($id) : [];
             
             $data = [
                 'active_menu' => 'pelayanan',
@@ -468,6 +519,10 @@ class Ibadah extends Controller
             
             if (!$ibadah) {
                 throw new \Exception('Data ibadah tidak ditemukan!');
+            }
+
+            if (!canAccessCabang($ibadah->id_cabang_gereja, 'absensi')) {
+                return redirect()->to('/ibadah')->with('error', 'Anda tidak memiliki akses ke absensi ibadah ini!');
             }
             
             // Ambil data absensi untuk ibadah ini
@@ -536,7 +591,7 @@ class Ibadah extends Controller
     {
         try {
             // Cek permission view
-            if (!canView('ibadah')) {
+            if (!canView('ibadah') || !canView('absensi') || !canView('persembahan') || !canView('pelayan')) {
                 return redirect()->to('/ibadah')->with('error', 'Anda tidak memiliki akses!');
             }
             
@@ -544,6 +599,10 @@ class Ibadah extends Controller
             
             if (!$ibadah) {
                 throw new \Exception('Data ibadah tidak ditemukan!');
+            }
+
+            if (!canAccessCabang($ibadah->id_cabang_gereja, 'ibadah')) {
+                return redirect()->to('/ibadah')->with('error', 'Anda tidak memiliki akses ke ibadah ini!');
             }
             
             $data = [
@@ -573,6 +632,21 @@ class Ibadah extends Controller
     {
         try {
             if ($this->request->isAJAX()) {
+                if (!canView('ibadah') || !canView('absensi') || !canView('persembahan') || !canView('pelayan')) {
+                    return $this->response->setStatusCode(403)->setJSON([
+                        'status' => 'error',
+                        'message' => 'Anda tidak memiliki akses ke seluruh data live report!',
+                    ]);
+                }
+
+                $ibadah = $this->ibadahModel->find($id_ibadah);
+                if (!$ibadah || !canAccessCabang($ibadah->id_cabang_gereja, 'ibadah')) {
+                    return $this->response->setStatusCode($ibadah ? 403 : 404)->setJSON([
+                        'status' => 'error',
+                        'message' => $ibadah ? 'Anda tidak memiliki akses ke ibadah ini!' : 'Data ibadah tidak ditemukan!',
+                    ]);
+                }
+
                 // 5 data absensi terakhir
                 $absensi = $this->absensiModel
                     ->select('absensi.*, jemaat.nama_jemaat, jemaat.no_anggota')
@@ -598,9 +672,6 @@ class Ibadah extends Controller
                     ->where('pelayan.id_ibadah', $id_ibadah)
                     ->orderBy('pelayan.tugas', 'ASC')
                     ->findAll();
-                
-                // Statistik ibadah
-                $ibadah = $this->ibadahModel->find($id_ibadah);
                 
                 return $this->response->setJSON([
                     'status' => 'success',
@@ -648,6 +719,10 @@ class Ibadah extends Controller
                 throw new \Exception('Data ibadah tidak ditemukan!');
             }
             
+            if (!canAccessCabang($ibadah->id_cabang_gereja, 'pelayan')) {
+                return redirect()->to('/ibadah')->with('error', 'Anda tidak memiliki akses ke ibadah ini!');
+            }
+
             // Ambil data pelayan yang sudah ada
             $pelayan = $this->pelayanModel->getByIbadah($id_ibadah);
             
@@ -715,10 +790,10 @@ class Ibadah extends Controller
             
             // Cek wilayah ibadah
             $ibadah = $this->ibadahModel->find($id_ibadah);
-            if ($this->userRole != 'master' && $ibadah->id_sektor_pelayanan != $this->userSektorPelayanan) {
+            if (!$ibadah || !canAccessCabang($ibadah->id_cabang_gereja, 'pelayan')) {
                 return $this->response->setJSON([
                     'status' => 'error',
-                    'message' => 'Anda hanya dapat mengelola data di wilayah Anda!'
+                    'message' => $ibadah ? 'Anda hanya dapat mengelola data di Cabang Gereja Anda!' : 'Data ibadah tidak ditemukan!'
                 ]);
             }
             
@@ -794,10 +869,10 @@ class Ibadah extends Controller
                 
                 // Cek wilayah ibadah
                 $ibadah = $this->ibadahModel->find($pelayan->id_ibadah);
-                if ($this->userRole != 'master' && $ibadah->id_sektor_pelayanan != $this->userSektorPelayanan) {
+                if (!$ibadah || !canAccessCabang($ibadah->id_cabang_gereja, 'pelayan')) {
                     return $this->response->setJSON([
                         'status' => 'error',
-                        'message' => 'Anda hanya dapat menghapus data di wilayah Anda!'
+                        'message' => $ibadah ? 'Anda hanya dapat menghapus data di Cabang Gereja Anda!' : 'Data ibadah tidak ditemukan!'
                     ]);
                 }
                 
@@ -848,6 +923,10 @@ class Ibadah extends Controller
             if (!$ibadah) {
                 throw new \Exception('Data ibadah tidak ditemukan!');
             }
+
+            if (!canAccessCabang($ibadah->id_cabang_gereja, 'persembahan')) {
+                return redirect()->to('/ibadah')->with('error', 'Anda tidak memiliki akses ke persembahan ibadah ini!');
+            }
             
             // Ambil data persembahan yang sudah ada
             $persembahan = $this->persembahanModel->getByIbadah($id_ibadah);
@@ -884,16 +963,25 @@ class Ibadah extends Controller
                 ]);
             }
 
-            // Cek permission create persembahan
-            if (!canCreate('persembahan')) {
+            $id = $this->request->getPost('id');
+
+            // Cek permission create/edit persembahan
+            if (empty($id) && !canCreate('persembahan')) {
                 return $this->response->setJSON([
                     'status' => 'error',
                     'message' => 'Anda tidak memiliki akses untuk menambah data!'
                 ]);
             }
+            if (!empty($id) && !canEdit('persembahan')) {
+                return $this->response->setJSON([
+                    'status' => 'error',
+                    'message' => 'Anda tidak memiliki akses untuk mengedit data!'
+                ]);
+            }
 
             // Validasi input
             $rules = [
+                'id' => 'permit_empty|is_natural_no_zero',
                 'id_ibadah' => 'required|numeric',
                 'nominal' => 'required|numeric|greater_than[0]',
                 'jenis_mata_uang' => 'permit_empty|string',
@@ -912,11 +1000,28 @@ class Ibadah extends Controller
             // Cek wilayah ibadah
             $id_ibadah = $this->request->getPost('id_ibadah');
             $ibadah = $this->ibadahModel->find($id_ibadah);
-            if ($this->userRole != 'master' && $ibadah->id_sektor_pelayanan != $this->userSektorPelayanan) {
+            if (!$ibadah || !canAccessCabang($ibadah->id_cabang_gereja, 'persembahan')) {
                 return $this->response->setJSON([
                     'status' => 'error',
-                    'message' => 'Anda hanya dapat mengelola data di wilayah Anda!'
+                    'message' => $ibadah ? 'Anda hanya dapat mengelola persembahan pada Cabang Gereja yang menjadi kewenangan Anda!' : 'Data ibadah tidak ditemukan!'
                 ]);
+            }
+
+            $existing = null;
+            if (!empty($id)) {
+                $existing = $this->persembahanModel->find($id);
+                if (!$existing || (string) $existing->id_ibadah !== (string) $id_ibadah) {
+                    return $this->response->setStatusCode(404)->setJSON([
+                        'status' => 'error',
+                        'message' => 'Data persembahan tidak ditemukan pada ibadah ini!',
+                    ]);
+                }
+                if (($existing->status_approval ?? 'draft') !== 'draft') {
+                    return $this->response->setStatusCode(422)->setJSON([
+                        'status' => 'error',
+                        'message' => 'Persembahan yang sudah disetujui tidak dapat diedit.',
+                    ]);
+                }
             }
 
             // Bersihkan nominal dari titik dan koma
@@ -934,18 +1039,20 @@ class Ibadah extends Controller
                 'keterangan' => $this->request->getPost('keterangan')
             ];
 
-            $insert = $this->persembahanModel->insert($data);
-            
-            if ($insert) {
+            $saved = empty($id)
+                ? $this->persembahanModel->insert($data)
+                : $this->persembahanModel->update($id, $data);
+
+            if ($saved) {
                 return $this->response->setJSON([
                     'status' => 'success',
-                    'message' => 'Persembahan berhasil ditambahkan!',
-                    'id' => $insert
+                    'message' => empty($id) ? 'Persembahan berhasil ditambahkan!' : 'Persembahan berhasil diupdate!',
+                    'id' => empty($id) ? $saved : (int) $id,
                 ]);
             } else {
                 return $this->response->setJSON([
                     'status' => 'error',
-                    'message' => 'Gagal menambahkan persembahan!'
+                    'message' => empty($id) ? 'Gagal menambahkan persembahan!' : 'Gagal mengupdate persembahan!'
                 ]);
             }
         } catch (\Exception $e) {
@@ -986,10 +1093,17 @@ class Ibadah extends Controller
                 
                 // Cek wilayah ibadah
                 $ibadah = $this->ibadahModel->find($persembahan->id_ibadah);
-                if ($this->userRole != 'master' && $ibadah->id_sektor_pelayanan != $this->userSektorPelayanan) {
+                if (!$ibadah || !canAccessCabang($ibadah->id_cabang_gereja, 'persembahan')) {
                     return $this->response->setJSON([
                         'status' => 'error',
-                        'message' => 'Anda hanya dapat menghapus data di wilayah Anda!'
+                        'message' => $ibadah ? 'Anda hanya dapat menghapus data di Cabang Gereja Anda!' : 'Data ibadah tidak ditemukan!'
+                    ]);
+                }
+
+                if (($persembahan->status_approval ?? 'draft') !== 'draft') {
+                    return $this->response->setStatusCode(422)->setJSON([
+                        'status' => 'error',
+                        'message' => 'Persembahan yang sudah disetujui tidak dapat dihapus.',
                     ]);
                 }
                 
@@ -1013,41 +1127,103 @@ class Ibadah extends Controller
             ]);
         }
     }
+
+    /**
+     * Detail persembahan untuk pemeriksaan sebelum edit/approval.
+     */
+    public function getPersembahanById($id)
+    {
+        if (!$this->request->isAJAX() || !canView('persembahan')) {
+            return $this->response->setStatusCode(403)->setJSON([
+                'status' => 'error',
+                'message' => 'Anda tidak memiliki akses ke data persembahan!',
+            ]);
+        }
+
+        $persembahan = $this->persembahanModel->getPersembahanById($id);
+        if (!$persembahan) {
+            return $this->response->setStatusCode(404)->setJSON([
+                'status' => 'error',
+                'message' => 'Data persembahan tidak ditemukan!',
+            ]);
+        }
+
+        if (!canAccessCabang($persembahan->id_cabang_gereja, 'persembahan')) {
+            return $this->response->setStatusCode(403)->setJSON([
+                'status' => 'error',
+                'message' => 'Anda tidak memiliki akses ke persembahan ini!',
+            ]);
+        }
+
+        return $this->response->setJSON([
+            'status' => 'success',
+            'data' => $persembahan,
+        ]);
+    }
+
     /**
      * Setujui Persembahan (Bendahara / Master)
      */
     public function approvePersembahan($id)
     {
         try {
-            if ($this->request->isAJAX()) {
-                $role = $this->session->get('role');
-                if (!in_array($role, ['bendahara', 'master', 'admin_master'])) {
-                    return $this->response->setJSON([
-                        'status' => 'error',
-                        'message' => 'Anda tidak memiliki hak akses untuk menyetujui!'
-                    ]);
-                }
-                
-                $persembahan = $this->persembahanModel->find($id);
-                if (!$persembahan) {
-                    return $this->response->setJSON([
-                        'status' => 'error',
-                        'message' => 'Data tidak ditemukan!'
-                    ]);
-                }
-                
-                $update = $this->persembahanModel->update($id, [
-                    'status_approval' => 'approved',
-                    'approved_by' => $this->session->get('id_jemaat') ?? 1,
-                    'approved_at' => date('Y-m-d H:i:s')
+            if (!$this->request->isAJAX()) {
+                return $this->response->setStatusCode(400)->setJSON([
+                    'status' => 'error',
+                    'message' => 'Invalid request',
                 ]);
-                
-                if ($update) {
-                    return $this->response->setJSON(['status' => 'success', 'message' => 'Persembahan disetujui!']);
-                } else {
-                    return $this->response->setJSON(['status' => 'error', 'message' => 'Gagal menyetujui.']);
-                }
             }
+
+            if (!canApprovePersembahan()) {
+                return $this->response->setStatusCode(403)->setJSON([
+                    'status' => 'error',
+                    'message' => 'Anda tidak memiliki hak akses untuk menyetujui!'
+                ]);
+            }
+
+            $persembahan = $this->persembahanModel->find($id);
+            if (!$persembahan) {
+                return $this->response->setStatusCode(404)->setJSON([
+                    'status' => 'error',
+                    'message' => 'Data tidak ditemukan!'
+                ]);
+            }
+
+            $ibadah = $this->ibadahModel->find($persembahan->id_ibadah);
+            if (!$ibadah || !canAccessCabang($ibadah->id_cabang_gereja, 'persembahan')) {
+                return $this->response->setStatusCode($ibadah ? 403 : 404)->setJSON([
+                    'status' => 'error',
+                    'message' => $ibadah ? 'Anda tidak memiliki akses ke persembahan ini!' : 'Data ibadah tidak ditemukan!',
+                ]);
+            }
+
+            if (($persembahan->status_approval ?? 'draft') === 'approved') {
+                return $this->response->setJSON([
+                    'status' => 'success',
+                    'message' => 'Persembahan sudah disetujui sebelumnya.',
+                    'approval_status' => 'approved',
+                ]);
+            }
+
+            $update = $this->persembahanModel->update($id, [
+                'status_approval' => 'approved',
+                'approved_by' => $this->session->get('user_id'),
+                'approved_at' => date('Y-m-d H:i:s')
+            ]);
+
+            $freshPersembahan = $this->persembahanModel->find($id);
+            if ($update && ($freshPersembahan->status_approval ?? null) === 'approved') {
+                return $this->response->setJSON([
+                    'status' => 'success',
+                    'message' => 'Persembahan disetujui!',
+                    'approval_status' => 'approved',
+                ]);
+            }
+
+            return $this->response->setStatusCode(500)->setJSON([
+                'status' => 'error',
+                'message' => 'Gagal menyetujui.',
+            ]);
         } catch (\Exception $e) {
             return $this->response->setJSON(['status' => 'error', 'message' => $e->getMessage()]);
         }
@@ -1058,30 +1234,60 @@ class Ibadah extends Controller
     public function approveKetua5($id)
     {
         try {
-            if ($this->request->isAJAX()) {
-                $role = $this->session->get('role');
-                if (!in_array($role, ['master', 'admin_master', 'ketua_5'])) {
-                    return $this->response->setJSON([
-                        'status' => 'error',
-                        'message' => 'Anda tidak memiliki hak akses untuk menyetujui jadwal ini!'
-                    ]);
-                }
-                
-                $ibadah = $this->ibadahModel->find($id);
-                if (!$ibadah) {
-                    return $this->response->setJSON(['status' => 'error', 'message' => 'Data ibadah tidak ditemukan!']);
-                }
-                
-                $update = $this->ibadahModel->update($id, [
-                    'approval_ketua5' => 'approved'
+            if (!$this->request->isAJAX()) {
+                return $this->response->setStatusCode(400)->setJSON([
+                    'status' => 'error',
+                    'message' => 'Invalid request',
                 ]);
-                
-                if ($update) {
-                    return $this->response->setJSON(['status' => 'success', 'message' => 'Jadwal disetujui Ketua 5!']);
-                } else {
-                    return $this->response->setJSON(['status' => 'error', 'message' => 'Gagal menyetujui.']);
-                }
             }
+
+            if (!canApproveKetua5()) {
+                return $this->response->setStatusCode(403)->setJSON([
+                    'status' => 'error',
+                    'message' => 'Anda tidak memiliki hak akses untuk menyetujui jadwal ini!'
+                ]);
+            }
+
+            $ibadah = $this->ibadahModel->find($id);
+            if (!$ibadah) {
+                return $this->response->setStatusCode(404)->setJSON([
+                    'status' => 'error',
+                    'message' => 'Data ibadah tidak ditemukan!',
+                ]);
+            }
+
+            if (!canAccessCabang($ibadah->id_cabang_gereja, 'ibadah')) {
+                return $this->response->setStatusCode(403)->setJSON([
+                    'status' => 'error',
+                    'message' => 'Anda tidak memiliki akses ke ibadah ini!',
+                ]);
+            }
+
+            if (($ibadah->approval_ketua5 ?? 'pending') === 'approved') {
+                return $this->response->setJSON([
+                    'status' => 'success',
+                    'message' => 'Ibadah sudah disetujui Ketua 5 sebelumnya.',
+                    'approval_status' => 'approved',
+                ]);
+            }
+
+            $update = $this->ibadahModel->update($id, [
+                'approval_ketua5' => 'approved'
+            ]);
+
+            $freshIbadah = $this->ibadahModel->find($id);
+            if ($update && ($freshIbadah->approval_ketua5 ?? null) === 'approved') {
+                return $this->response->setJSON([
+                    'status' => 'success',
+                    'message' => 'Pemeriksaan ibadah disetujui Ketua 5!',
+                    'approval_status' => 'approved',
+                ]);
+            }
+
+            return $this->response->setStatusCode(500)->setJSON([
+                'status' => 'error',
+                'message' => 'Gagal menyetujui.',
+            ]);
         } catch (\Exception $e) {
             return $this->response->setJSON(['status' => 'error', 'message' => $e->getMessage()]);
         }

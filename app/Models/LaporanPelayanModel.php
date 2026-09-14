@@ -16,7 +16,7 @@ class LaporanPelayanModel extends Model
         $this->builder = $this->db->table('pelayan');
     }
 
-    public function getPelayanByFilter($id_ibadah = null, $tugas = null, $status = null)
+    public function getPelayanByFilter($id_ibadah = null, $tugas = null, $status = null, $id_cabang_gereja = null)
     {
         try {
             // Reset builder
@@ -49,6 +49,9 @@ class LaporanPelayanModel extends Model
             if ($status !== null && $status !== '' && $status !== 'null') {
                 $this->builder->where('pelayan.status', $status);
             }
+            if ($id_cabang_gereja !== null) {
+                $this->builder->where('ibadah.id_cabang_gereja', $id_cabang_gereja);
+            }
             
             $this->builder->orderBy('pelayan.id', 'DESC');
             $query = $this->builder->get();
@@ -61,13 +64,16 @@ class LaporanPelayanModel extends Model
         }
     }
 
-    public function getAllIbadah()
+    public function getAllIbadah($id_cabang_gereja = null)
     {
         try {
             $this->builder = $this->db->table('ibadah');
             $this->builder->select('ibadah.*, cabang_gereja.nama_cabang');
             $this->builder->join('cabang_gereja', 'cabang_gereja.id = ibadah.id_cabang_gereja', 'left');
             $this->builder->where('ibadah.status !=', 'batal');
+            if ($id_cabang_gereja !== null) {
+                $this->builder->where('ibadah.id_cabang_gereja', $id_cabang_gereja);
+            }
             $this->builder->orderBy('ibadah.tanggal', 'DESC');
             $query = $this->builder->get();
             return $query->getResult();
@@ -92,7 +98,7 @@ class LaporanPelayanModel extends Model
         }
     }
 
-    public function getStatistik($id_ibadah = null, $tugas = null, $status = null)
+    public function getStatistik($id_ibadah = null, $tugas = null, $status = null, $id_cabang_gereja = null)
     {
         try {
             $this->builder = $this->db->table('pelayan');
@@ -116,6 +122,9 @@ class LaporanPelayanModel extends Model
             if ($status !== null && $status !== '' && $status !== 'null') {
                 $this->builder->where('pelayan.status', $status);
             }
+            if ($id_cabang_gereja !== null) {
+                $this->builder->where('ibadah.id_cabang_gereja', $id_cabang_gereja);
+            }
             
             $query = $this->builder->get();
             return $query->getRow();
@@ -125,7 +134,7 @@ class LaporanPelayanModel extends Model
         }
     }
 
-    public function getStatusCount($id_ibadah = null, $tugas = null)
+    public function getStatusCount($id_ibadah = null, $tugas = null, $id_cabang_gereja = null)
     {
         try {
             $this->builder = $this->db->table('pelayan');
@@ -140,6 +149,9 @@ class LaporanPelayanModel extends Model
             if ($tugas !== null && $tugas !== '' && $tugas !== 'null') {
                 $this->builder->where('pelayan.tugas', $tugas);
             }
+            if ($id_cabang_gereja !== null) {
+                $this->builder->where('ibadah.id_cabang_gereja', $id_cabang_gereja);
+            }
             
             $this->builder->groupBy('pelayan.status');
             $query = $this->builder->get();
@@ -150,7 +162,7 @@ class LaporanPelayanModel extends Model
         }
     }
 
-    public function getTugasCount($id_ibadah = null, $status = null)
+    public function getTugasCount($id_ibadah = null, $status = null, $id_cabang_gereja = null)
     {
         try {
             $this->builder = $this->db->table('pelayan');
@@ -164,6 +176,9 @@ class LaporanPelayanModel extends Model
             }
             if ($status !== null && $status !== '' && $status !== 'null') {
                 $this->builder->where('pelayan.status', $status);
+            }
+            if ($id_cabang_gereja !== null) {
+                $this->builder->where('ibadah.id_cabang_gereja', $id_cabang_gereja);
             }
             
             $this->builder->groupBy('pelayan.tugas');

@@ -42,7 +42,7 @@
         </a>
         <?php endif; ?>
         
-        <?php if (canView('ibadah')): ?>
+        <?php if (canView('ibadah') && canView('absensi') && canView('persembahan') && canView('pelayan')): ?>
         <a href="<?= base_url('ibadah/live/' . $ibadah->id) ?>" class="btn btn-danger btn-sm ml-2" title="Live Report" target="_blank">
             <i class="fas fa-broadcast"></i> Live
         </a>
@@ -108,6 +108,15 @@
                                 </span>
                             </td>
                         </tr>
+                        <tr>
+                            <th><i class="fas fa-clipboard-check"></i> Approval Ketua 5</th>
+                            <td>
+                                <?php $approvalKetua5 = $ibadah->approval_ketua5 ?? 'pending'; ?>
+                                <span class="badge badge-<?= $approvalKetua5 === 'approved' ? 'success' : ($approvalKetua5 === 'rejected' ? 'danger' : 'warning') ?>">
+                                    <?= ucfirst($approvalKetua5) ?>
+                                </span>
+                            </td>
+                        </tr>
                     </table>
                 </div>
             </div>
@@ -115,6 +124,7 @@
 
         <!-- Statistik -->
         <div class="row mb-4">
+            <?php if (canView('absensi')): ?>
             <div class="col-md-3">
                 <div class="card border-left-primary shadow h-100 py-2">
                     <div class="card-body">
@@ -132,6 +142,8 @@
                     </div>
                 </div>
             </div>
+            <?php endif; ?>
+            <?php if (canView('pelayan')): ?>
             <div class="col-md-3">
                 <div class="card border-left-success shadow h-100 py-2">
                     <div class="card-body">
@@ -149,6 +161,8 @@
                     </div>
                 </div>
             </div>
+            <?php endif; ?>
+            <?php if (canView('persembahan')): ?>
             <div class="col-md-3">
                 <div class="card border-left-info shadow h-100 py-2">
                     <div class="card-body">
@@ -191,8 +205,10 @@
                     </div>
                 </div>
             </div>
+            <?php endif; ?>
         </div>
 
+        <?php if (canView('pelayan')): ?>
         <!-- Tabel Pelayan -->
         <h6 class="section-title"><i class="fas fa-user-tie"></i> Daftar Pelayan</h6>
         <div class="table-responsive mb-4">
@@ -229,7 +245,9 @@
                 </tbody>
             </table>
         </div>
+        <?php endif; ?>
 
+        <?php if (canView('absensi')): ?>
         <!-- Tabel Absensi -->
         <h6 class="section-title"><i class="fas fa-qrcode"></i> Daftar Absensi</h6>
         <div class="table-responsive mb-4">
@@ -272,7 +290,9 @@
                 </tbody>
             </table>
         </div>
+        <?php endif; ?>
 
+        <?php if (canView('persembahan')): ?>
         <!-- Tabel Persembahan -->
         <h6 class="section-title"><i class="fas fa-hand-holding-heart"></i> Daftar Persembahan</h6>
         <div class="table-responsive mb-4">
@@ -281,8 +301,11 @@
                     <tr>
                         <th width="5%">No</th>
                         <th>Nominal</th>
+                        <th>Mata Uang</th>
+                        <th>Jumlah Lembar/Koin</th>
                         <th>Jenis</th>
                         <th>Metode</th>
+                        <th>Status Approval</th>
                         <th>Keterangan</th>
                     </tr>
                 </thead>
@@ -292,13 +315,18 @@
                         <tr>
                             <td><?= $no++ ?></td>
                             <td><strong>Rp <?= number_format($p->nominal ?? 0, 0, ',', '.') ?></strong></td>
+                            <td><?= esc($p->jenis_mata_uang ?? 'Rupiah') ?></td>
+                            <td><?= $p->jumlah_lembar ?? '-' ?></td>
                             <td>
-                                <span class="badge badge-<?= $p->jenis == 'kantong_putih' ? 'primary' : ($p->jenis == 'kantong_cokelat' ? 'warning' : 'danger') ?>">
+                                <span class="badge badge-<?= in_array($p->jenis, ['putih', 'kantong_putih'], true) ? 'primary' : (in_array($p->jenis, ['cokelat', 'kantong_cokelat'], true) ? 'warning' : 'danger') ?>">
                                     <?php 
                                         $jenisMap = [
+                                            'putih' => 'Kantong Putih',
+                                            'cokelat' => 'Kantong Cokelat',
+                                            'khusus' => 'Persembahan Khusus',
                                             'kantong_putih' => 'Kantong Putih',
                                             'kantong_cokelat' => 'Kantong Cokelat',
-                                            'persembahan_khusus' => 'Persembahan Khusus'
+                                            'persembahan_khusus' => 'Persembahan Khusus',
                                         ];
                                         echo $jenisMap[$p->jenis] ?? $p->jenis;
                                     ?>
@@ -309,17 +337,39 @@
                                     <?= ucfirst($p->metode) ?>
                                 </span>
                             </td>
-                            <td><?= $p->keterangan ?? '-' ?></td>
+                            <td>
+                                <span class="badge badge-<?= ($p->status_approval ?? 'draft') === 'approved' ? 'success' : 'warning' ?>">
+                                    <?= ucfirst($p->status_approval ?? 'draft') ?>
+                                </span>
+                            </td>
+                            <td><?= esc($p->keterangan ?? '-') ?></td>
                         </tr>
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="5" class="text-center text-muted">Belum ada data persembahan</td>
+                            <td colspan="8" class="text-center text-muted">Belum ada data persembahan</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
             </table>
         </div>
+        <?php endif; ?>
+
+        <?php if (($ibadah->approval_ketua5 ?? 'pending') !== 'approved'): ?>
+        <div class="alert alert-<?= ($ibadah->approval_ketua5 ?? 'pending') === 'rejected' ? 'danger' : 'warning' ?> no-print">
+            <i class="fas fa-exclamation-triangle"></i>
+            Ibadah belum dapat diselesaikan sebelum seluruh data yang dapat diakses di atas diperiksa dan disetujui oleh Ketua 5.
+            <?php if (canApproveKetua5()): ?>
+            <button type="button" class="btn btn-success btn-sm float-right" id="btnApproveKetua5" data-id="<?= $ibadah->id ?>">
+                <i class="fas fa-check-double"></i> Approve Ketua 5
+            </button>
+            <?php endif; ?>
+        </div>
+        <?php else: ?>
+        <div class="alert alert-success no-print">
+            <i class="fas fa-check-circle"></i> Seluruh data ibadah telah disetujui oleh Ketua 5 dan ibadah dapat diselesaikan.
+        </div>
+        <?php endif; ?>
 
         <!-- Tombol Aksi -->
         <div class="text-center mt-4 no-print">
@@ -336,6 +386,49 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('custom_js') ?>
+<?php if (canApproveKetua5() && ($ibadah->approval_ketua5 ?? 'pending') !== 'approved'): ?>
+<script>
+$(document).on('click', '#btnApproveKetua5', function() {
+    var button = $(this);
+
+    Swal.fire({
+        title: 'Konfirmasi Pemeriksaan',
+        text: 'Pastikan data ibadah, pelayan, absensi, dan persembahan sudah diperiksa. Setujui ibadah ini?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#28a745',
+        confirmButtonText: 'Ya, Approve',
+        cancelButtonText: 'Batal'
+    }).then(function(result) {
+        if (!result.isConfirmed) {
+            return;
+        }
+
+        button.prop('disabled', true);
+        $.ajax({
+            url: '<?= base_url('ibadah/approveKetua5/' . $ibadah->id) ?>',
+            type: 'POST',
+            dataType: 'json',
+            success: function(response) {
+                if (response.status === 'success' && response.approval_status === 'approved') {
+                    Swal.fire({ icon: 'success', title: 'Berhasil', text: response.message })
+                        .then(function() { window.location.reload(); });
+                    return;
+                }
+
+                button.prop('disabled', false);
+                Swal.fire({ icon: 'error', title: 'Gagal', text: response.message || 'Approval gagal disimpan.' });
+            },
+            error: function(xhr) {
+                button.prop('disabled', false);
+                var response = xhr.responseJSON || {};
+                Swal.fire({ icon: 'error', title: 'Gagal', text: response.message || 'Koneksi server gagal.' });
+            }
+        });
+    });
+});
+</script>
+<?php endif; ?>
 <style>
     .section-title {
         font-size: 16px;

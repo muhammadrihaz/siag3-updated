@@ -17,6 +17,8 @@ class IbadahModel extends Model
     protected $updatedField = 'updated_at';
     protected $returnType = 'object';
     protected $useSoftDeletes = false;
+    protected $beforeInsert = ['preventUnapprovedFinish'];
+    protected $beforeUpdate = ['preventUnapprovedFinish'];
     
     protected $column_order = ['id', 'tanggal', 'jenis_ibadah', 'nama_cabang', 'jumlah_hadir', 'total_peserta', 'status'];
     protected $column_search = ['tanggal', 'jenis_ibadah', 'nama_cabang', 'status'];
@@ -97,7 +99,6 @@ class IbadahModel extends Model
     {
         try {
             $this->_getDatatablesQuery($where);
-            if (!empty($where)) { $this->builder->where($where); }
             return $this->builder->countAllResults();
         } catch (\Exception $e) {
             log_message('error', 'countFiltered error: ' . $e->getMessage());
@@ -193,5 +194,33 @@ class IbadahModel extends Model
             log_message('error', 'getStatusCount error: ' . $e->getMessage());
             return 0;
         }
+    }
+
+    /**
+     * Pertahanan terakhir agar status selesai tidak dapat dilewati melalui
+     * controller/API lain yang tetap menggunakan model ini.
+     */
+    protected function preventUnapprovedFinish(array $eventData): array
+    {
+        if (($eventData['data']['status'] ?? null) !== 'selesai') {
+            return $eventData;
+        }
+
+        $approval = $eventData['data']['approval_ketua5'] ?? null;
+
+        if ($approval === null && !empty($eventData['id'][0])) {
+            $existing = $this->db->table($this->table)
+                ->select('approval_ketua5')
+                ->where($this->primaryKey, $eventData['id'][0])
+                ->get()
+                ->getRow();
+            $approval = $existing->approval_ketua5 ?? null;
+        }
+
+        if ($approval !== 'approved') {
+            throw new \DomainException('Ibadah belum dapat diselesaikan karena approval Ketua 5 masih pending.');
+        }
+
+        return $eventData;
     }
 }

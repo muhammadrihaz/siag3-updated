@@ -20,6 +20,7 @@
                     <?php 
                         $role = session()->get('role');
                         $namaSektorPelayanan = session()->get('nama_sektor');
+                        $namaCabangGereja = session()->get('nama_cabang');
                     ?>
                     
                     
@@ -35,8 +36,10 @@
                         <small class="text-light">
                             <?php if ($role == 'master'): ?>
                                 <i class="fas fa-crown"></i> Master (Super Admin)
+                            <?php elseif (!empty($namaCabangGereja)): ?>
+                                <i class="fas fa-church"></i> <?= esc($namaCabangGereja) ?>
                             <?php elseif (!empty($namaSektorPelayanan)): ?>
-                                <i class="fas fa-map-marker-alt"></i> <?= $namaSektorPelayanan ?>
+                                <i class="fas fa-map-marker-alt"></i> <?= esc($namaSektorPelayanan) ?>
                             <?php else: ?>
                                 <i class="fas fa-user"></i> <?= ucfirst(str_replace('_', ' ', $role)) ?>
                             <?php endif; ?>

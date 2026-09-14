@@ -45,7 +45,9 @@ class Dashboard extends Controller
         try {
             $userRole = $this->session->get('role');
             $userSektorPelayanan = $this->session->get('id_sektor_pelayanan');
+            $userCabangGereja = $this->session->get('id_cabang_gereja');
             $isMaster = in_array($userRole, ['master', 'admin_master']); // Support new roles
+            $hasGlobalIbadahAccess = hasGlobalCabangAccess('ibadah');
             
             // =============================================
             // TOTAL JEMAAT
@@ -84,11 +86,11 @@ class Dashboard extends Controller
             // =============================================
             // TOTAL IBADAH
             // =============================================
-            if ($isMaster) {
+            if ($hasGlobalIbadahAccess) {
                 $total_ibadah = $this->ibadahModel->countAll();
             } else {
                 $total_ibadah = $this->ibadahModel
-                    ->where('id_sektor_pelayanan', $userSektorPelayanan)
+                    ->where('id_cabang_gereja', $userCabangGereja)
                     ->countAllResults();
             }
             
@@ -96,7 +98,7 @@ class Dashboard extends Controller
             // ABSENSI HARI INI (HADIR)
             // =============================================
             $today = date('Y-m-d');
-            if ($isMaster) {
+            if (hasGlobalCabangAccess('absensi')) {
                 $total_absensi_hari_ini = $this->absensiModel
                     ->where('DATE(waktu)', $today)
                     ->where('status', 'hadir')
@@ -105,7 +107,7 @@ class Dashboard extends Controller
                 $total_absensi_hari_ini = $this->absensiModel
                     ->select('absensi.*')
                     ->join('ibadah', 'ibadah.id = absensi.id_ibadah', 'left')
-                    ->where('ibadah.id_sektor_pelayanan', $userSektorPelayanan)
+                    ->where('ibadah.id_cabang_gereja', $userCabangGereja)
                     ->where('DATE(absensi.waktu)', $today)
                     ->where('absensi.status', 'hadir')
                     ->countAllResults();
@@ -125,9 +127,11 @@ class Dashboard extends Controller
                 'total_absensi_hari_ini' => $total_absensi_hari_ini,
                 'user_name' => $this->session->get('nama_jemaat') ?? $this->session->get('username'),
                 'user_role' => $userRole,
-                'user_sektor' => $this->session->get('nama_sektor'),
+                'user_sektor' => $this->session->get('nama_cabang') ?? $this->session->get('nama_sektor'),
                 'is_master' => $isMaster,
-                'cabang_list' => (new \App\Models\CabangGerejaModel())->findAll(), // For location filter
+                'cabang_list' => $hasGlobalIbadahAccess
+                    ? (new \App\Models\CabangGerejaModel())->findAll()
+                    : (new \App\Models\CabangGerejaModel())->where('id', $userCabangGereja)->findAll(),
             ];
             
             return view('dashboard/index', $data);
@@ -151,6 +155,10 @@ class Dashboard extends Controller
         $jam_ibadah = $this->request->getPost('jam_ibadah') ?? 'all'; 
 
         $db = \Config\Database::connect();
+
+        if (!hasGlobalCabangAccess('ibadah')) {
+            $lokasi = $this->session->get('id_cabang_gereja');
+        }
         
         // Base where string building
         $whereIbadah = "1=1";

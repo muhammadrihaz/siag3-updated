@@ -16,7 +16,7 @@ class LaporanAbsensiModel extends Model
         $this->builder = $this->db->table('absensi');
     }
 
-    public function getAbsensiByFilter($id_ibadah = null, $status = null, $metode = null)
+    public function getAbsensiByFilter($id_ibadah = null, $status = null, $metode = null, $id_cabang_gereja = null)
     {
         try {
             // Reset builder
@@ -50,6 +50,9 @@ class LaporanAbsensiModel extends Model
             if ($metode !== null && $metode !== '' && $metode !== 'null') {
                 $this->builder->where('absensi.metode', $metode);
             }
+            if ($id_cabang_gereja !== null) {
+                $this->builder->where('ibadah.id_cabang_gereja', $id_cabang_gereja);
+            }
             
             $this->builder->orderBy('absensi.waktu', 'DESC');
             $query = $this->builder->get();
@@ -65,13 +68,16 @@ class LaporanAbsensiModel extends Model
         }
     }
 
-    public function getAllIbadah()
+    public function getAllIbadah($id_cabang_gereja = null)
     {
         try {
             $this->builder = $this->db->table('ibadah');
             $this->builder->select('ibadah.*, cabang_gereja.nama_cabang');
             $this->builder->join('cabang_gereja', 'cabang_gereja.id = ibadah.id_cabang_gereja', 'left');
             $this->builder->where('ibadah.status !=', 'batal');
+            if ($id_cabang_gereja !== null) {
+                $this->builder->where('ibadah.id_cabang_gereja', $id_cabang_gereja);
+            }
             $this->builder->orderBy('ibadah.tanggal', 'DESC');
             $query = $this->builder->get();
             return $query->getResult();
@@ -81,7 +87,7 @@ class LaporanAbsensiModel extends Model
         }
     }
 
-    public function getStatistik($id_ibadah = null, $status = null, $metode = null)
+    public function getStatistik($id_ibadah = null, $status = null, $metode = null, $id_cabang_gereja = null)
     {
         try {
             $this->builder = $this->db->table('absensi');
@@ -107,6 +113,9 @@ class LaporanAbsensiModel extends Model
             if ($metode !== null && $metode !== '' && $metode !== 'null') {
                 $this->builder->where('absensi.metode', $metode);
             }
+            if ($id_cabang_gereja !== null) {
+                $this->builder->where('ibadah.id_cabang_gereja', $id_cabang_gereja);
+            }
             
             $query = $this->builder->get();
             return $query->getRow();
@@ -116,7 +125,7 @@ class LaporanAbsensiModel extends Model
         }
     }
 
-    public function getStatusCount($id_ibadah = null, $metode = null)
+    public function getStatusCount($id_ibadah = null, $metode = null, $id_cabang_gereja = null)
     {
         try {
             $this->builder = $this->db->table('absensi');
@@ -131,6 +140,9 @@ class LaporanAbsensiModel extends Model
             if ($metode !== null && $metode !== '' && $metode !== 'null') {
                 $this->builder->where('absensi.metode', $metode);
             }
+            if ($id_cabang_gereja !== null) {
+                $this->builder->where('ibadah.id_cabang_gereja', $id_cabang_gereja);
+            }
             
             $this->builder->groupBy('absensi.status');
             $query = $this->builder->get();
@@ -141,7 +153,7 @@ class LaporanAbsensiModel extends Model
         }
     }
 
-    public function getMetodeCount($id_ibadah = null, $status = null)
+    public function getMetodeCount($id_ibadah = null, $status = null, $id_cabang_gereja = null)
     {
         try {
             $this->builder = $this->db->table('absensi');
@@ -155,6 +167,9 @@ class LaporanAbsensiModel extends Model
             }
             if ($status !== null && $status !== '' && $status !== 'null') {
                 $this->builder->where('absensi.status', $status);
+            }
+            if ($id_cabang_gereja !== null) {
+                $this->builder->where('ibadah.id_cabang_gereja', $id_cabang_gereja);
             }
             
             $this->builder->groupBy('absensi.metode');

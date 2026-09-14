@@ -35,13 +35,16 @@
         
         // Ibadah - Akses: Master, Admin Area, Pendeta, Sekretaris
         // (Di dalam ibadah sudah termasuk absensi, pelayan, persembahan)
-        $canAccessIbadah = ($isMaster || $isAdminArea || $isPendeta || $isSekretaris);
+        $canAccessIbadah = canView('ibadah');
+        $canAccessWaitlist = ($isMaster || $isAdminArea || $isPendeta || $isSekretaris);
         
-        // Laporan - Akses: Master, Admin Area, Pendeta, Sekretaris
-        $canAccessLaporan = ($isMaster || $isAdminArea || $isPendeta || $isSekretaris);
+        // Laporan umum tidak dibuka untuk Bendahara; Bendahara hanya melihat
+        // laporan persembahan.
+        $canAccessGeneralReports = ($isMaster || $isAdminArea || $isPendeta || $isSekretaris);
         
         // Laporan Persembahan - Akses: Master, Admin Area, Pendeta, Sekretaris, Bendahara
-        $canAccessLaporanPersembahan = ($isMaster || $isAdminArea || $isPendeta || $isSekretaris || $isBendahara);
+        $canAccessLaporanPersembahan = canView('laporan_persembahan');
+        $canAccessLaporan = ($canAccessGeneralReports || $canAccessLaporanPersembahan);
         
         // User Management - Akses: Master saja
         $canAccessUser = $isMaster;
@@ -99,6 +102,7 @@
         </a>
     </li>
     
+    <?php if ($canAccessWaitlist): ?>
     <li class="nav-item <?= (isset($active_menu) && $active_menu == 'pelayanan') ? 'active' : '' ?>">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseWaitlist">
             <i class="fas fa-fw fa-list-ol"></i>
@@ -113,6 +117,7 @@
         </div>
     </li>
     <?php endif; ?>
+    <?php endif; ?>
 
     <!-- Laporan -->
     <?php if ($canAccessLaporan): ?>
@@ -124,6 +129,7 @@
         </a>
         <div id="collapseLaporan" class="collapse <?= (isset($active_menu) && $active_menu == 'laporan') ? 'show' : '' ?>">
             <div class="bg-white py-2 collapse-inner rounded">
+                <?php if ($canAccessGeneralReports): ?>
                 <a class="collapse-item <?= (isset($sub_menu) && $sub_menu == 'laporan_keluarga') ? 'active' : '' ?>" href="<?= base_url('laporankeluarga') ?>">
                     <i class="fas fa-users fa-fw"></i> Laporan Keluarga
                 </a>
@@ -139,6 +145,7 @@
                 <a class="collapse-item <?= (isset($sub_menu) && $sub_menu == 'laporan_pelayan') ? 'active' : '' ?>" href="<?= base_url('laporanpelayan') ?>">
                     <i class="fas fa-user-tie fa-fw"></i> Laporan Pelayan
                 </a>
+                <?php endif; ?>
                 <?php if ($canAccessLaporanPersembahan): ?>
                 <a class="collapse-item <?= (isset($sub_menu) && $sub_menu == 'laporan_persembahan') ? 'active' : '' ?>" href="<?= base_url('laporanpersembahan') ?>">
                     <i class="fas fa-hand-holding-heart fa-fw"></i> Laporan Persembahan

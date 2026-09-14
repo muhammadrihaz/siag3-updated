@@ -25,7 +25,7 @@
                         <th width="4%">No</th>
                         <th>Username</th>
                         <th>Nama Jemaat</th>
-                        <th>Wilayah</th>
+                        <th>Cabang Gereja</th>
                         <th>Role</th>
                         <th>Status</th>
                         <th>Last Login</th>
@@ -77,11 +77,11 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="id_sektor_pelayanan">Sektor Pelayanan <span class="text-danger">*</span></label>
-                        <select class="form-control" id="id_sektor_pelayanan" name="id_sektor_pelayanan">
-                            <option value="">-- Pilih Sektor Pelayanan --</option>
+                        <label for="id_cabang_gereja">Cabang Gereja <span class="text-danger">*</span></label>
+                        <select class="form-control" id="id_cabang_gereja" name="id_cabang_gereja">
+                            <option value="">-- Pilih Cabang Gereja --</option>
                         </select>
-                        <small class="text-danger error-text" id="error_id_sektor_pelayanan"></small>
+                        <small class="text-danger error-text" id="error_id_cabang_gereja"></small>
                     </div>
                     
                     <div class="form-group">
@@ -89,10 +89,13 @@
                         <select class="form-control" id="role" name="role">
                             <option value="">-- Pilih Role --</option>
                             <option value="master">Master</option>
+                            <option value="admin_master">Admin Master</option>
                             <option value="admin_area">Admin Area</option>
                             <option value="pendeta">Pendeta</option>
                             <option value="sekretaris">Sekretaris</option>
                             <option value="bendahara">Bendahara</option>
+                            <option value="kasir">Kasit Gereja</option>
+                            <option value="ketua_5">Ketua 5</option>
                         </select>
                         <small class="text-danger error-text" id="error_role"></small>
                     </div>
@@ -223,24 +226,24 @@ $(document).ready(function() {
         });
     }
     
-    // Load Sektor Pelayanan untuk dropdown
-    function loadWilayah(selectedId = null) {
+    // Load Cabang Gereja untuk dropdown. Jika user baru, pilih ID terkecil.
+    function loadCabangGereja(selectedId = null) {
         $.ajax({
-            url: '<?= base_url('user/getWilayah') ?>',
+            url: '<?= base_url('user/getCabangGereja') ?>',
             type: 'GET',
             dataType: 'json',
             success: function(data) {
-                var select = $('#id_sektor_pelayanan');
+                var select = $('#id_cabang_gereja');
                 select.empty();
-                select.append('<option value="">-- Pilih Sektor Pelayanan --</option>');
+                select.append('<option value="">-- Pilih Cabang Gereja --</option>');
                 $.each(data, function(key, value) {
-                    var selected = (selectedId && selectedId == value.id) ? 'selected' : '';
+                    var selected = ((selectedId && selectedId == value.id) || (!selectedId && key === 0)) ? 'selected' : '';
                     select.append('<option value="' + value.id + '" ' + selected + '>' + 
-                        value.nama_sektor + '</option>');
+                        value.nama_cabang + '</option>');
                 });
             },
             error: function() {
-                console.log('Gagal load data sektor pelayanan');
+                console.log('Gagal load data cabang gereja');
             }
         });
     }
@@ -261,7 +264,7 @@ $(document).ready(function() {
         $('#modalTitle').text('Tambah User');
         resetForm();
         loadJemaat();
-        loadWilayah();
+        loadCabangGereja();
         $('#modalUser').modal('show');
     });
     
@@ -281,7 +284,7 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(data) {
                 loadJemaat(data.id_jemaat);
-                loadWilayah(data.id_sektor_pelayanan);
+                loadCabangGereja(data.id_cabang_gereja);
                 $('#username').val(data.username);
                 $('#role').val(data.role);
                 $('#status').val(data.status);
@@ -361,7 +364,7 @@ $(document).ready(function() {
         
         var username = $('#username').val();
         var password = $('#password').val();
-        var id_sektor_pelayanan = $('#id_sektor_pelayanan').val();
+        var id_cabang_gereja = $('#id_cabang_gereja').val();
         var role = $('#role').val();
         var id = $('#id').val();
         var isValid = true;
@@ -382,8 +385,8 @@ $(document).ready(function() {
             isValid = false;
         }
         
-        if (id_sektor_pelayanan == '') {
-            $('#error_id_sektor_pelayanan').text('Sektor Pelayanan harus dipilih!');
+        if (id_cabang_gereja == '') {
+            $('#error_id_cabang_gereja').text('Cabang Gereja harus dipilih!');
             isValid = false;
         }
         

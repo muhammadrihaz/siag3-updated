@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use App\Models\LaporanPersembahanModel;
 use App\Models\IbadahModel;
-use App\Models\CabangGerejaModel;
 use CodeIgniter\Controller;
 
 class LaporanPersembahan extends Controller
@@ -12,8 +11,7 @@ class LaporanPersembahan extends Controller
     protected $laporanPersembahanModel;
     protected $ibadahModel;
     protected $session;
-    protected $userRole;
-    protected $userSektorPelayanan;
+    protected $userCabangGereja;
 
     /**
      * Constructor - Inisialisasi model dan cek login
@@ -28,8 +26,7 @@ class LaporanPersembahan extends Controller
             return redirect()->to('/login');
         }
         
-        $this->userRole = $this->session->get('role');
-        $this->userSektorPelayanan = $this->session->get('id_sektor_pelayanan');
+        $this->userCabangGereja = $this->session->get('id_cabang_gereja');
         
         if (!canView('laporan_persembahan')) {
             return redirect()->to('/dashboard')->with('error', 'Anda tidak memiliki akses ke halaman ini!');
@@ -42,22 +39,17 @@ class LaporanPersembahan extends Controller
     public function index()
     {
         try {
-            $ibadah = $this->laporanPersembahanModel->getAllIbadah();
-            
-            // Filter ibadah berdasarkan wilayah user
-            $filteredIbadah = [];
-            foreach ($ibadah as $i) {
-                if ($this->userRole == 'master' || $i->id_sektor_pelayanan == $this->userSektorPelayanan) {
-                    $filteredIbadah[] = $i;
-                }
-            }
+            $scopeCabang = $this->getScopeCabang();
+            $filteredIbadah = $this->laporanPersembahanModel->getAllIbadah($scopeCabang);
             
             $jenisOptions = $this->laporanPersembahanModel->getJenisOptions();
             $metodeOptions = $this->laporanPersembahanModel->getMetodeOptions();
             
             
             $cabangModel = new \App\Models\CabangGerejaModel();
-            $allCabangGereja = $cabangModel->findAll();
+            $allCabangGereja = $scopeCabang === null
+                ? $cabangModel->orderBy('id', 'ASC')->findAll()
+                : $cabangModel->where('id', $scopeCabang)->findAll();
             
             $data = [
                 'cabangGereja' => $allCabangGereja,
@@ -91,29 +83,17 @@ class LaporanPersembahan extends Controller
                 $jenis = (empty($jenis) || $jenis === 'null') ? null : $jenis;
                 $metode = (empty($metode) || $metode === 'null') ? null : $metode;
                 
-                // Cek jika user bukan master, filter berdasarkan wilayahnya
-                if ($this->userRole != 'master' && $id_ibadah) {
-                    $ibadah = $this->ibadahModel->find($id_ibadah);
-                    if ($ibadah && $ibadah->id_sektor_pelayanan != $this->userSektorPelayanan) {
-                        return $this->response->setJSON([
-                            'data' => [],
-                            'statistik' => null,
-                            'jenisCount' => [],
-                            'metodeCount' => [],
-                            'ibadahDetail' => null,
-                            'filter' => [
-                                'id_ibadah' => $id_ibadah,
-                                'jenis' => $jenis,
-                                'metode' => $metode
-                            ]
-                        ]);
-                    }
+                $scopeCabang = $this->getScopeCabang();
+                if ($id_ibadah && !$this->canAccessIbadah($id_ibadah)) {
+                    return $this->response->setStatusCode(403)->setJSON([
+                        'error' => 'Anda tidak memiliki akses ke laporan persembahan ibadah ini!',
+                    ]);
                 }
                 
-                $persembahan = $this->laporanPersembahanModel->getPersembahanByFilter($id_ibadah, $jenis, $metode);
-                $statistik = $this->laporanPersembahanModel->getStatistik($id_ibadah, $jenis, $metode);
-                $jenisCount = $this->laporanPersembahanModel->getJenisCount($id_ibadah, $metode);
-                $metodeCount = $this->laporanPersembahanModel->getMetodeCount($id_ibadah, $jenis);
+                $persembahan = $this->laporanPersembahanModel->getPersembahanByFilter($id_ibadah, $jenis, $metode, $scopeCabang);
+                $statistik = $this->laporanPersembahanModel->getStatistik($id_ibadah, $jenis, $metode, $scopeCabang);
+                $jenisCount = $this->laporanPersembahanModel->getJenisCount($id_ibadah, $metode, $scopeCabang);
+                $metodeCount = $this->laporanPersembahanModel->getMetodeCount($id_ibadah, $jenis, $scopeCabang);
                 
                 $ibadahDetail = null;
                 if (!empty($id_ibadah)) {
@@ -155,18 +135,15 @@ class LaporanPersembahan extends Controller
             $jenis = ($jenis && $jenis !== 'null') ? $jenis : null;
             $metode = ($metode && $metode !== 'null') ? $metode : null;
             
-            // Cek jika user bukan master, filter berdasarkan wilayahnya
-            if ($this->userRole != 'master' && $id_ibadah) {
-                $ibadah = $this->ibadahModel->find($id_ibadah);
-                if ($ibadah && $ibadah->id_sektor_pelayanan != $this->userSektorPelayanan) {
-                    return redirect()->to('/laporanpersembahan')->with('error', 'Anda tidak memiliki akses ke data ini!');
-                }
+            if ($id_ibadah && !$this->canAccessIbadah($id_ibadah)) {
+                return redirect()->to('/laporanpersembahan')->with('error', 'Anda tidak memiliki akses ke data ini!');
             }
-            
-            $persembahan = $this->laporanPersembahanModel->getPersembahanByFilter($id_ibadah, $jenis, $metode);
-            $statistik = $this->laporanPersembahanModel->getStatistik($id_ibadah, $jenis, $metode);
-            $jenisCount = $this->laporanPersembahanModel->getJenisCount($id_ibadah, $metode);
-            $metodeCount = $this->laporanPersembahanModel->getMetodeCount($id_ibadah, $jenis);
+
+            $scopeCabang = $this->getScopeCabang();
+            $persembahan = $this->laporanPersembahanModel->getPersembahanByFilter($id_ibadah, $jenis, $metode, $scopeCabang);
+            $statistik = $this->laporanPersembahanModel->getStatistik($id_ibadah, $jenis, $metode, $scopeCabang);
+            $jenisCount = $this->laporanPersembahanModel->getJenisCount($id_ibadah, $metode, $scopeCabang);
+            $metodeCount = $this->laporanPersembahanModel->getMetodeCount($id_ibadah, $jenis, $scopeCabang);
             
             $ibadahDetail = null;
             if ($id_ibadah) {
@@ -189,5 +166,16 @@ class LaporanPersembahan extends Controller
             log_message('error', 'print error: ' . $e->getMessage());
             throw $e;
         }
+    }
+
+    private function getScopeCabang()
+    {
+        return hasGlobalCabangAccess('persembahan') ? null : $this->userCabangGereja;
+    }
+
+    private function canAccessIbadah($idIbadah)
+    {
+        $ibadah = $this->ibadahModel->find($idIbadah);
+        return $ibadah && canAccessCabang($ibadah->id_cabang_gereja, 'persembahan');
     }
 }

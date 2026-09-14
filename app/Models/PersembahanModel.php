@@ -40,11 +40,12 @@ class PersembahanModel extends Model
             ibadah.tanggal,
             ibadah.jenis_ibadah,
             ibadah.waktu_mulai,
-            sektor_pelayanan.nama_sektor
+            ibadah.id_cabang_gereja,
+            cabang_gereja.nama_cabang
         ');
         $this->builder->join('jemaat', 'jemaat.id = persembahan.id_jemaat', 'left');
         $this->builder->join('ibadah', 'ibadah.id = persembahan.id_ibadah', 'left');
-        $this->builder->join('sektor_pelayanan', 'sektor_pelayanan.id = ibadah.id_sektor_pelayanan', 'left');
+        $this->builder->join('cabang_gereja', 'cabang_gereja.id = ibadah.id_cabang_gereja', 'left');
         
         $i = 0;
         $searchValue = $this->request->getPost('search')['value'] ?? '';
@@ -127,13 +128,14 @@ class PersembahanModel extends Model
                 persembahan.*, 
                 jemaat.nama_jemaat,
                 jemaat.no_anggota,
-                ibadah.tanggal,
-                ibadah.jenis_ibadah,
-                sektor_pelayanan.nama_sektor
-            ');
+            ibadah.tanggal,
+            ibadah.jenis_ibadah,
+            ibadah.id_cabang_gereja,
+            cabang_gereja.nama_cabang
+        ');
             $this->builder->join('jemaat', 'jemaat.id = persembahan.id_jemaat', 'left');
             $this->builder->join('ibadah', 'ibadah.id = persembahan.id_ibadah', 'left');
-            $this->builder->join('sektor_pelayanan', 'sektor_pelayanan.id = ibadah.id_sektor_pelayanan', 'left');
+            $this->builder->join('cabang_gereja', 'cabang_gereja.id = ibadah.id_cabang_gereja', 'left');
             $this->builder->orderBy('persembahan.id', 'DESC');
             $query = $this->builder->get();
             return $query->getResult();
@@ -150,14 +152,15 @@ class PersembahanModel extends Model
                 persembahan.*, 
                 jemaat.nama_jemaat,
                 jemaat.no_anggota,
-                ibadah.tanggal,
-                ibadah.jenis_ibadah,
-                ibadah.waktu_mulai,
-                sektor_pelayanan.nama_sektor
-            ');
+            ibadah.tanggal,
+            ibadah.jenis_ibadah,
+            ibadah.waktu_mulai,
+            ibadah.id_cabang_gereja,
+            cabang_gereja.nama_cabang
+        ');
             $this->builder->join('jemaat', 'jemaat.id = persembahan.id_jemaat', 'left');
             $this->builder->join('ibadah', 'ibadah.id = persembahan.id_ibadah', 'left');
-            $this->builder->join('sektor_pelayanan', 'sektor_pelayanan.id = ibadah.id_sektor_pelayanan', 'left');
+            $this->builder->join('cabang_gereja', 'cabang_gereja.id = ibadah.id_cabang_gereja', 'left');
             $this->builder->where('persembahan.id', $id);
             $query = $this->builder->get();
             return $query->getRow();

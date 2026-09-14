@@ -17,7 +17,7 @@ class Absensi extends Controller
     protected $session;
     protected $validation;
     protected $userRole;
-    protected $userSektorPelayanan;
+    protected $userCabangGereja;
 
 public function __construct()
 {
@@ -32,9 +32,9 @@ public function __construct()
         return redirect()->to('/login');
     }
     
-    // Ambil role dan wilayah user
+    // Ambil role dan Cabang Gereja user
     $this->userRole = $this->session->get('role');
-    $this->userSektorPelayanan = $this->session->get('id_sektor_pelayanan');
+    $this->userCabangGereja = $this->session->get('id_cabang_gereja');
     
     // Cek permission view - hanya user dengan akses view yang bisa masuk
     if (!canView('absensi')) {
@@ -75,10 +75,10 @@ public function __construct()
         try {
             if ($this->request->isAJAX()) {
                 $filter = [];
-            if ($this->userRole != 'master') {
-                $filter['absensi.id_cabang_gereja'] = $this->userSektorPelayanan;
-            }
-            $list = $this->absensiModel->getDatatables($filter);
+                if (!hasGlobalCabangAccess('absensi')) {
+                    $filter['ibadah.id_cabang_gereja'] = $this->userCabangGereja;
+                }
+                $list = $this->absensiModel->getDatatables($filter);
                 $data = [];
                 $no = $this->request->getPost('start');
                 
@@ -101,7 +101,7 @@ public function __construct()
                     $row[] = $absensi->no_anggota ?? '-';
                     $row[] = date('d-m-Y', strtotime($absensi->tanggal));
                     $row[] = $absensi->jenis_ibadah ?? '-';
-                    $row[] = $absensi->nama_sektor ?? '-';
+                    $row[] = $absensi->nama_cabang ?? '-';
                     $row[] = date('H:i:s', strtotime($absensi->waktu));
                     $row[] = $statusBadge;
                     $row[] = $metodeBadge;
@@ -197,10 +197,10 @@ public function __construct()
             $id_ibadah = $this->request->getPost('id_ibadah');
             $ibadah = $this->ibadahModel->find($id_ibadah);
             
-            if ($this->userRole != 'master' && $ibadah->id_cabang_gereja != $this->userSektorPelayanan) {
+            if (!$ibadah || !canAccessCabang($ibadah->id_cabang_gereja, 'absensi')) {
                 return $this->response->setJSON([
                     'status' => 'error',
-                    'message' => 'Anda hanya dapat mengelola data di wilayah Anda!'
+                    'message' => $ibadah ? 'Anda hanya dapat mengelola absensi di Cabang Gereja yang menjadi kewenangan Anda!' : 'Data ibadah tidak ditemukan!'
                 ]);
             }
 
@@ -283,9 +283,14 @@ public function __construct()
         try {
             if ($this->request->isAJAX()) {
                 $data = $this->absensiModel->getAbsensiById($id);
-                
-                // Cek jika user bukan master, hanya bisa lihat data di wilayahnya
-                if ($this->userRole != 'master' && $data->id_cabang_gereja != $this->userSektorPelayanan) {
+
+                if (!$data) {
+                    return $this->response->setStatusCode(404)->setJSON([
+                        'error' => 'Data absensi tidak ditemukan!',
+                    ]);
+                }
+
+                if (!canAccessCabang($data->id_cabang_gereja, 'absensi')) {
                     return $this->response->setJSON([
                         'error' => 'Anda tidak memiliki akses ke data ini!'
                     ]);
@@ -322,13 +327,18 @@ public function __construct()
                 }
                 
                 $absensi = $this->absensiModel->find($id);
+                if (!$absensi) {
+                    return $this->response->setStatusCode(404)->setJSON([
+                        'status' => 'error',
+                        'message' => 'Data absensi tidak ditemukan!',
+                    ]);
+                }
                 $ibadah = $this->ibadahModel->find($absensi->id_ibadah);
                 
-                // Cek jika user bukan master, hanya bisa hapus data di wilayahnya
-                if ($this->userRole != 'master' && $ibadah->id_cabang_gereja != $this->userSektorPelayanan) {
+                if (!$ibadah || !canAccessCabang($ibadah->id_cabang_gereja, 'absensi')) {
                     return $this->response->setJSON([
                         'status' => 'error',
-                        'message' => 'Anda hanya dapat menghapus data di wilayah Anda!'
+                        'message' => $ibadah ? 'Anda hanya dapat menghapus absensi di Cabang Gereja yang menjadi kewenangan Anda!' : 'Data ibadah tidak ditemukan!'
                     ]);
                 }
                 
@@ -370,12 +380,12 @@ public function __construct()
             if ($this->request->isAJAX()) {
                 // Filter ibadah berdasarkan wilayah user (kecuali master)
                 $this->ibadahModel
-                    ->select('ibadah.*, sektor_pelayanan.nama_sektor')
-                    ->join('sektor_pelayanan', 'sektor_pelayanan.id = ibadah.id_cabang_gereja', 'left')
+                    ->select('ibadah.*, cabang_gereja.nama_cabang')
+                    ->join('cabang_gereja', 'cabang_gereja.id = ibadah.id_cabang_gereja', 'left')
                     ->where('ibadah.status !=', 'batal');
                 
-                if ($this->userRole != 'master') {
-                    $this->ibadahModel->where('ibadah.id_cabang_gereja', $this->userSektorPelayanan);
+                if (!hasGlobalCabangAccess('absensi')) {
+                    $this->ibadahModel->where('ibadah.id_cabang_gereja', $this->userCabangGereja);
                 }
                 
                 $ibadah = $this->ibadahModel->orderBy('ibadah.tanggal', 'DESC')->findAll();
@@ -402,9 +412,9 @@ public function __construct()
                 // Filter jemaat berdasarkan wilayah user (kecuali master)
                 $this->jemaatModel->where('status_aktif', 1);
                 
-                if ($this->userRole != 'master') {
+                if (!hasGlobalCabangAccess('absensi') && $this->userRole !== 'admin_area') {
                     $this->jemaatModel->join('keluarga', 'keluarga.id = jemaat.id_keluarga', 'left');
-                    $this->jemaatModel->where('keluarga.id_sektor_pelayanan', $this->userSektorPelayanan);
+                    $this->jemaatModel->where('keluarga.id_sektor_pelayanan', $this->session->get('id_sektor_pelayanan'));
                 }
                 
                 $jemaat = $this->jemaatModel->orderBy('nama_jemaat', 'ASC')->findAll();
@@ -429,6 +439,13 @@ public function __construct()
     {
         try {
             if ($this->request->isAJAX()) {
+                $ibadahData = $this->ibadahModel->find($id_ibadah);
+                if (!$ibadahData || !canAccessCabang($ibadahData->id_cabang_gereja, 'absensi')) {
+                    return $this->response->setStatusCode($ibadahData ? 403 : 404)->setJSON([
+                        'error' => $ibadahData ? 'Anda tidak memiliki akses ke ibadah ini!' : 'Data ibadah tidak ditemukan!',
+                    ]);
+                }
+
                 // Get jemaat yang sudah absen untuk ibadah ini
                 $absensi = $this->absensiModel
                     ->where('id_ibadah', $id_ibadah)
@@ -443,9 +460,9 @@ public function __construct()
                 $this->jemaatModel->where('status_aktif', 1);
                 
                 // Filter berdasarkan wilayah
-                if ($this->userRole != 'master') {
+                if (!hasGlobalCabangAccess('absensi') && $this->userRole !== 'admin_area') {
                     $this->jemaatModel->join('keluarga', 'keluarga.id = jemaat.id_keluarga', 'left');
-                    $this->jemaatModel->where('keluarga.id_sektor_pelayanan', $this->userSektorPelayanan);
+                    $this->jemaatModel->where('keluarga.id_sektor_pelayanan', $this->session->get('id_sektor_pelayanan'));
                 }
                 
                 if (!empty($absenIds)) {
@@ -517,7 +534,7 @@ public function __construct()
             }
             
             // Cek jika user bukan master, hanya bisa scan di wilayahnya
-            if ($this->userRole != 'master' && $ibadah->id_cabang_gereja != $this->userSektorPelayanan) {
+            if (!canAccessCabang($ibadah->id_cabang_gereja, 'absensi')) {
                 return redirect()->to('/ibadah')->with('error', 'Anda tidak memiliki akses ke ibadah ini!');
             }
             
@@ -555,6 +572,13 @@ public function __construct()
                 ]);
             }
 
+            if (!canCreate('absensi')) {
+                return $this->response->setStatusCode(403)->setJSON([
+                    'status' => 'error',
+                    'message' => 'Anda tidak memiliki akses untuk menambah absensi!',
+                ]);
+            }
+
             $qr_token = trim($this->request->getPost('qr_token'));
             $id_ibadah = $this->request->getPost('id_ibadah');
             
@@ -578,10 +602,10 @@ public function __construct()
 
             // Cek apakah user bisa mengakses ibadah ini (filter wilayah)
             $ibadah = $this->ibadahModel->find($id_ibadah);
-            if ($this->userRole != 'master' && $ibadah->id_cabang_gereja != $this->userSektorPelayanan) {
+            if (!$ibadah || !canAccessCabang($ibadah->id_cabang_gereja, 'absensi')) {
                 return $this->response->setJSON([
                     'status' => 'error',
-                    'message' => 'Anda tidak memiliki akses ke ibadah ini!'
+                    'message' => $ibadah ? 'Anda tidak memiliki akses ke ibadah ini!' : 'Data ibadah tidak ditemukan!'
                 ]);
             }
 
@@ -660,7 +684,7 @@ public function __construct()
             }
             
             // Cek jika user bukan master, hanya bisa lihat data di wilayahnya
-            if ($this->userRole != 'master' && $absensi->id_cabang_gereja != $this->userSektorPelayanan) {
+            if (!canAccessCabang($absensi->id_cabang_gereja, 'absensi')) {
                 return redirect()->to('/absensi')->with('error', 'Anda tidak memiliki akses ke data ini!');
             }
             

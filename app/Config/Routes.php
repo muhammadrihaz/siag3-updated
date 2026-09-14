@@ -14,7 +14,8 @@ $routes->post('auth/loginProcess', 'Auth::loginProcess');
 $routes->get('home/kartuAnggota/(:num)', 'Home::kartuAnggota/$1');
 $routes->post('home/registerSakramen', 'Home::registerSakramen');
 $routes->get('logout', 'Auth::logout');
-
+$routes->get('ibadah/live/(:num)', 'Home::ibadahLive/$1');
+$routes->get('ibadah/getLiveData/(:num)', 'Home::getLiveData/$1');
 // =============================================
 // ROUTES DENGAN LOGIN (PROTECTED)
 // =============================================
@@ -88,9 +89,9 @@ $routes->group('', ['filter' => 'login'], function($routes) {
     });
     
     // =============================================
-    // PELAYANAN - Admin Area, Pendeta, Sekretaris, Master
+    // IBADAH - termasuk role pemeriksa, pengelola persembahan, dan bendahara
     // =============================================
-    $routes->group('', ['filter' => 'role:admin_area,pendeta,sekretaris,master'], function($routes) {
+    $routes->group('', ['filter' => 'role:admin_area,pendeta,sekretaris,bendahara,kasir,ketua_5,admin_master,master'], function($routes) {
         
         // Ibadah Routes
         $routes->group('ibadah', ['filter' => 'login'], function($routes) {
@@ -111,12 +112,14 @@ $routes->group('', ['filter' => 'login'], function($routes) {
             $routes->post('savePersembahanIbadah', 'Ibadah::savePersembahanIbadah'); 
             $routes->post('deletePelayan/(:num)', 'Ibadah::deletePelayan/$1');
             $routes->post('deletePersembahanIbadah/(:num)', 'Ibadah::deletePersembahanIbadah/$1'); 
+            $routes->get('getPersembahanById/(:num)', 'Ibadah::getPersembahanById/$1');
             $routes->post('approvePersembahan/(:num)', 'Ibadah::approvePersembahan/$1');
+            $routes->post('approveKetua5/(:num)', 'Ibadah::approveKetua5/$1');
 
         });
         
         // PELAYAN
-        $routes->group('pelayan', function($routes) {
+        $routes->group('pelayan', ['filter' => 'role:admin_area,pendeta,sekretaris,admin_master,master'], function($routes) {
             $routes->get('/', 'Pelayan::index');
             $routes->post('getData', 'Pelayan::getData');
             $routes->post('save', 'Pelayan::save');
@@ -129,7 +132,7 @@ $routes->group('', ['filter' => 'login'], function($routes) {
         });
         
         // ABSENSI
-        $routes->group('absensi', function($routes) {
+        $routes->group('absensi', ['filter' => 'role:admin_area,pendeta,sekretaris,admin_master,master'], function($routes) {
             $routes->get('/', 'Absensi::index');
             $routes->post('getData', 'Absensi::getData');
             $routes->post('save', 'Absensi::save');
@@ -247,7 +250,7 @@ $routes->group('', ['filter' => 'login'], function($routes) {
         $routes->post('delete/(:num)', 'User::delete/$1');
         $routes->post('toggleStatus/(:num)', 'User::toggleStatus/$1');
         $routes->get('getJemaat', 'User::getJemaat');
-        $routes->get('getWilayah', 'User::getWilayah');
+        $routes->get('getCabangGereja', 'User::getCabangGereja');
         $routes->get('getRoles', 'User::getRoles');
     });
 

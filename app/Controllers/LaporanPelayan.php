@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use App\Models\LaporanPelayanModel;
 use App\Models\IbadahModel;
-use App\Models\CabangGerejaModel;
 use CodeIgniter\Controller;
 
 class LaporanPelayan extends Controller
@@ -12,8 +11,7 @@ class LaporanPelayan extends Controller
     protected $laporanPelayanModel;
     protected $ibadahModel;
     protected $session;
-    protected $userRole;
-    protected $userSektorPelayanan;
+    protected $userCabangGereja;
 
     /**
      * Constructor - Inisialisasi model dan cek login
@@ -28,8 +26,7 @@ class LaporanPelayan extends Controller
             return redirect()->to('/login');
         }
         
-        $this->userRole = $this->session->get('role');
-        $this->userSektorPelayanan = $this->session->get('id_sektor_pelayanan');
+        $this->userCabangGereja = $this->session->get('id_cabang_gereja');
         
         if (!canView('laporan_pelayan')) {
             return redirect()->to('/dashboard')->with('error', 'Anda tidak memiliki akses ke halaman ini!');
@@ -42,15 +39,8 @@ class LaporanPelayan extends Controller
     public function index()
     {
         try {
-            $ibadah = $this->laporanPelayanModel->getAllIbadah();
-            
-            // Filter ibadah berdasarkan wilayah user
-            $filteredIbadah = [];
-            foreach ($ibadah as $i) {
-                if ($this->userRole == 'master' || $i->id_sektor_pelayanan == $this->userSektorPelayanan) {
-                    $filteredIbadah[] = $i;
-                }
-            }
+            $scopeCabang = $this->getScopeCabang();
+            $filteredIbadah = $this->laporanPelayanModel->getAllIbadah($scopeCabang);
             
             $tugasList = $this->laporanPelayanModel->getTugasList();
             
@@ -63,7 +53,9 @@ class LaporanPelayan extends Controller
             
             
             $cabangModel = new \App\Models\CabangGerejaModel();
-            $allCabangGereja = $cabangModel->findAll();
+            $allCabangGereja = $scopeCabang === null
+                ? $cabangModel->orderBy('id', 'ASC')->findAll()
+                : $cabangModel->where('id', $scopeCabang)->findAll();
             
             $data = [
                 'cabangGereja' => $allCabangGereja,
@@ -97,29 +89,17 @@ class LaporanPelayan extends Controller
                 $tugas = (empty($tugas) || $tugas === 'null') ? null : $tugas;
                 $status = (empty($status) || $status === 'null') ? null : $status;
                 
-                // Cek jika user bukan master, filter berdasarkan wilayahnya
-                if ($this->userRole != 'master' && $id_ibadah) {
-                    $ibadah = $this->ibadahModel->find($id_ibadah);
-                    if ($ibadah && $ibadah->id_sektor_pelayanan != $this->userSektorPelayanan) {
-                        return $this->response->setJSON([
-                            'data' => [],
-                            'statistik' => null,
-                            'statusCount' => [],
-                            'tugasCount' => [],
-                            'ibadahDetail' => null,
-                            'filter' => [
-                                'id_ibadah' => $id_ibadah,
-                                'tugas' => $tugas,
-                                'status' => $status
-                            ]
-                        ]);
-                    }
+                $scopeCabang = $this->getScopeCabang();
+                if ($id_ibadah && !$this->canAccessIbadah($id_ibadah)) {
+                    return $this->response->setStatusCode(403)->setJSON([
+                        'error' => 'Anda tidak memiliki akses ke laporan pelayan ibadah ini!',
+                    ]);
                 }
                 
-                $pelayan = $this->laporanPelayanModel->getPelayanByFilter($id_ibadah, $tugas, $status);
-                $statistik = $this->laporanPelayanModel->getStatistik($id_ibadah, $tugas, $status);
-                $statusCount = $this->laporanPelayanModel->getStatusCount($id_ibadah, $tugas);
-                $tugasCount = $this->laporanPelayanModel->getTugasCount($id_ibadah, $status);
+                $pelayan = $this->laporanPelayanModel->getPelayanByFilter($id_ibadah, $tugas, $status, $scopeCabang);
+                $statistik = $this->laporanPelayanModel->getStatistik($id_ibadah, $tugas, $status, $scopeCabang);
+                $statusCount = $this->laporanPelayanModel->getStatusCount($id_ibadah, $tugas, $scopeCabang);
+                $tugasCount = $this->laporanPelayanModel->getTugasCount($id_ibadah, $status, $scopeCabang);
                 
                 $ibadahDetail = null;
                 if (!empty($id_ibadah)) {
@@ -161,18 +141,15 @@ class LaporanPelayan extends Controller
             $tugas = ($tugas && $tugas !== 'null') ? $tugas : null;
             $status = ($status && $status !== 'null') ? $status : null;
             
-            // Cek jika user bukan master, filter berdasarkan wilayahnya
-            if ($this->userRole != 'master' && $id_ibadah) {
-                $ibadah = $this->ibadahModel->find($id_ibadah);
-                if ($ibadah && $ibadah->id_sektor_pelayanan != $this->userSektorPelayanan) {
-                    return redirect()->to('/laporanpelayan')->with('error', 'Anda tidak memiliki akses ke data ini!');
-                }
+            if ($id_ibadah && !$this->canAccessIbadah($id_ibadah)) {
+                return redirect()->to('/laporanpelayan')->with('error', 'Anda tidak memiliki akses ke data ini!');
             }
-            
-            $pelayan = $this->laporanPelayanModel->getPelayanByFilter($id_ibadah, $tugas, $status);
-            $statistik = $this->laporanPelayanModel->getStatistik($id_ibadah, $tugas, $status);
-            $statusCount = $this->laporanPelayanModel->getStatusCount($id_ibadah, $tugas);
-            $tugasCount = $this->laporanPelayanModel->getTugasCount($id_ibadah, $status);
+
+            $scopeCabang = $this->getScopeCabang();
+            $pelayan = $this->laporanPelayanModel->getPelayanByFilter($id_ibadah, $tugas, $status, $scopeCabang);
+            $statistik = $this->laporanPelayanModel->getStatistik($id_ibadah, $tugas, $status, $scopeCabang);
+            $statusCount = $this->laporanPelayanModel->getStatusCount($id_ibadah, $tugas, $scopeCabang);
+            $tugasCount = $this->laporanPelayanModel->getTugasCount($id_ibadah, $status, $scopeCabang);
             
             $ibadahDetail = null;
             if ($id_ibadah) {
@@ -195,5 +172,16 @@ class LaporanPelayan extends Controller
             log_message('error', 'print error: ' . $e->getMessage());
             throw $e;
         }
+    }
+
+    private function getScopeCabang()
+    {
+        return hasGlobalCabangAccess('pelayan') ? null : $this->userCabangGereja;
+    }
+
+    private function canAccessIbadah($idIbadah)
+    {
+        $ibadah = $this->ibadahModel->find($idIbadah);
+        return $ibadah && canAccessCabang($ibadah->id_cabang_gereja, 'pelayan');
     }
 }

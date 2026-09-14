@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use App\Models\LaporanAbsensiModel;
 use App\Models\IbadahModel;
-use App\Models\CabangGerejaModel;
 use CodeIgniter\Controller;
 
 class LaporanAbsensi extends Controller
@@ -12,8 +11,7 @@ class LaporanAbsensi extends Controller
     protected $laporanAbsensiModel;
     protected $ibadahModel;
     protected $session;
-    protected $userRole;
-    protected $userSektorPelayanan;
+    protected $userCabangGereja;
 
     /**
      * Constructor - Inisialisasi model dan cek login
@@ -30,8 +28,7 @@ class LaporanAbsensi extends Controller
         }
         
         // Ambil role dan wilayah user untuk filter data
-        $this->userRole = $this->session->get('role');
-        $this->userSektorPelayanan = $this->session->get('id_sektor_pelayanan');
+        $this->userCabangGereja = $this->session->get('id_cabang_gereja');
         
         // Cek permission view - hanya user dengan akses view yang bisa masuk
         if (!canView('laporan_absensi')) {
@@ -49,7 +46,8 @@ class LaporanAbsensi extends Controller
     {
         try {
             // Ambil data ibadah (filter berdasarkan wilayah)
-            $ibadah = $this->laporanAbsensiModel->getAllIbadah();
+            $scopeCabang = $this->getScopeCabang();
+            $ibadah = $this->laporanAbsensiModel->getAllIbadah($scopeCabang);
             
             $filteredIbadah = $ibadah;
             
@@ -67,7 +65,9 @@ class LaporanAbsensi extends Controller
             
             
             $cabangModel = new \App\Models\CabangGerejaModel();
-            $allCabangGereja = $cabangModel->findAll();
+            $allCabangGereja = $scopeCabang === null
+                ? $cabangModel->orderBy('id', 'ASC')->findAll()
+                : $cabangModel->where('id', $scopeCabang)->findAll();
             
             $data = [
                 'cabangGereja' => $allCabangGereja,
@@ -108,15 +108,21 @@ class LaporanAbsensi extends Controller
                 $status = (empty($status) || $status === 'null') ? null : $status;
                 $metode = (empty($metode) || $metode === 'null') ? null : $metode;
                 
-                // Filter dicabut agar menampilkan Ibadah terlepas dari session
-                
+                $scopeCabang = $this->getScopeCabang();
+
+                if ($id_ibadah && !$this->canAccessIbadah($id_ibadah)) {
+                    return $this->response->setStatusCode(403)->setJSON([
+                        'error' => 'Anda tidak memiliki akses ke laporan absensi ibadah ini!',
+                    ]);
+                }
+
                 // Ambil data absensi berdasarkan filter
-                $absensi = $this->laporanAbsensiModel->getAbsensiByFilter($id_ibadah, $status, $metode);
+                $absensi = $this->laporanAbsensiModel->getAbsensiByFilter($id_ibadah, $status, $metode, $scopeCabang);
                 
                 // Ambil statistik
-                $statistik = $this->laporanAbsensiModel->getStatistik($id_ibadah, $status, $metode);
-                $statusCount = $this->laporanAbsensiModel->getStatusCount($id_ibadah, $metode);
-                $metodeCount = $this->laporanAbsensiModel->getMetodeCount($id_ibadah, $status);
+                $statistik = $this->laporanAbsensiModel->getStatistik($id_ibadah, $status, $metode, $scopeCabang);
+                $statusCount = $this->laporanAbsensiModel->getStatusCount($id_ibadah, $metode, $scopeCabang);
+                $metodeCount = $this->laporanAbsensiModel->getMetodeCount($id_ibadah, $status, $scopeCabang);
                 
                 $ibadahDetail = null;
                 if (!empty($id_ibadah)) {
@@ -164,13 +170,15 @@ class LaporanAbsensi extends Controller
             $id_ibadah = ($id_ibadah && $id_ibadah !== 'null') ? $id_ibadah : null;
             $status = ($status && $status !== 'null') ? $status : null;
             $metode = ($metode && $metode !== 'null') ? $metode : null;
-            
-            
-            
-            $absensi = $this->laporanAbsensiModel->getAbsensiByFilter($id_ibadah, $status, $metode);
-            $statistik = $this->laporanAbsensiModel->getStatistik($id_ibadah, $status, $metode);
-            $statusCount = $this->laporanAbsensiModel->getStatusCount($id_ibadah, $metode);
-            $metodeCount = $this->laporanAbsensiModel->getMetodeCount($id_ibadah, $status);
+            if ($id_ibadah && !$this->canAccessIbadah($id_ibadah)) {
+                return redirect()->to('/laporanabsensi')->with('error', 'Anda tidak memiliki akses ke laporan absensi ibadah ini!');
+            }
+
+            $scopeCabang = $this->getScopeCabang();
+            $absensi = $this->laporanAbsensiModel->getAbsensiByFilter($id_ibadah, $status, $metode, $scopeCabang);
+            $statistik = $this->laporanAbsensiModel->getStatistik($id_ibadah, $status, $metode, $scopeCabang);
+            $statusCount = $this->laporanAbsensiModel->getStatusCount($id_ibadah, $metode, $scopeCabang);
+            $metodeCount = $this->laporanAbsensiModel->getMetodeCount($id_ibadah, $status, $scopeCabang);
             
             $ibadahDetail = null;
             if ($id_ibadah) {
@@ -193,5 +201,16 @@ class LaporanAbsensi extends Controller
             log_message('error', 'print error: ' . $e->getMessage());
             throw $e;
         }
+    }
+
+    private function getScopeCabang()
+    {
+        return hasGlobalCabangAccess('absensi') ? null : $this->userCabangGereja;
+    }
+
+    private function canAccessIbadah($idIbadah)
+    {
+        $ibadah = $this->ibadahModel->find($idIbadah);
+        return $ibadah && canAccessCabang($ibadah->id_cabang_gereja, 'absensi');
     }
 }

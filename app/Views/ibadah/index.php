@@ -130,6 +130,9 @@
                                     <option value="aktif">Aktif</option>
                                     <option value="selesai">Selesai</option>
                                 </select>
+                                <small class="form-text text-warning" id="finishApprovalHint">
+                                    Status Selesai tersedia setelah approval Ketua 5.
+                                </small>
                                 <small class="text-danger error-text" id="error_status"></small>
                             </div>
                         </div>
@@ -250,6 +253,12 @@ $(document).ready(function() {
         var today = new Date().toISOString().split('T')[0];
         $('#tanggal').val(today);
     }
+
+    function setFinishAvailability(approvalStatus) {
+        var approved = approvalStatus === 'approved';
+        $('#status option[value="selesai"]').prop('disabled', !approved);
+        $('#finishApprovalHint').toggle(!approved);
+    }
     <?php endif; ?>
     
     // Auto-select jenis_ibadah based on waktu_mulai
@@ -272,6 +281,7 @@ $(document).ready(function() {
         $('#id').val('');
         $('.error-text').text('');
         $('#status').val('draft');
+        setFinishAvailability('pending');
         loadCabangGereja();
         setDefaultDate();
         $('#modalIbadah').modal('show');
@@ -301,11 +311,16 @@ $(document).ready(function() {
             type: 'GET',
             dataType: 'json',
             success: function(data) {
+                if (data.error) {
+                    Swal.fire({ icon: 'error', title: 'Gagal', text: data.error });
+                    return;
+                }
                 loadCabangGereja(data.id_cabang_gereja);
                 $('#tanggal').val(data.tanggal);
                 $('#waktu_mulai').val(data.waktu_mulai);
                 $('#jenis_ibadah').val(data.jenis_ibadah);
                 $('#status').val(data.status);
+                setFinishAvailability(data.approval_ketua5 || 'pending');
                 $('#keterangan').val(data.keterangan);
                 $('#modalIbadah').modal('show');
             },
@@ -461,30 +476,6 @@ $(document).ready(function() {
                 }
             });
         }
-    });
-    $(document).on('click', '.btn-approve-ketua5', function() {
-        var id = $(this).data('id');
-        Swal.fire({
-            title: 'Konfirmasi Persetujuan',
-            text: "Setujui Jadwal Ibadah ini (Ketua 5)?",
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#28a745',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Ya, Setujui',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.post('<?= base_url('ibadah/approveKetua5') ?>/' + id, function(response) {
-                    if (response.status == 'success') {
-                        Swal.fire({icon: 'success', title: 'Berhasil!', text: response.message, timer: 1500, showConfirmButton: false});
-                        table.ajax.reload(null, false);
-                    } else {
-                        Swal.fire({icon: 'error', title: 'Gagal!', text: response.message});
-                    }
-                }, 'json');
-            }
-        });
     });
     <?php endif; ?>
 });

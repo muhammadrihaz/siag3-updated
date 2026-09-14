@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\UserModel;
 use App\Models\JemaatModel;
 use App\Models\SektorPelayananModel;
+use App\Models\CabangGerejaModel;
 use CodeIgniter\Controller;
 
 class Auth extends Controller
@@ -12,6 +13,7 @@ class Auth extends Controller
     protected $userModel;
     protected $jemaatModel;
     protected $sektorPelayananModel;
+    protected $cabangGerejaModel;
     protected $session;
     protected $validation;
 
@@ -20,6 +22,7 @@ class Auth extends Controller
         $this->userModel = new UserModel();
         $this->jemaatModel = new JemaatModel();
         $this->sektorPelayananModel = new SektorPelayananModel();
+        $this->cabangGerejaModel = new CabangGerejaModel();
         $this->session = \Config\Services::session();
         $this->validation = \Config\Services::validation();
     }
@@ -85,6 +88,12 @@ class Auth extends Controller
                 $namaSektorPelayanan = $sektorPelayanan ? $sektorPelayanan->nama_sektor : null;
             }
 
+            $namaCabangGereja = null;
+            if (!empty($user->id_cabang_gereja)) {
+                $cabangGereja = $this->cabangGerejaModel->find($user->id_cabang_gereja);
+                $namaCabangGereja = $cabangGereja ? $cabangGereja->nama_cabang : null;
+            }
+
             // Set session dengan data lengkap
             $sessionData = [
                 'user_id' => $user->id,
@@ -92,8 +101,10 @@ class Auth extends Controller
                 'role' => $user->role,
                 'id_jemaat' => $user->id_jemaat,
                 'id_sektor_pelayanan' => $user->id_sektor_pelayanan,
+                'id_cabang_gereja' => $user->id_cabang_gereja,
                 'nama_jemaat' => $user->nama_jemaat ?? $user->username,
                 'nama_sektor' => $namaSektorPelayanan,
+                'nama_cabang' => $namaCabangGereja,
                 'logged_in' => true
             ];
             $this->session->set($sessionData);

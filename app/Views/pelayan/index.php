@@ -31,7 +31,7 @@
                         <th>Tugas</th>
                         <th>Tanggal Ibadah</th>
                         <th>Jenis Ibadah</th>
-                        <th>Wilayah</th>
+                        <th>Cabang Gereja</th>
                         <th>Status</th>
                         <th width="15%">Aksi</th>
                     </tr>
@@ -226,7 +226,7 @@ $(document).ready(function() {
                 $.each(data, function(key, value) {
                     var selected = (selectedId && selectedId == value.id) ? 'selected' : '';
                     select.append('<option value="' + value.id + '" ' + selected + '>' + 
-                        value.jenis_ibadah + ' - ' + value.tanggal + ' (' + value.nama_sektor + ')' + '</option>');
+                        value.jenis_ibadah + ' - ' + value.tanggal + ' (' + value.nama_cabang + ')' + '</option>');
                 });
             },
             error: function() {
@@ -302,8 +302,8 @@ $(document).ready(function() {
                                 <td>${data.jenis_ibadah || '-'} (${data.tanggal || '-'})</td>
                             </tr>
                             <tr>
-                                <th>Wilayah</th>
-                                <td>${data.nama_sektor || '-'}</td>
+                                <th>Cabang Gereja</th>
+                                <td>${data.nama_cabang || '-'}</td>
                             </tr>
                             <tr>
                                 <th>Status</th>
