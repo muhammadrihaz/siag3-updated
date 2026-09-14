@@ -67,4 +67,15 @@ final class RolePermissionTest extends CIUnitTestCase
         session()->set('role', 'kasir');
         $this->assertFalse(canApprovePersembahan());
     }
+
+    public function testJemaatDoesNotReceiveApprovalPrivileges(): void
+    {
+        session()->set([
+            'role' => 'jemaat',
+            'id_cabang_gereja' => 1,
+        ]);
+
+        $this->assertFalse(canApproveKetua5());
+        $this->assertFalse(canApprovePersembahan());
+    }
 }

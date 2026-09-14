@@ -74,6 +74,7 @@
                             <option value="">-- Pilih Jemaat (Opsional) --</option>
                         </select>
                         <small class="text-muted">Jika user bukan jemaat, bisa dikosongkan</small>
+                        <small class="text-danger error-text d-block" id="error_id_jemaat"></small>
                     </div>
                     
                     <div class="form-group">
@@ -96,6 +97,7 @@
                             <option value="bendahara">Bendahara</option>
                             <option value="kasir">Kasit Gereja</option>
                             <option value="ketua_5">Ketua 5</option>
+                            <option value="jemaat">Jemaat</option>
                         </select>
                         <small class="text-danger error-text" id="error_role"></small>
                     </div>
@@ -364,6 +366,7 @@ $(document).ready(function() {
         
         var username = $('#username').val();
         var password = $('#password').val();
+        var id_jemaat = $('#id_jemaat').val();
         var id_cabang_gereja = $('#id_cabang_gereja').val();
         var role = $('#role').val();
         var id = $('#id').val();
@@ -392,6 +395,9 @@ $(document).ready(function() {
         
         if (role == '') {
             $('#error_role').text('Role harus dipilih!');
+            isValid = false;
+        } else if (role === 'jemaat' && id_jemaat == '') {
+            $('#error_id_jemaat').text('Nama Jemaat wajib dipilih untuk role Jemaat!');
             isValid = false;
         }
         

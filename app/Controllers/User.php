@@ -166,9 +166,11 @@ class User extends Controller
             }
             
             $rules = [
-                'id_jemaat' => 'permit_empty|numeric',
+                'id_jemaat' => ($payload['role'] ?? null) === 'jemaat'
+                    ? 'required|is_natural_no_zero|is_not_unique[jemaat.id]'
+                    : 'permit_empty|numeric',
                 'id_cabang_gereja' => 'required|is_natural_no_zero|is_not_unique[cabang_gereja.id]',
-                'role' => 'required|in_list[master,admin_master,admin_area,pendeta,sekretaris,bendahara,kasir,ketua_5]',
+                'role' => 'required|in_list[master,admin_master,admin_area,pendeta,sekretaris,bendahara,kasir,ketua_5,jemaat]',
                 'username' => 'required|min_length[3]|max_length[50]|is_unique[user.username,id,{id}]',
             ];
             
@@ -542,6 +544,7 @@ class User extends Controller
             'kasir' => '<span class="badge badge-success">Kasit Gereja</span>',
             'ketua_5' => '<span class="badge badge-dark">Ketua 5</span>',
             'admin_master' => '<span class="badge badge-danger">Admin Master</span>',
+            'jemaat' => '<span class="badge badge-secondary">Jemaat</span>',
         ];
         
         return $badge[$role] ?? '<span class="badge badge-secondary">' . $role . '</span>';
