@@ -545,6 +545,9 @@
             <div class="text-center mb-5 fade-block">
                 <h2 class="section-title">Pelayanan & Sakramen</h2>
                 <p class="text-muted mt-3">Daftarkan diri Anda untuk Pelayanan & Sakramen secara online.</p>
+                <a href="https://docs.google.com/forms/d/163Y9c7Y6TlYAESscryPcghH_dAYWK9Fo6NjuikViX10/edit" target="_blank" class="btn btn-portal mt-3 px-4 py-2 shadow">
+                    <i class="fas fa-external-link-alt mr-2"></i> Pendaftaran Akses Online Pengajuan Pelayanan & Sakramen GPIB Maranatha
+                </a>
             </div>
             
             <div class="row justify-content-center">
