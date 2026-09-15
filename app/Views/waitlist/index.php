@@ -108,6 +108,12 @@ $statusBadges = [
                 <?= csrf_field() ?>
                 <div class="modal-body">
                     <div id="waitlistAlert" class="alert alert-danger d-none" role="alert"></div>
+                    
+                    <div class="alert alert-info" role="alert">
+                        <i class="fas fa-info-circle mr-2"></i> Sebelum mengajukan, pastikan Anda telah mengisi form pelayanan. 
+                        <a href="https://drive.google.com/drive/folders/16ZmLC6G3Cznm-OruBbnqQ5BcQOAm8HdD?usp=drive_link" target="_blank" class="alert-link"><strong>Unduh Form di sini</strong></a>.
+                    </div>
+
                     <input type="hidden" name="id" id="id_waitlist">
 
                     <?php if ($is_staff): ?>
