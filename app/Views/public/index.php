@@ -295,8 +295,8 @@
         /* Galeri Pelayanan & Sakramen */
         .sakramen-gallery {
             display: grid;
-            grid-template-columns: 1.35fr 1fr;
-            grid-template-rows: repeat(2, minmax(0, 1fr));
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, minmax(240px, 1fr));
             gap: 18px;
             min-height: 510px;
             margin-bottom: 30px;
@@ -311,7 +311,7 @@
             box-shadow: 0 14px 32px rgba(31, 31, 31, 0.14);
         }
         .sakramen-photo-main {
-            grid-row: 1 / span 2;
+            /* Menyesuaikan grid agar menjadi 2x2 untuk 4 gambar */
         }
         .sakramen-photo img {
             width: 100%;
