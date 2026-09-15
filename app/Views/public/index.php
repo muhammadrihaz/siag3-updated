@@ -628,14 +628,14 @@
                 <figure class="sakramen-photo sakramen-photo-main">
                     <img src="<?= base_url('assets/img/Screenshot (1799).png') ?>" alt="Pelayanan baptisan anak di GPIB Maranatha Denpasar" loading="lazy">
                     <figcaption class="sakramen-caption">
-                        <small>Pelayanan Keluarga</small>
-                        <strong>Baptisan Anak</strong>
+                        <small>Sakramen Gereja</small>
+                        <strong>Sakramen Baptisan Anak</strong>
                     </figcaption>
                 </figure>
                 <figure class="sakramen-photo">
                     <img src="<?= base_url('assets/img/Screenshot (1800).png') ?>" alt="Pelayanan peneguhan di GPIB Maranatha Denpasar" loading="lazy">
                     <figcaption class="sakramen-caption">
-                        <small>Pertumbuhan Iman</small>
+                        <small>Pelayanan Gereja</small>
                         <strong>Peneguhan Sidi</strong>
                     </figcaption>
                 </figure>
@@ -643,7 +643,14 @@
                     <img src="<?= base_url('assets/img/Screenshot (1801).png') ?>" alt="Sakramen baptisan di GPIB Maranatha Denpasar" loading="lazy">
                     <figcaption class="sakramen-caption">
                         <small>Sakramen Gereja</small>
-                        <strong>Sakramen Baptisan</strong>
+                        <strong>Sakramen Baptisan Dewasa</strong>
+                    </figcaption>
+                </figure>
+                <figure class="sakramen-photo">
+                    <img src="<?= base_url('assets/img/Screenshot (1808).png') ?>" alt="Sakramen baptisan di GPIB Maranatha Denpasar" loading="lazy">
+                    <figcaption class="sakramen-caption">
+                        <small>Pelayanan Gereja</small>
+                        <strong>Pemberkatan Perkawinan</strong>
                     </figcaption>
                 </figure>
             </div>
