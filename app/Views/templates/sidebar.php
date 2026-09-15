@@ -29,6 +29,7 @@
         $isPendeta = ($role == 'pendeta');
         $isSekretaris = ($role == 'sekretaris');
         $isBendahara = ($role == 'bendahara');
+        $isJemaat = ($role == 'jemaat');
         
         // Data Master - Akses: Master, Admin Area, Sekretaris
         $canAccessDataMaster = ($isMaster || $isAdminArea || $isSekretaris);
@@ -117,6 +118,15 @@
         </div>
     </li>
     <?php endif; ?>
+    <?php endif; ?>
+
+    <?php if ($isJemaat): ?>
+    <li class="nav-item <?= (isset($active_menu) && $active_menu == 'pelayanan') ? 'active' : '' ?>">
+        <a class="nav-link" href="<?= base_url('waitlistsakramen') ?>">
+            <i class="fas fa-fw fa-file-signature"></i>
+            <span>Permohonan Sakramen</span>
+        </a>
+    </li>
     <?php endif; ?>
 
     <!-- Laporan -->

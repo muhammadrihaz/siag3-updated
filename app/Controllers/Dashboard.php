@@ -42,6 +42,10 @@ class Dashboard extends Controller
 
     public function index()
     {
+        if ($this->session->get('role') === 'jemaat') {
+            return redirect()->to('/waitlistsakramen');
+        }
+
         try {
             $userRole = $this->session->get('role');
             $userSektorPelayanan = $this->session->get('id_sektor_pelayanan');

@@ -69,6 +69,7 @@
                                         <p class="text-muted small">Silakan login untuk melanjutkan</p>
                                     </div>
                                     <form id="formLogin" class="user">
+                                        <?= csrf_field() ?>
                                         <div class="form-group">
                                             <input type="text" class="form-control form-control-user"
                                                 id="username" name="username"
@@ -87,7 +88,7 @@
                                         <i class="fas fa-home"></i> Kembali ke Halaman Awal
                                     </a>
                                     <div class="text-center">
-                                        <a class="small" href="<?= base_url('register') ?>">Belum punya akun? Register</a>
+                                        <a class="small font-weight-bold" href="<?= base_url('register') ?>">Belum punya akun? Daftar sebagai Jemaat</a>
                                     </div>
                                 </div>
                             </div>
@@ -136,10 +137,7 @@
             $.ajax({
                 url: '<?= base_url('auth/loginProcess') ?>',
                 type: 'POST',
-                data: {
-                    username: username,
-                    password: password
-                },
+                data: $(this).serialize(),
                 dataType: 'json',
                 success: function(response) {
                     if (response.status == 'success') {

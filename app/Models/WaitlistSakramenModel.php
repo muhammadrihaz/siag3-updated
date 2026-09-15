@@ -16,8 +16,13 @@ class WaitlistSakramenModel extends Model
         'id_jemaat',
         'jenis_sakramen',
         'status_pendaftaran',
+        'catatan_pemohon',
         'keterangan_admin',
-        'pendaftar_by'
+        'pendaftar_by',
+        'attachment_path',
+        'attachment_name',
+        'attachment_mime',
+        'attachment_size'
     ];
 
     // Dates
@@ -29,11 +34,16 @@ class WaitlistSakramenModel extends Model
     /**
      * Get Waitlist Data Left Joined to Jemaat
      */
-    public function getWaitlistData()
+    public function getWaitlistData(?int $idJemaat = null)
     {
-        return $this->select('waitlist_sakramen.*, jemaat.nama_jemaat, jemaat.no_anggota')
+        $query = $this->select('waitlist_sakramen.*, jemaat.nama_jemaat, jemaat.no_anggota')
                     ->join('jemaat', 'jemaat.id = waitlist_sakramen.id_jemaat', 'left')
-                    ->orderBy('waitlist_sakramen.created_at', 'DESC')
-                    ->findAll();
+                    ->orderBy('waitlist_sakramen.created_at', 'DESC');
+
+        if ($idJemaat !== null) {
+            $query->where('waitlist_sakramen.id_jemaat', $idJemaat);
+        }
+
+        return $query->findAll();
     }
 }

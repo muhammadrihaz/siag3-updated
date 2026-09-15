@@ -10,9 +10,10 @@ $routes = Services::routes();
 $routes->get('/', 'Home::index');
 $routes->post('home/search', 'Home::search');
 $routes->get('login', 'Auth::login');
-$routes->post('auth/loginProcess', 'Auth::loginProcess');
+$routes->post('auth/loginProcess', 'Auth::loginProcess', ['filter' => 'csrf']);
+$routes->get('register', 'Auth::register');
+$routes->post('auth/registerProcess', 'Auth::registerProcess', ['filter' => 'csrf']);
 $routes->get('home/kartuAnggota/(:num)', 'Home::kartuAnggota/$1');
-$routes->post('home/registerSakramen', 'Home::registerSakramen');
 $routes->get('logout', 'Auth::logout');
 $routes->get('ibadah/live/(:num)', 'Home::ibadahLive/$1');
 $routes->get('ibadah/getLiveData/(:num)', 'Home::getLiveData/$1');
@@ -32,6 +33,16 @@ $routes->group('', ['filter' => 'login'], function($routes) {
     // =============================================
     $routes->get('user/profile', 'User::profile');
     $routes->post('user/updateProfile', 'User::updateProfile');
+
+    // Permohonan sakramen. Otorisasi data per-jemaat tetap ditegakkan
+    // di controller agar payload dari browser tidak dapat mengganti pemohon.
+    $routes->group('waitlistsakramen', ['filter' => 'role:master,admin_master,admin_area,pendeta,sekretaris,jemaat'], function($routes) {
+        $routes->get('/', 'WaitlistSakramen::index');
+        $routes->post('save', 'WaitlistSakramen::save', ['filter' => 'csrf']);
+        $routes->get('get/(:num)', 'WaitlistSakramen::get/$1');
+        $routes->get('attachment/(:num)', 'WaitlistSakramen::attachment/$1');
+        $routes->post('delete/(:num)', 'WaitlistSakramen::delete/$1', ['filter' => 'csrf']);
+    });
     
     // =============================================
     // DATA MASTER - Admin Area, Pendeta, Sekretaris, Master
@@ -54,14 +65,6 @@ $routes->group('', ['filter' => 'login'], function($routes) {
             $routes->post('save', 'CabangGereja::save');
             $routes->get('getById/(:num)', 'CabangGereja::getById/$1');
             $routes->post('delete/(:num)', 'CabangGereja::delete/$1');
-        });
-        
-        // WAITLIST SAKRAMEN
-        $routes->group('waitlistsakramen', function($routes) {
-            $routes->get('/', 'WaitlistSakramen::index');
-            $routes->post('save', 'WaitlistSakramen::save');
-            $routes->get('get/(:num)', 'WaitlistSakramen::get/$1');
-            $routes->post('delete/(:num)', 'WaitlistSakramen::delete/$1');
         });
         
         // KELUARGA

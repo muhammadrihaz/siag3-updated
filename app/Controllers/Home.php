@@ -89,41 +89,6 @@ class Home extends BaseController
         return view('public/kartu_anggota', $data);
     }
 
-    public function registerSakramen()
-    {
-        if ($this->request->isAJAX()) {
-            $noAnggota = $this->request->getPost('no_anggota');
-            $jenisSakramen = $this->request->getPost('jenis_sakramen');
-            $catatan = $this->request->getPost('catatan');
-
-            if (empty($noAnggota) || empty($jenisSakramen)) {
-                return $this->response->setJSON(['status' => 'error', 'message' => 'Nomor Anggota dan Jenis Pelayanan wajib diisi!']);
-            }
-
-            // Validasi jemaat
-            $jemaat = $this->jemaatModel->where('no_anggota', $noAnggota)->first();
-            if (!$jemaat) {
-                return $this->response->setJSON(['status' => 'error', 'message' => 'Nomor Kartu Anggota tidak terdaftar!']);
-            }
-
-            // Simpan ke waitlist_sakramen
-            $waitlistModel = new \App\Models\WaitlistSakramenModel();
-            
-            $data = [
-                'id_jemaat' => $jemaat->id,
-                'jenis_sakramen' => $jenisSakramen,
-                'status_pendaftaran' => 'pending',
-                'keterangan_admin' => $catatan
-            ];
-            
-            if ($waitlistModel->insert($data)) {
-                return $this->response->setJSON(['status' => 'success', 'message' => 'Pendaftaran berhasil!']);
-            } else {
-                return $this->response->setJSON(['status' => 'error', 'message' => 'Terjadi kesalahan saat menyimpan data.']);
-            }
-        }
-    }
-
     public function ibadahLive($id_ibadah)
     {
         $ibadahModel = new \App\Models\IbadahModel();

@@ -71,7 +71,9 @@ class Security extends BaseConfig
      *
      * Regenerate CSRF Token on every submission.
      */
-    public bool $regenerate = true;
+    // Token stabil selama sesi agar formulir AJAX dapat menampilkan error
+    // validasi dan dikirim ulang tanpa token menjadi kedaluwarsa.
+    public bool $regenerate = false;
 
     /**
      * --------------------------------------------------------------------------

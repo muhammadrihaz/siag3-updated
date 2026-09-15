@@ -544,47 +544,24 @@
         <div class="container">
             <div class="text-center mb-5 fade-block">
                 <h2 class="section-title">Pelayanan & Sakramen</h2>
-                <p class="text-muted mt-3">Daftarkan diri Anda untuk Pelayanan & Sakramen secara online.</p>
-                <a href="https://docs.google.com/forms/d/163Y9c7Y6TlYAESscryPcghH_dAYWK9Fo6NjuikViX10/edit" target="_blank" class="btn btn-portal mt-3 px-4 py-2 shadow">
-                    <i class="fas fa-external-link-alt mr-2"></i> Pendaftaran Akses Online Pengajuan Pelayanan & Sakramen GPIB Maranatha
-                </a>
+                <p class="text-muted mt-3">Ajukan permohonan secara aman melalui akun jemaat Anda.</p>
             </div>
             
             <div class="row justify-content-center">
                 <div class="col-lg-8 fade-block">
                     <div class="card shadow-sm border-0" style="border-radius: 15px;">
                         <div class="card-body p-4 p-md-5">
-                            <form id="formSakramen">
-                                <div class="form-group mb-4">
-                                    <label for="no_anggota" class="font-weight-bold">Nomor Kartu Anggota <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="no_anggota" name="no_anggota" placeholder="Masukkan Nomor Anggota Anda" required>
-                                    <small class="form-text text-muted"><i class="fas fa-info-circle"></i> Pastikan nomor anggota Anda sudah terdaftar di sistem.</small>
-                                </div>
-                                
-                                <div class="form-group mb-4">
-                                    <label for="jenis_sakramen" class="font-weight-bold">Jenis Pelayanan <span class="text-danger">*</span></label>
-                                    <select class="form-control" id="jenis_sakramen" name="jenis_sakramen" required>
-                                        <option value="">-- Pilih Jenis Pelayanan --</option>
-                                        <option value="baptis_anak">Baptisan Anak</option>
-                                        <option value="baptis_dewasa">Baptisan Dewasa</option>
-                                        <option value="sidi">Peneguhan Sidi</option>
-                                        <option value="pernikahan">Pemberkatan Perkawinan</option>
-                                    </select>
-                                </div>
-                                
-                                <div class="form-group mb-4">
-                                    <label for="catatan" class="font-weight-bold">Catatan / Pesan Tambahan</label>
-                                    <textarea class="form-control" id="catatan" name="catatan" rows="3" placeholder="Tambahkan catatan jika diperlukan..."></textarea>
-                                </div>
-                                
-                                <div id="alertSakramen" class="alert d-none"></div>
-                                
-                                <div class="text-center mt-4">
-                                    <button type="submit" id="btnSubmitSakramen" class="btn btn-portal px-5 py-2">
-                                        <i class="fas fa-paper-plane mr-2"></i> Ajukan Pendaftaran
-                                    </button>
-                                </div>
-                            </form>
+                            <div class="text-center">
+                                <div class="mb-4" style="color: var(--primary);"><i class="fas fa-user-shield fa-3x"></i></div>
+                                <h4 class="font-weight-bold">Portal Permohonan Jemaat</h4>
+                                <p class="text-muted mb-4">Hanya jemaat yang telah terdaftar dan login yang dapat mengajukan permohonan untuk dirinya sendiri serta mengunggah dokumen persyaratan.</p>
+                                <a href="<?= base_url('login') ?>" class="btn btn-portal px-4 py-2 mr-2 mb-2">
+                                    <i class="fas fa-sign-in-alt mr-2"></i> Login
+                                </a>
+                                <a href="<?= base_url('register') ?>" class="btn btn-outline-secondary px-4 py-2 mb-2">
+                                    <i class="fas fa-user-plus mr-2"></i> Daftar Akun
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -808,39 +785,6 @@
                     error: function() {
                         $('#loading').addClass('d-none');
                         $('#btnSearch').prop('disabled', false).html('<i class="fas fa-search"></i> Cari');
-                        Swal.fire({icon: 'error', title: 'Error Koneksi', text: 'Gagal terhubung ke sistem server.'});
-                    }
-                });
-            });
-            // FORM SAKRAMEN AJAX SUBMIT
-            $('#formSakramen').on('submit', function(e) {
-                e.preventDefault();
-                
-                var btn = $('#btnSubmitSakramen');
-                var originalText = btn.html();
-                
-                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...');
-                $('#alertSakramen').addClass('d-none').removeClass('alert-success alert-danger');
-                
-                $.ajax({
-                    url: '<?= base_url('home/registerSakramen') ?>',
-                    type: 'POST',
-                    data: $(this).serialize(),
-                    dataType: 'json',
-                    success: function(response) {
-                        btn.prop('disabled', false).html(originalText);
-                        
-                        if (response.status == 'success') {
-                            Swal.fire({icon: 'success', title: 'Berhasil!', text: response.message});
-                            $('#formSakramen')[0].reset();
-                        } else {
-                            $('#alertSakramen').html('<i class="fas fa-exclamation-triangle mr-2"></i> ' + response.message)
-                                             .removeClass('d-none alert-success')
-                                             .addClass('alert-danger');
-                        }
-                    },
-                    error: function() {
-                        btn.prop('disabled', false).html(originalText);
                         Swal.fire({icon: 'error', title: 'Error Koneksi', text: 'Gagal terhubung ke sistem server.'});
                     }
                 });
