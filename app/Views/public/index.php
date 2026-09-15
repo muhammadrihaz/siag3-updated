@@ -292,6 +292,71 @@
             border: 1px solid rgba(212, 175, 55, 0.4);
         }
 
+        /* Galeri Pelayanan & Sakramen */
+        .sakramen-gallery {
+            display: grid;
+            grid-template-columns: 1.35fr 1fr;
+            grid-template-rows: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+            min-height: 510px;
+            margin-bottom: 30px;
+        }
+        .sakramen-photo {
+            position: relative;
+            min-height: 0;
+            margin: 0;
+            overflow: hidden;
+            border-radius: 18px;
+            background: #28145f;
+            box-shadow: 0 14px 32px rgba(31, 31, 31, 0.14);
+        }
+        .sakramen-photo-main {
+            grid-row: 1 / span 2;
+        }
+        .sakramen-photo img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+        .sakramen-photo:hover img {
+            transform: scale(1.035);
+        }
+        .sakramen-photo::after {
+            content: '';
+            position: absolute;
+            inset: 45% 0 0;
+            background: linear-gradient(to bottom, transparent, rgba(31, 10, 54, 0.82));
+            pointer-events: none;
+        }
+        .sakramen-caption {
+            position: absolute;
+            z-index: 1;
+            right: 22px;
+            bottom: 18px;
+            left: 22px;
+            color: #fff;
+        }
+        .sakramen-caption small {
+            display: block;
+            margin-bottom: 4px;
+            color: var(--accent);
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+        .sakramen-caption strong {
+            font-size: 1.15rem;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+        }
+        .sakramen-portal-card {
+            overflow: hidden;
+            border-radius: 15px;
+            border-top: 4px solid var(--accent) !important;
+        }
+
         /* Informasi Jemaat (Stats) */
         .stat-item {
             text-align: center;
@@ -387,6 +452,18 @@
             .section-padding { padding: 60px 0; }
             .stat-item { padding: 20px 10px; }
             .navbar-custom { background-color: rgba(88, 28, 28, 1); }
+            .sakramen-gallery {
+                grid-template-columns: 1fr;
+                grid-template-rows: none;
+                min-height: 0;
+                gap: 14px;
+            }
+            .sakramen-photo,
+            .sakramen-photo-main {
+                grid-row: auto;
+                min-height: 235px;
+            }
+            .sakramen-caption { right: 16px; bottom: 14px; left: 16px; }
         }
     </style>
 </head>
@@ -544,12 +621,36 @@
         <div class="container">
             <div class="text-center mb-5 fade-block">
                 <h2 class="section-title">Pelayanan & Sakramen</h2>
-                <p class="text-muted mt-3">Ajukan permohonan secara aman melalui akun jemaat Anda.</p>
+                <p class="text-muted mt-3">Melayani setiap tahap perjalanan iman bersama keluarga dan persekutuan jemaat.</p>
             </div>
-            
+
+            <div class="sakramen-gallery fade-block" aria-label="Galeri pelayanan dan sakramen">
+                <figure class="sakramen-photo sakramen-photo-main">
+                    <img src="<?= base_url('assets/img/Screenshot (1799).png') ?>" alt="Pelayanan baptisan anak di GPIB Maranatha Denpasar" loading="lazy">
+                    <figcaption class="sakramen-caption">
+                        <small>Pelayanan Keluarga</small>
+                        <strong>Baptisan Anak</strong>
+                    </figcaption>
+                </figure>
+                <figure class="sakramen-photo">
+                    <img src="<?= base_url('assets/img/Screenshot (1800).png') ?>" alt="Pelayanan peneguhan di GPIB Maranatha Denpasar" loading="lazy">
+                    <figcaption class="sakramen-caption">
+                        <small>Pertumbuhan Iman</small>
+                        <strong>Peneguhan Sidi</strong>
+                    </figcaption>
+                </figure>
+                <figure class="sakramen-photo">
+                    <img src="<?= base_url('assets/img/Screenshot (1801).png') ?>" alt="Sakramen baptisan di GPIB Maranatha Denpasar" loading="lazy">
+                    <figcaption class="sakramen-caption">
+                        <small>Sakramen Gereja</small>
+                        <strong>Sakramen Baptisan</strong>
+                    </figcaption>
+                </figure>
+            </div>
+
             <div class="row justify-content-center">
                 <div class="col-lg-8 fade-block">
-                    <div class="card shadow-sm border-0" style="border-radius: 15px;">
+                    <div class="card sakramen-portal-card shadow-sm border-0">
                         <div class="card-body p-4 p-md-5">
                             <div class="text-center">
                                 <div class="mb-4" style="color: var(--primary);"><i class="fas fa-user-shield fa-3x"></i></div>
