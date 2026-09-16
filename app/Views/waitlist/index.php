@@ -52,6 +52,7 @@ $statusBadges = [
                         <th>Pelayanan</th>
                         <?php if ($is_staff): ?><th>Jemaat</th><?php endif; ?>
                         <th>Status</th>
+                        <th>Keterangan Admin</th>
                         <th>Lampiran</th>
                         <th>Diajukan</th>
                         <?php if ($is_staff): ?><th width="12%">Aksi</th><?php endif; ?>
@@ -67,6 +68,7 @@ $statusBadges = [
                         <td><?= esc($item->nama_jemaat ?: '-') ?><br><small class="text-muted"><?= esc($item->no_anggota ?: '-') ?></small></td>
                         <?php endif; ?>
                         <td><span class="badge badge-<?= esc($statusBadges[$item->status_pendaftaran] ?? 'secondary') ?>"><?= esc(strtoupper($item->status_pendaftaran)) ?></span></td>
+                        <td><small><?= nl2br(esc($item->keterangan_admin ?: '-')) ?></small></td>
                         <td>
                             <?php if (!empty($item->attachment_path)): ?>
                                 <a class="btn btn-outline-primary btn-sm" href="<?= base_url('waitlistsakramen/attachment/' . $item->id) ?>" title="Unduh <?= esc($item->attachment_name ?: 'lampiran') ?>">
@@ -89,7 +91,7 @@ $statusBadges = [
                     </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <tr><td colspan="<?= $is_staff ? 7 : 5 ?>" class="text-center text-muted py-4">Belum ada permohonan sakramen.</td></tr>
+                    <tr><td colspan="<?= $is_staff ? 8 : 6 ?>" class="text-center text-muted py-4">Belum ada permohonan sakramen.</td></tr>
                 <?php endif; ?>
                 </tbody>
             </table>
