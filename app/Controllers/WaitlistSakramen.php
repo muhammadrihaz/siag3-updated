@@ -40,6 +40,7 @@ class WaitlistSakramen extends Controller
             'jemaat' => $isStaff ? $this->jemaatModel->getActive() : [],
             'current_jemaat' => $idJemaat ? $this->jemaatModel->find($idJemaat) : null,
             'is_staff' => $isStaff,
+            'open_request_id' => $isStaff ? (int) $this->request->getGet('open') : 0,
         ]);
     }
 
@@ -90,17 +91,12 @@ class WaitlistSakramen extends Controller
         $attachment = $this->request->getFile('attachment');
         $hasNewAttachment = $attachment && $attachment->getError() !== UPLOAD_ERR_NO_FILE;
 
-        if ($id === 0 && !$hasNewAttachment) {
-            return $this->jsonError('Dokumen persyaratan wajib dilampirkan.', 422);
-        }
-
         if ($hasNewAttachment) {
             $rules = [
-                'attachment' => 'uploaded[attachment]|max_size[attachment,5120]|ext_in[attachment,pdf,jpg,jpeg,png]|mime_in[attachment,application/pdf,image/jpeg,image/png]',
+                'attachment' => 'max_size[attachment,5120]|ext_in[attachment,pdf,jpg,jpeg,png]|mime_in[attachment,application/pdf,image/jpeg,image/png]',
             ];
             $messages = [
                 'attachment' => [
-                    'uploaded' => 'Dokumen persyaratan wajib dilampirkan.',
                     'max_size' => 'Ukuran dokumen maksimal 5 MB.',
                     'ext_in' => 'Dokumen harus berformat PDF, JPG, JPEG, atau PNG.',
                     'mime_in' => 'Isi dokumen tidak sesuai dengan format yang diizinkan.',

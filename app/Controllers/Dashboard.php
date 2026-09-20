@@ -8,16 +8,20 @@ use App\Models\AbsensiModel;
 use App\Models\KeluargaModel;
 use App\Models\SektorPelayananModel;
 use App\Models\PersembahanModel; // Missing earlier
+use App\Models\WaitlistSakramenModel;
 use CodeIgniter\Controller;
 
 class Dashboard extends Controller
 {
+    private const SAKRAMEN_ADMIN_ROLES = ['master', 'admin_master', 'admin_area', 'pendeta', 'sekretaris'];
+
     protected $ibadahModel;
     protected $jemaatModel;
     protected $absensiModel;
     protected $keluargaModel;
     protected $sektorPelayananModel;
     protected $persembahanModel;
+    protected $waitlistSakramenModel;
     protected $session;
 
     public function __construct()
@@ -27,6 +31,7 @@ class Dashboard extends Controller
         $this->absensiModel = new AbsensiModel();
         $this->keluargaModel = new KeluargaModel();
         $this->sektorPelayananModel = new SektorPelayananModel();
+        $this->waitlistSakramenModel = new WaitlistSakramenModel();
         
         // Cek jika PersembahanModel ada, kita instance
         if(class_exists('\App\Models\PersembahanModel')) {
@@ -52,6 +57,16 @@ class Dashboard extends Controller
             $userCabangGereja = $this->session->get('id_cabang_gereja');
             $isMaster = in_array($userRole, ['master', 'admin_master']); // Support new roles
             $hasGlobalIbadahAccess = hasGlobalCabangAccess('ibadah');
+            $canManageSakramen = in_array($userRole, self::SAKRAMEN_ADMIN_ROLES, true);
+
+            // Pengajuan di dashboard membaca tabel waitlist yang sama dengan
+            // halaman pengelolaan, sehingga statusnya selalu tersinkron.
+            $pendingSakramenCount = $canManageSakramen
+                ? $this->waitlistSakramenModel->countPending()
+                : 0;
+            $pendingSakramen = $canManageSakramen
+                ? $this->waitlistSakramenModel->getRecentPending(5)
+                : [];
             
             // =============================================
             // TOTAL JEMAAT
@@ -133,6 +148,9 @@ class Dashboard extends Controller
                 'user_role' => $userRole,
                 'user_sektor' => $this->session->get('nama_cabang') ?? $this->session->get('nama_sektor'),
                 'is_master' => $isMaster,
+                'can_manage_sakramen' => $canManageSakramen,
+                'pending_sakramen_count' => $pendingSakramenCount,
+                'pending_sakramen' => $pendingSakramen,
                 'cabang_list' => $hasGlobalIbadahAccess
                     ? (new \App\Models\CabangGerejaModel())->findAll()
                     : (new \App\Models\CabangGerejaModel())->where('id', $userCabangGereja)->findAll(),

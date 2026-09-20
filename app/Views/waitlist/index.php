@@ -39,6 +39,70 @@ $statusBadges = [
 </div>
 <?php endif; ?>
 
+<?php if (!$is_staff): ?>
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">
+            <i class="fas fa-question-circle mr-1"></i> Informasi &amp; FAQ Pelayanan Sakramen
+        </h6>
+    </div>
+    <div class="card-body py-2">
+        <div class="accordion" id="sakramenFaq">
+            <div class="border-bottom">
+                <button class="btn btn-link btn-block text-left font-weight-bold px-0 py-3" type="button" data-toggle="collapse" data-target="#faqJenis" aria-expanded="true" aria-controls="faqJenis">
+                    Pelayanan apa saja yang dapat diajukan?
+                </button>
+                <div id="faqJenis" class="collapse show" data-parent="#sakramenFaq">
+                    <div class="pb-3 text-muted">
+                        Pengajuan tersedia untuk Baptisan Anak, Baptisan Dewasa, Peneguhan Sidi, dan Pemberkatan Perkawinan. Persyaratan serta jadwal pelayanan akan dikonfirmasi lebih lanjut oleh petugas gereja.
+                    </div>
+                </div>
+            </div>
+            <div class="border-bottom">
+                <button class="btn btn-link btn-block text-left font-weight-bold px-0 py-3 collapsed" type="button" data-toggle="collapse" data-target="#faqProses" aria-expanded="false" aria-controls="faqProses">
+                    Apa yang terjadi setelah pengajuan dikirim?
+                </button>
+                <div id="faqProses" class="collapse" data-parent="#sakramenFaq">
+                    <div class="pb-3 text-muted">
+                        Pengajuan akan masuk ke dashboard admin untuk ditinjau. Silakan periksa akun Anda secara berkala dalam 2 hari ke depan untuk melihat perubahan status atau keterangan dari admin.
+                    </div>
+                </div>
+            </div>
+            <div class="border-bottom">
+                <button class="btn btn-link btn-block text-left font-weight-bold px-0 py-3 collapsed" type="button" data-toggle="collapse" data-target="#faqStatus" aria-expanded="false" aria-controls="faqStatus">
+                    Apa arti status pengajuan?
+                </button>
+                <div id="faqStatus" class="collapse" data-parent="#sakramenFaq">
+                    <div class="pb-3 text-muted">
+                        <strong>Pending</strong> berarti menunggu tinjauan, <strong>Dalam Proses</strong> berarti sedang ditindaklanjuti, <strong>Selesai</strong> berarti proses pengajuan telah dituntaskan, dan <strong>Batal</strong> berarti pengajuan tidak dilanjutkan. Perhatikan juga kolom Keterangan Admin untuk informasi tambahan.
+                    </div>
+                </div>
+            </div>
+            <div class="border-bottom">
+                <button class="btn btn-link btn-block text-left font-weight-bold px-0 py-3 collapsed" type="button" data-toggle="collapse" data-target="#faqDokumen" aria-expanded="false" aria-controls="faqDokumen">
+                    Apakah dokumen persyaratan wajib diunggah?
+                </button>
+                <div id="faqDokumen" class="collapse" data-parent="#sakramenFaq">
+                    <div class="pb-3 text-muted">
+                        Tidak. Dokumen bersifat opsional saat pengajuan awal. Jika ada dokumen tambahan yang diperlukan, admin akan menyampaikannya melalui pembaruan status atau keterangan pengajuan.
+                    </div>
+                </div>
+            </div>
+            <div>
+                <button class="btn btn-link btn-block text-left font-weight-bold px-0 py-3 collapsed" type="button" data-toggle="collapse" data-target="#faqPerubahan" aria-expanded="false" aria-controls="faqPerubahan">
+                    Bagaimana jika data yang dikirim perlu diperbaiki?
+                </button>
+                <div id="faqPerubahan" class="collapse" data-parent="#sakramenFaq">
+                    <div class="pb-3 text-muted">
+                        Pengajuan yang sudah dikirim tidak dapat diubah sendiri. Hubungi admin gereja apabila ada informasi yang perlu dikoreksi.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
 <div class="card shadow mb-4">
     <div class="card-header py-3">
         <h6 class="m-0 font-weight-bold text-primary"><?= $is_staff ? 'Daftar Seluruh Pemohon' : 'Riwayat Permohonan Saya' ?></h6>
@@ -112,7 +176,7 @@ $statusBadges = [
                     <div id="waitlistAlert" class="alert alert-danger d-none" role="alert"></div>
                     
                     <div class="alert alert-info" role="alert">
-                        <i class="fas fa-info-circle mr-2"></i> Sebelum mengajukan, pastikan Anda telah mengisi form pelayanan. 
+                        <i class="fas fa-info-circle mr-2"></i> Jika diperlukan, Anda dapat mengunduh dan mengisi form pelayanan.
                         <a href="https://drive.google.com/drive/folders/16ZmLC6G3Cznm-OruBbnqQ5BcQOAm8HdD?usp=drive_link" target="_blank" class="alert-link"><strong>Unduh Form di sini</strong></a>.
                     </div>
 
@@ -171,12 +235,16 @@ $statusBadges = [
                     <?php endif; ?>
 
                     <div class="form-group mb-0">
-                        <label for="attachment">Dokumen Persyaratan <span class="text-danger new-only">*</span></label>
+                        <label for="attachment">Dokumen Persyaratan <span class="text-muted">(Opsional)</span></label>
                         <div class="custom-file">
-                            <input type="file" class="custom-file-input" name="attachment" id="attachment" accept=".pdf,.jpg,.jpeg,.png" required>
+                            <input type="file" class="custom-file-input" name="attachment" id="attachment" accept=".pdf,.jpg,.jpeg,.png">
                             <label class="custom-file-label" for="attachment">Pilih PDF/JPG/PNG...</label>
                         </div>
-                        <small class="form-text text-muted">Format PDF, JPG, JPEG, atau PNG. Ukuran maksimal 5 MB. File baru tidak wajib saat petugas hanya memperbarui status.</small>
+                        <?php if ($is_staff): ?>
+                            <small class="form-text text-muted">Khusus admin: unggah dokumen hanya jika admin mewakili jemaat dalam mengajukan permohonan. Format PDF, JPG, JPEG, atau PNG; maksimal 5 MB.</small>
+                        <?php else: ?>
+                            <small class="form-text text-muted">Dokumen tidak wajib pada pengajuan awal. Jika ingin melampirkan, gunakan format PDF, JPG, JPEG, atau PNG dengan ukuran maksimal 5 MB.</small>
+                        <?php endif; ?>
                         <div id="existingAttachment" class="small mt-2 d-none"></div>
                     </div>
                 </div>
@@ -201,6 +269,7 @@ select.form-control.select2-hidden-accessible { display: none !important; }
 </style>
 <script>
 const isStaff = <?= $is_staff ? 'true' : 'false' ?>;
+const openRequestId = <?= (int) ($open_request_id ?? 0) ?>;
 const csrfName = '<?= csrf_token() ?>';
 const csrfHash = '<?= csrf_hash() ?>';
 
@@ -216,6 +285,7 @@ $(function() {
 
     $('#formWaitlist').on('submit', function(e) {
         e.preventDefault();
+        const isNewRequest = !$('#id_waitlist').val();
         const button = $('#btnSimpanWaitlist');
         const original = button.html();
         button.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Menyimpan...');
@@ -229,6 +299,16 @@ $(function() {
             contentType: false,
             dataType: 'json'
         }).done(function(response) {
+            if (!isStaff && isNewRequest) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Pengajuan Berhasil Dikirim',
+                    text: 'Terima kasih. Mohon cek kembali akun Anda secara berkala dalam 2 hari ke depan untuk melihat pembaruan status.',
+                    confirmButtonText: 'Baik'
+                }).then(function() { location.reload(); });
+                return;
+            }
+
             Swal.fire({ icon: 'success', title: 'Berhasil', text: response.message, timer: 1600, showConfirmButton: false })
                 .then(function() { location.reload(); });
         }).fail(function(xhr) {
@@ -238,12 +318,16 @@ $(function() {
             button.prop('disabled', false).html(original);
         });
     });
+
+    if (isStaff && openRequestId > 0) {
+        editWaitlist(openRequestId);
+    }
 });
 
 function addWaitlist() {
     $('#formWaitlist')[0].reset();
     $('#id_waitlist').val('');
-    $('#attachment').prop('required', true).next('.custom-file-label').text('Pilih PDF/JPG/PNG...');
+    $('#attachment').prop('required', false).next('.custom-file-label').text('Pilih PDF/JPG/PNG...');
     $('#existingAttachment').addClass('d-none').empty();
     $('#waitlistAlert').addClass('d-none').empty();
     $('#modalWaitlistTitle').text('Ajukan Permohonan Sakramen');

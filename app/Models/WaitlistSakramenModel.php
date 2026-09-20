@@ -46,4 +46,21 @@ class WaitlistSakramenModel extends Model
 
         return $query->findAll();
     }
+
+    /**
+     * Data pengajuan baru untuk notifikasi dashboard petugas.
+     */
+    public function getRecentPending(int $limit = 5): array
+    {
+        return $this->select('waitlist_sakramen.*, jemaat.nama_jemaat, jemaat.no_anggota')
+            ->join('jemaat', 'jemaat.id = waitlist_sakramen.id_jemaat', 'left')
+            ->where('waitlist_sakramen.status_pendaftaran', 'pending')
+            ->orderBy('waitlist_sakramen.created_at', 'DESC')
+            ->findAll(max(1, $limit));
+    }
+
+    public function countPending(): int
+    {
+        return $this->where('status_pendaftaran', 'pending')->countAllResults();
+    }
 }

@@ -13,6 +13,9 @@
  * @var string $title
  * @var string $active_menu
  * @var string $sub_menu
+ * @var bool $can_manage_sakramen
+ * @var int $pending_sakramen_count
+ * @var array $pending_sakramen
  */
 ?>
 
@@ -27,6 +30,65 @@
         </h1>
         
     </div>
+
+    <?php if (!empty($can_manage_sakramen)): ?>
+    <?php
+    $sakramenTypeLabels = [
+        'baptis_anak' => 'Baptisan Anak',
+        'baptis_dewasa' => 'Baptisan Dewasa',
+        'sidi' => 'Peneguhan Sidi',
+        'pernikahan' => 'Pemberkatan Perkawinan',
+    ];
+    ?>
+    <div class="card shadow mb-4 border-left-warning">
+        <div class="card-header py-3 d-flex flex-column flex-sm-row align-items-sm-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-warning">
+                <i class="fas fa-bell mr-1"></i> Pengajuan Sakramen Baru
+                <span class="badge badge-warning ml-1"><?= number_format($pending_sakramen_count ?? 0) ?></span>
+            </h6>
+            <a href="<?= base_url('waitlistsakramen') ?>" class="btn btn-sm btn-primary mt-2 mt-sm-0">
+                <i class="fas fa-tasks mr-1"></i> Kelola Pengajuan
+            </a>
+        </div>
+        <div class="card-body p-0">
+            <?php if (!empty($pending_sakramen)): ?>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Jemaat</th>
+                            <th>Pelayanan</th>
+                            <th>Waktu Pengajuan</th>
+                            <th class="text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($pending_sakramen as $submission): ?>
+                        <tr>
+                            <td>
+                                <strong><?= esc($submission->nama_jemaat ?: '-') ?></strong>
+                                <small class="d-block text-muted"><?= esc($submission->no_anggota ?: '-') ?></small>
+                            </td>
+                            <td><?= esc($sakramenTypeLabels[$submission->jenis_sakramen] ?? ucwords(str_replace('_', ' ', $submission->jenis_sakramen))) ?></td>
+                            <td><?= date('d-m-Y H:i', strtotime($submission->created_at)) ?></td>
+                            <td class="text-right">
+                                <a href="<?= base_url('waitlistsakramen') . '?open=' . (int) $submission->id ?>" class="btn btn-sm btn-outline-primary" title="Tinjau pengajuan">
+                                    <i class="fas fa-eye mr-1"></i> Tinjau
+                                </a>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+            <?php else: ?>
+            <div class="text-center text-muted py-4">
+                <i class="fas fa-check-circle text-success mr-1"></i> Tidak ada pengajuan baru yang menunggu ditinjau.
+            </div>
+            <?php endif; ?>
+        </div>
+    </div>
+    <?php endif; ?>
 
     <!-- Content Row -->
     <div class="row">
