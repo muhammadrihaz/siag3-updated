@@ -49,52 +49,52 @@ $statusBadges = [
     <div class="card-body py-2">
         <div class="accordion" id="sakramenFaq">
             <div class="border-bottom">
-                <button class="btn btn-link btn-block text-left font-weight-bold px-0 py-3" type="button" data-toggle="collapse" data-target="#faqJenis" aria-expanded="true" aria-controls="faqJenis">
-                    Pelayanan apa saja yang dapat diajukan?
+                <button class="btn btn-link btn-block text-left font-weight-bold px-0 py-3" type="button" data-toggle="collapse" data-target="#faqOne" aria-expanded="true" aria-controls="faqOne">
+                    1. Apa saja pelayanan atau sakramen yang dapat diajukan melalui sistem?
                 </button>
-                <div id="faqJenis" class="collapse show" data-parent="#sakramenFaq">
+                <div id="faqOne" class="collapse show" data-parent="#sakramenFaq">
                     <div class="pb-3 text-muted">
-                        Pengajuan tersedia untuk Baptisan Anak, Baptisan Dewasa, Peneguhan Sidi, dan Pemberkatan Perkawinan. Persyaratan serta jadwal pelayanan akan dikonfirmasi lebih lanjut oleh petugas gereja.
+                        Jemaat dapat mengajukan jenis pelayanan atau sakramen yang tersedia pada sistem sesuai dengan ketentuan pelayanan di GPIB Maranatha Denpasar.
                     </div>
                 </div>
             </div>
             <div class="border-bottom">
-                <button class="btn btn-link btn-block text-left font-weight-bold px-0 py-3 collapsed" type="button" data-toggle="collapse" data-target="#faqProses" aria-expanded="false" aria-controls="faqProses">
-                    Apa yang terjadi setelah pengajuan dikirim?
+                <button class="btn btn-link btn-block text-left font-weight-bold px-0 py-3 collapsed" type="button" data-toggle="collapse" data-target="#faqTwo" aria-expanded="false" aria-controls="faqTwo">
+                    2. Apa saja persyaratan yang perlu disiapkan?
                 </button>
-                <div id="faqProses" class="collapse" data-parent="#sakramenFaq">
+                <div id="faqTwo" class="collapse" data-parent="#sakramenFaq">
                     <div class="pb-3 text-muted">
-                        Pengajuan akan masuk ke dashboard admin untuk ditinjau. Silakan periksa akun Anda secara berkala dalam 2 hari ke depan untuk melihat perubahan status atau keterangan dari admin.
+                        Persyaratan dapat berbeda sesuai dengan jenis pelayanan yang diajukan. Jemaat dapat melihat persyaratan pada formulir pengajuan dan melengkapi dokumen yang diperlukan sebelum mengirimkan pengajuan.
                     </div>
                 </div>
             </div>
             <div class="border-bottom">
-                <button class="btn btn-link btn-block text-left font-weight-bold px-0 py-3 collapsed" type="button" data-toggle="collapse" data-target="#faqStatus" aria-expanded="false" aria-controls="faqStatus">
-                    Apa arti status pengajuan?
+                <button class="btn btn-link btn-block text-left font-weight-bold px-0 py-3 collapsed" type="button" data-toggle="collapse" data-target="#faqThree" aria-expanded="false" aria-controls="faqThree">
+                    3. Apakah ada pertemuan sebelum pelaksanaan pelayanan?
                 </button>
-                <div id="faqStatus" class="collapse" data-parent="#sakramenFaq">
+                <div id="faqThree" class="collapse" data-parent="#sakramenFaq">
                     <div class="pb-3 text-muted">
-                        <strong>Pending</strong> berarti menunggu tinjauan, <strong>Dalam Proses</strong> berarti sedang ditindaklanjuti, <strong>Selesai</strong> berarti proses pengajuan telah dituntaskan, dan <strong>Batal</strong> berarti pengajuan tidak dilanjutkan. Perhatikan juga kolom Keterangan Admin untuk informasi tambahan.
+                        Ya. Sebelum pelaksanaan pelayanan, jemaat akan mengikuti pertemuan persiapan untuk mendapatkan arahan dan informasi terkait pelaksanaan pelayanan.
                     </div>
                 </div>
             </div>
             <div class="border-bottom">
-                <button class="btn btn-link btn-block text-left font-weight-bold px-0 py-3 collapsed" type="button" data-toggle="collapse" data-target="#faqDokumen" aria-expanded="false" aria-controls="faqDokumen">
-                    Apakah dokumen persyaratan wajib diunggah?
+                <button class="btn btn-link btn-block text-left font-weight-bold px-0 py-3 collapsed" type="button" data-toggle="collapse" data-target="#faqFour" aria-expanded="false" aria-controls="faqFour">
+                    4. Apakah ada yang perlu disiapkan atau diserahkan pada saat pelaksanaan?
                 </button>
-                <div id="faqDokumen" class="collapse" data-parent="#sakramenFaq">
+                <div id="faqFour" class="collapse" data-parent="#sakramenFaq">
                     <div class="pb-3 text-muted">
-                        Tidak. Dokumen bersifat opsional saat pengajuan awal. Jika ada dokumen tambahan yang diperlukan, admin akan menyampaikannya melalui pembaruan status atau keterangan pengajuan.
+                        Pada saat pertemuan persiapan, jemaat akan diberikan amplop untuk diserahkan pada saat pelaksanaan pelayanan. Amplop tersebut diserahkan melalui kotak atau kantong khusus yang telah disediakan oleh pihak gereja.
                     </div>
                 </div>
             </div>
             <div>
-                <button class="btn btn-link btn-block text-left font-weight-bold px-0 py-3 collapsed" type="button" data-toggle="collapse" data-target="#faqPerubahan" aria-expanded="false" aria-controls="faqPerubahan">
-                    Bagaimana jika data yang dikirim perlu diperbaiki?
+                <button class="btn btn-link btn-block text-left font-weight-bold px-0 py-3 collapsed" type="button" data-toggle="collapse" data-target="#faqFive" aria-expanded="false" aria-controls="faqFive">
+                    5. Bagaimana saya mengetahui jadwal pertemuan dan pelaksanaan pelayanan?
                 </button>
-                <div id="faqPerubahan" class="collapse" data-parent="#sakramenFaq">
+                <div id="faqFive" class="collapse" data-parent="#sakramenFaq">
                     <div class="pb-3 text-muted">
-                        Pengajuan yang sudah dikirim tidak dapat diubah sendiri. Hubungi admin gereja apabila ada informasi yang perlu dikoreksi.
+                        Informasi mengenai jadwal pertemuan, tanggal dan waktu pelaksanaan, lokasi, serta informasi penting lainnya akan disampaikan melalui bagian Keterangan pada pengajuan pelayanan. Jemaat diharapkan memeriksa keterangan pengajuan secara berkala untuk mendapatkan informasi terbaru.
                     </div>
                 </div>
             </div>
