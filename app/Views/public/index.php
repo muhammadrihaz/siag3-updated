@@ -431,6 +431,14 @@
             font-size: 0.9rem;
         }
 
+        /* FAQ Accordion */
+        #faqAccordion .btn-link:not(.collapsed) .fa-chevron-down {
+            transform: rotate(180deg);
+        }
+        #faqAccordion .btn-link:hover {
+            text-decoration: none;
+        }
+
         /* Animations */
         @keyframes fadeInUP {
             from { opacity: 0; transform: translateY(30px); }
@@ -731,6 +739,109 @@
                                 <h5 class="font-weight-bold mb-0 text-dark">Pdt. Sonya Ansye Medyarto - Sitaniapessy</h5>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="section-padding bg-white">
+        <div class="container">
+            <div class="text-center mb-5 fade-block">
+                <h2 class="section-title">Pertanyaan yang Sering Diajukan (FAQ)</h2>
+                <p class="text-muted mt-3 max-w-700 mx-auto" style="max-width: 700px;">Informasi penting seputar pelayanan dan sakramen di GPIB Maranatha Denpasar.</p>
+            </div>
+            
+            <div class="row justify-content-center fade-block">
+                <div class="col-lg-10">
+                    <div class="accordion" id="faqAccordion">
+                        
+                        <!-- FAQ 1 -->
+                        <div class="card mb-3 border-0 shadow-sm" style="border-radius: 12px; overflow: hidden; background-color: var(--bg-cream);">
+                            <div class="card-header border-0 p-0" id="headingOne" style="background-color: transparent;">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-link btn-block text-left font-weight-bold p-4 text-dark d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" style="font-size: 1.1rem; box-shadow: none;">
+                                        1. Apa saja pelayanan atau sakramen yang dapat diajukan melalui sistem?
+                                        <i class="fas fa-chevron-down text-muted" style="transition: transform 0.3s;"></i>
+                                    </button>
+                                </h2>
+                            </div>
+                            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#faqAccordion">
+                                <div class="card-body text-secondary px-4 pb-4 pt-0" style="line-height: 1.7;">
+                                    Jemaat dapat mengajukan jenis pelayanan atau sakramen yang tersedia pada sistem sesuai dengan ketentuan pelayanan di GPIB Maranatha Denpasar.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQ 2 -->
+                        <div class="card mb-3 border-0 shadow-sm" style="border-radius: 12px; overflow: hidden; background-color: var(--bg-cream);">
+                            <div class="card-header border-0 p-0" id="headingTwo" style="background-color: transparent;">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-link btn-block text-left font-weight-bold p-4 text-dark d-flex justify-content-between align-items-center collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" style="font-size: 1.1rem; box-shadow: none;">
+                                        2. Apa saja persyaratan yang perlu disiapkan?
+                                        <i class="fas fa-chevron-down text-muted" style="transition: transform 0.3s;"></i>
+                                    </button>
+                                </h2>
+                            </div>
+                            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#faqAccordion">
+                                <div class="card-body text-secondary px-4 pb-4 pt-0" style="line-height: 1.7;">
+                                    Persyaratan dapat berbeda sesuai dengan jenis pelayanan yang diajukan. Jemaat dapat melihat persyaratan pada formulir pengajuan dan melengkapi dokumen yang diperlukan sebelum mengirimkan pengajuan.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQ 3 -->
+                        <div class="card mb-3 border-0 shadow-sm" style="border-radius: 12px; overflow: hidden; background-color: var(--bg-cream);">
+                            <div class="card-header border-0 p-0" id="headingThree" style="background-color: transparent;">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-link btn-block text-left font-weight-bold p-4 text-dark d-flex justify-content-between align-items-center collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree" style="font-size: 1.1rem; box-shadow: none;">
+                                        3. Apakah ada pertemuan sebelum pelaksanaan pelayanan?
+                                        <i class="fas fa-chevron-down text-muted" style="transition: transform 0.3s;"></i>
+                                    </button>
+                                </h2>
+                            </div>
+                            <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#faqAccordion">
+                                <div class="card-body text-secondary px-4 pb-4 pt-0" style="line-height: 1.7;">
+                                    Ya. Sebelum pelaksanaan pelayanan, jemaat akan mengikuti pertemuan persiapan untuk mendapatkan arahan dan informasi terkait pelaksanaan pelayanan.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQ 4 -->
+                        <div class="card mb-3 border-0 shadow-sm" style="border-radius: 12px; overflow: hidden; background-color: var(--bg-cream);">
+                            <div class="card-header border-0 p-0" id="headingFour" style="background-color: transparent;">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-link btn-block text-left font-weight-bold p-4 text-dark d-flex justify-content-between align-items-center collapsed" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour" style="font-size: 1.1rem; box-shadow: none;">
+                                        4. Apakah ada yang perlu disiapkan atau diserahkan pada saat pelaksanaan?
+                                        <i class="fas fa-chevron-down text-muted" style="transition: transform 0.3s;"></i>
+                                    </button>
+                                </h2>
+                            </div>
+                            <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#faqAccordion">
+                                <div class="card-body text-secondary px-4 pb-4 pt-0" style="line-height: 1.7;">
+                                    Pada saat pertemuan persiapan, jemaat akan diberikan amplop untuk diserahkan pada saat pelaksanaan pelayanan. Amplop tersebut diserahkan melalui kotak atau kantong khusus yang telah disediakan oleh pihak gereja.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQ 5 -->
+                        <div class="card mb-3 border-0 shadow-sm" style="border-radius: 12px; overflow: hidden; background-color: var(--bg-cream);">
+                            <div class="card-header border-0 p-0" id="headingFive" style="background-color: transparent;">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-link btn-block text-left font-weight-bold p-4 text-dark d-flex justify-content-between align-items-center collapsed" type="button" data-toggle="collapse" data-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive" style="font-size: 1.1rem; box-shadow: none;">
+                                        5. Bagaimana saya mengetahui jadwal pertemuan dan pelaksanaan pelayanan?
+                                        <i class="fas fa-chevron-down text-muted" style="transition: transform 0.3s;"></i>
+                                    </button>
+                                </h2>
+                            </div>
+                            <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#faqAccordion">
+                                <div class="card-body text-secondary px-4 pb-4 pt-0" style="line-height: 1.7;">
+                                    Informasi mengenai jadwal pertemuan, tanggal dan waktu pelaksanaan, lokasi, serta informasi penting lainnya akan disampaikan melalui bagian Keterangan pada pengajuan pelayanan. Jemaat diharapkan memeriksa keterangan pengajuan secara berkala untuk mendapatkan informasi terbaru.
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
