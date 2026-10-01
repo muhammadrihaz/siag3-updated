@@ -28,7 +28,7 @@ final class RolePermissionTest extends CIUnitTestCase
         $this->assertFalse(canAccessCabang(3, 'absensi'));
     }
 
-    public function testKasitCanCreateAndEditOfferingsAcrossBranches(): void
+    public function testKasirCanCreateAndEditOfferingsAcrossBranches(): void
     {
         session()->set([
             'role' => 'kasir',
@@ -58,7 +58,7 @@ final class RolePermissionTest extends CIUnitTestCase
         $this->assertTrue(canAccessCabang(5, 'ibadah'));
     }
 
-    public function testTreasurerCanApproveOfferingWhileKasitCannot(): void
+    public function testTreasurerCanApproveOfferingWhileKasirCannot(): void
     {
         session()->set('role', 'bendahara');
         $this->assertTrue(canApprovePersembahan());
@@ -66,6 +66,39 @@ final class RolePermissionTest extends CIUnitTestCase
 
         session()->set('role', 'kasir');
         $this->assertFalse(canApprovePersembahan());
+    }
+
+    public function testTreasurerSeesApprovalButtonForDraftOffering(): void
+    {
+        session()->set('role', 'bendahara');
+
+        $html = view('ibadah/persembahan', [
+            'active_menu' => 'pelayanan',
+            'sub_menu' => 'ibadah',
+            'title' => 'Persembahan Ibadah',
+            'id_ibadah' => 10,
+            'ibadah' => (object) [
+                'jenis_ibadah' => 'Ibadah Minggu',
+                'tanggal' => '2026-10-04',
+                'nama_cabang' => 'Cabang Uji',
+                'waktu_mulai' => '09:00:00',
+                'status' => 'berlangsung',
+            ],
+            'persembahan' => [
+                (object) [
+                    'id' => 25,
+                    'nominal' => 100000,
+                    'jenis_mata_uang' => 'Rupiah',
+                    'jumlah_lembar' => 1,
+                    'jenis' => 'putih',
+                    'metode' => 'tunai',
+                    'status_approval' => 'draft',
+                ],
+            ],
+        ]);
+
+        $this->assertStringContainsString('btn-approval-persembahan', $html);
+        $this->assertStringContainsString('Approval', $html);
     }
 
     public function testJemaatDoesNotReceiveApprovalPrivileges(): void

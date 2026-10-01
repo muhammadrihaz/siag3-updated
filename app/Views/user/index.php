@@ -95,7 +95,7 @@
                             <option value="pendeta">Pendeta</option>
                             <option value="sekretaris">Sekretaris</option>
                             <option value="bendahara">Bendahara</option>
-                            <option value="kasir">Kasit Gereja</option>
+                            <option value="kasir">Kasir Gereja</option>
                             <option value="ketua_5">Ketua 5</option>
                             <option value="jemaat">Jemaat</option>
                         </select>

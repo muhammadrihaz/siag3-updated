@@ -88,7 +88,7 @@
                                         <i class="fas fa-home"></i> Kembali ke Halaman Awal
                                     </a>
                                     <div class="text-center">
-                                        <a class="small font-weight-bold" href="<?= base_url('register') ?>">Belum punya akun? Daftar sebagai Jemaat</a>
+                                        <a class="small font-weight-bold" href="<?= base_url('register') ?>">Belum punya akun? Daftar</a>
                                     </div>
                                 </div>
                             </div>

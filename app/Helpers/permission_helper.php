@@ -20,7 +20,7 @@ if (!function_exists('hasPermission')) {
                 'absensi' => ['view', 'create', 'edit', 'delete'],
             ],
             // Nama role pada database tetap `kasir` untuk kompatibilitas,
-            // sedangkan label pada UI adalah "Kasit Gereja".
+            // sedangkan label pada UI adalah "Kasir Gereja".
             'kasir' => [
                 'ibadah' => ['view'],
                 'persembahan' => ['view', 'create', 'edit'],

@@ -541,7 +541,7 @@ class User extends Controller
             'pendeta' => '<span class="badge badge-success">Pendeta</span>',
             'sekretaris' => '<span class="badge badge-warning">Sekretaris</span>',
             'bendahara' => '<span class="badge badge-info">Bendahara</span>',
-            'kasir' => '<span class="badge badge-success">Kasit Gereja</span>',
+            'kasir' => '<span class="badge badge-success">Kasir Gereja</span>',
             'ketua_5' => '<span class="badge badge-dark">Ketua 5</span>',
             'admin_master' => '<span class="badge badge-danger">Admin Master</span>',
             'jemaat' => '<span class="badge badge-secondary">Jemaat</span>',

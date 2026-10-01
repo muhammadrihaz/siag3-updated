@@ -195,7 +195,7 @@ class UserModel extends Model
             'pendeta' => 'Pendeta',
             'sekretaris' => 'Sekretaris',
             'bendahara' => 'Bendahara',
-            'kasir' => 'Kasit Gereja',
+            'kasir' => 'Kasir Gereja',
             'ketua_5' => 'Ketua 5',
             'jemaat' => 'Jemaat',
         ];

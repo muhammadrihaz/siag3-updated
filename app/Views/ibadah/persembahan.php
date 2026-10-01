@@ -165,7 +165,7 @@
                                 <th>Jenis</th>
                                 <th>Metode</th>
                                 <th>Status</th>
-                                <th width="12%">Aksi</th>
+                                <th width="18%">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="tbodyPersembahan">
@@ -204,6 +204,12 @@
                                         <button class="btn btn-sm btn-primary btn-detail-persembahan" data-id="<?= $p->id ?>" title="Lihat Detail">
                                             <i class="fas fa-eye"></i>
                                         </button>
+
+                                        <?php if (canApprovePersembahan() && ($p->status_approval ?? 'draft') == 'draft'): ?>
+                                        <button class="btn btn-sm btn-success btn-approval-persembahan" data-id="<?= $p->id ?>" title="Periksa dan approve persembahan">
+                                            <i class="fas fa-check"></i> Approval
+                                        </button>
+                                        <?php endif; ?>
 
                                         <?php if (canEdit('persembahan') && ($p->status_approval ?? 'draft') == 'draft'): ?>
                                         <button class="btn btn-sm btn-info btn-edit-persembahan" data-id="<?= $p->id ?>" title="Edit">
@@ -580,7 +586,7 @@ $(document).ready(function() {
     var selectedPersembahanId = null;
 
     // Semua role yang boleh melihat persembahan dapat membuka detailnya.
-    $(document).on('click', '.btn-detail-persembahan', function() {
+    $(document).on('click', '.btn-detail-persembahan, .btn-approval-persembahan', function() {
         selectedPersembahanId = $(this).data('id');
 
         $.ajax({
